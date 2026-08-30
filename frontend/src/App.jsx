@@ -18,6 +18,7 @@ import ReportPage from './pages/public/ReportPage';
 // Auth pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 // Job seeker pages
 import DashboardPage from './pages/jobseeker/DashboardPage';
@@ -83,6 +84,7 @@ export default function App() {
           {/* ── Auth ───────────────────────────────────────────────────── */}
           <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
           <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
+          <Route path="/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
 
           {/* ── Job Seeker ─────────────────────────────────────────────── */}
           <Route path="/dashboard" element={

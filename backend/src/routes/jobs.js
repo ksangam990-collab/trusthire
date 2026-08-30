@@ -12,18 +12,18 @@ const {
 const { applyToJob } = require('../controllers/applicationController');
 const { protect, restrictTo, optionalAuth } = require('../middleware/auth');
 
-// Public
+// Static routes MUST come before dynamic /:jobId to avoid conflicts
 router.get('/', getJobs);
-router.get('/:jobId', optionalAuth, getJob);
+router.get('/employer/mine', protect, restrictTo('employer'), getMyListings);
 
-// Job seeker only
+// Dynamic routes
+router.get('/:jobId', optionalAuth, getJob);
 router.post('/:jobId/apply', protect, restrictTo('jobseeker'), applyToJob);
 router.post('/:jobId/save', protect, restrictTo('jobseeker'), toggleSaveJob);
+router.patch('/:jobId', protect, restrictTo('employer'), updateJob);
+router.patch('/:jobId/status', protect, restrictTo('employer'), updateJobStatus);
 
 // Employer only
 router.post('/', protect, restrictTo('employer'), createJob);
-router.get('/employer/mine', protect, restrictTo('employer'), getMyListings);
-router.patch('/:jobId', protect, restrictTo('employer'), updateJob);
-router.patch('/:jobId/status', protect, restrictTo('employer'), updateJobStatus);
 
 module.exports = router;

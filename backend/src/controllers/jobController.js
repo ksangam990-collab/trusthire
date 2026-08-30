@@ -3,6 +3,9 @@ const JobListing = require('../models/JobListing');
 const Employer = require('../models/Employer');
 const JobSeekerProfile = require('../models/JobSeekerProfile');
 
+
+// Escape special regex characters to prevent ReDoS attacks
+const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\const jobSchema = z.object({');
 const jobSchema = z.object({
   title: z.string().min(3).max(150),
   description: z.string().min(50).max(5000),
@@ -87,8 +90,8 @@ exports.getJobs = async (req, res, next) => {
     }
 
     // Location filters
-    if (city) query['location.city'] = { $regex: city, $options: 'i' };
-    if (state) query['location.state'] = { $regex: state, $options: 'i' };
+    if (city) query['location.city'] = { $regex: escapeRegex(city), $options: 'i' };
+    if (state) query['location.state'] = { $regex: escapeRegex(state), $options: 'i' };
     if (remote === 'true') query['location.isRemote'] = true;
 
     // Type filters

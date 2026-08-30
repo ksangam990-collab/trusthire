@@ -68,19 +68,7 @@ export default function JobDetailPage() {
   });
 
   const applyMutation = useMutation({
-    mutationFn: () => applicationsAPI.applyToJob ? null : jobsAPI.applyToJob(jobId, { coverNote }),
-    mutationFn: () => fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/jobs/${jobId}/apply`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('accessToken')}`,
-      },
-      body: JSON.stringify({ coverNote }),
-    }).then(async (r) => {
-      const json = await r.json();
-      if (!r.ok) throw new Error(json.message);
-      return json;
-    }),
+    mutationFn: () => jobsAPI.applyToJob(jobId, { coverNote }),
     onSuccess: () => {
       setApplied(true);
       setShowApplyForm(false);

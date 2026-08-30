@@ -1,4 +1,5 @@
 const { z } = require('zod');
+const mongoose = require('mongoose');
 const FraudReport = require('../models/FraudReport');
 const Employer = require('../models/Employer');
 const JobListing = require('../models/JobListing');
@@ -110,10 +111,14 @@ exports.getEmployerFraudSummary = async (req, res, next) => {
   try {
     const { employerId } = req.params;
 
+    if (!mongoose.isValidObjectId(employerId)) {
+      return res.status(400).json({ success: false, message: 'Invalid employer ID.' });
+    }
+
     const byType = await FraudReport.aggregate([
       {
         $match: {
-          employerId: require('mongoose').Types.ObjectId.createFromHexString(employerId),
+          employerId: new mongoose.Types.ObjectId(employerId),
           status: { $in: ['pending', 'under_review', 'verified'] },
         },
       },

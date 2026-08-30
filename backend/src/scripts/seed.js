@@ -1,4 +1,11 @@
 /**
+ * ⚠️  DEVELOPMENT SEED SCRIPT — DO NOT RUN IN PRODUCTION WITH REAL DATA
+ * This script creates demo accounts with known passwords for testing only.
+ * Passwords below are intentionally simple for local development.
+ * Run: node src/scripts/seed.js
+ */
+
+/**
  * TrustHire Database Seed Script
  * Run: node src/scripts/seed.js
  *

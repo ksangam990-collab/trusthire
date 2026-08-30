@@ -19,6 +19,9 @@ const profileRoutes = require('./routes/profile');
 
 const app = express();
 
+// Trust proxy — required for rate limiting behind Render/Vercel
+app.set("trust proxy", 1);
+
 // ── Connect to MongoDB ────────────────────────────────────────────────────────
 connectDB();
 
