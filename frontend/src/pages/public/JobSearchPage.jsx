@@ -1,8 +1,8 @@
 // frontend/src/pages/public/JobSearchPage.jsx
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin, Filter } from 'lucide-react';
+import { Search, MapPin } from 'lucide-react';
 import apiClient from '../../api/client';
-import { JobCard } from '../../components/jobs/JobCard';
+import JobCard from '../../components/jobs/JobCard';
 
 export const JobSearchPage = () => {
   const [jobs, setJobs] = useState([]);
@@ -20,7 +20,7 @@ export const JobSearchPage = () => {
       if (verifiedOnly) params.append('verifiedOnly', 'true');
 
       const res = await apiClient.get(`/jobs?${params.toString()}`);
-      setJobs(res.data || []);
+      setJobs(res.data || res || []);
     } catch (err) {
       console.error('Failed to fetch jobs', err);
     } finally {
@@ -40,7 +40,6 @@ export const JobSearchPage = () => {
   return (
     <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
       <div className="max-w-7xl mx-auto space-y-8">
-        {/* Search Header */}
         <div className="text-center max-w-2xl mx-auto space-y-3">
           <h1 className="text-3xl font-extrabold text-white">Find Verified Tech Jobs</h1>
           <p className="text-sm text-slate-400">
@@ -48,7 +47,6 @@ export const JobSearchPage = () => {
           </p>
         </div>
 
-        {/* Search Bar & Filters */}
         <form onSubmit={handleSearch} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col md:flex-row gap-3 items-center">
           <div className="relative flex-1 w-full">
             <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
@@ -90,7 +88,6 @@ export const JobSearchPage = () => {
           </button>
         </form>
 
-        {/* Job Listings Grid */}
         {loading ? (
           <div className="py-20 text-center text-slate-500 animate-pulse">Loading opportunities...</div>
         ) : jobs.length === 0 ? (
@@ -100,7 +97,7 @@ export const JobSearchPage = () => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {jobs.map((job) => (
-              <JobCard key={job._id} job={job} />
+              <JobCard key={job._id || job.id} job={job} />
             ))}
           </div>
         )}
@@ -108,3 +105,5 @@ export const JobSearchPage = () => {
     </div>
   );
 };
+
+export default JobSearchPage;
