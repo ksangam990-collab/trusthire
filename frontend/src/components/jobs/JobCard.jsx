@@ -1,190 +1,108 @@
-import { Link } from 'react-router-dom';
+// frontend/src/components/jobs/JobCard.jsx
+import React from "react";
+import { Link } from "react-router-dom";
 import {
   ShieldCheck,
-  ShieldAlert,
-  MapPin,
-  Clock,
-  Briefcase,
-  Users,
   AlertTriangle,
-  BookmarkPlus,
-  BookmarkCheck,
-} from 'lucide-react';
-import { useState } from 'react';
-import { jobsAPI } from '../../api';
-import useAuthStore from '../../store/authStore';
-import toast from 'react-hot-toast';
+  MapPin,
+  Briefcase,
+  DollarSign,
+  Building,
+} from "lucide-react";
 
-const JOB_TYPE_LABELS = {
-  fulltime: 'Full-time',
-  parttime: 'Part-time',
-  internship: 'Internship',
-  contract: 'Contract',
-  freelance: 'Freelance',
-};
-
-const EXP_LABELS = {
-  fresher: 'Fresher',
-  '1-2': '1–2 yrs',
-  '2-5': '2–5 yrs',
-  '5-10': '5–10 yrs',
-  '10+': '10+ yrs',
-};
-
-function TrustBadge({ verificationStatus, trustScore, fraudReportCount }) {
-  if (verificationStatus === 'verified') {
-    return (
-      <span className="badge-verified">
-        <ShieldCheck className="w-3 h-3" />
-        Verified · {trustScore}/100
-      </span>
-    );
-  }
-  if (fraudReportCount >= 3) {
-    return (
-      <span className="badge-warning">
-        <AlertTriangle className="w-3 h-3" />
-        {fraudReportCount} fraud reports
-      </span>
-    );
-  }
-  return (
-    <span className="badge-unverified">
-      <ShieldAlert className="w-3 h-3" />
-      Unverified
-    </span>
-  );
-}
-
-export default function JobCard({ job, savedIds = [], onSaveToggle }) {
-  const { user, isJobSeeker } = useAuthStore();
-  const [saving, setSaving] = useState(false);
-  const isSaved = savedIds.includes(job._id);
-
-  const employer = job.employerId;
-  const location = job.location?.isRemote
-    ? 'Remote'
-    : [job.location?.city, job.location?.state].filter(Boolean).join(', ') || 'Location not specified';
-
-  const salary =
-    job.salaryRange?.isDisclosed && job.salaryRange?.min
-      ? job.salaryRange.max
-        ? `₹${(job.salaryRange.min / 100000).toFixed(1)}–${(job.salaryRange.max / 100000).toFixed(1)} LPA`
-        : `₹${(job.salaryRange.min / 100000).toFixed(1)} LPA`
-      : 'Salary not disclosed';
-
-  const postedDaysAgo = Math.floor(
-    (Date.now() - new Date(job.createdAt)) / (1000 * 60 * 60 * 24)
-  );
-  const postedLabel =
-    postedDaysAgo === 0
-      ? 'Today'
-      : postedDaysAgo === 1
-      ? 'Yesterday'
-      : `${postedDaysAgo} days ago`;
-
-  const handleSave = async (e) => {
-    e.preventDefault();
-    if (!user || !isJobSeeker()) {
-      toast.error('Log in as a job seeker to save jobs.');
-      return;
-    }
-    setSaving(true);
-    try {
-      await jobsAPI.toggleSave(job._id);
-      onSaveToggle?.(job._id, !isSaved);
-      toast.success(isSaved ? 'Job removed from saved.' : 'Job saved!');
-    } catch {
-      toast.error('Could not save job. Try again.');
-    } finally {
-      setSaving(false);
-    }
-  };
+export const JobCard = ({ job }) => {
+  const isVerified = job.employerId?.verifiedStatus === "Verified";
+  const hasRisk = job.riskScore > 30;
 
   return (
-    <Link
-      to={`/jobs/${job._id}`}
-      className={`card-hover block p-5 relative ${
-        employer?.fraudReportCount >= 3 ? 'border-red-100' : ''
-      }`}
-    >
-      {/* Header */}
-      <div className="flex items-start justify-between gap-3">
-        <div className="flex-1 min-w-0">
-          {/* Employer name + trust */}
-          <div className="flex items-center gap-2 flex-wrap mb-1">
-            <span className="text-sm font-medium text-slate-500 truncate">
-              {employer?.companyName || 'Unknown Company'}
-            </span>
-            {employer && (
-              <TrustBadge
-                verificationStatus={employer.verificationStatus}
-                trustScore={employer.trustScore}
-                fraudReportCount={employer.fraudReportCount}
-              />
-            )}
+    <div className="group relative bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] backdrop-blur-xl flex flex-col justify-between">
+      <div>
+        {/* Header Badges */}
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden">
+              {job.employerId?.logo ? (
+                <img
+                  src={job.employerId.logo}
+                  alt={job.employerId.companyName}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <Building className="w-6 h-6 text-slate-400" />
+              )}
+            </div>
+            <div>
+              <h4 className="text-sm font-semibold text-slate-300">
+                {job.employerId?.companyName || "Verified Recruiter"}
+              </h4>
+              <p className="text-xs text-slate-500">
+                {new Date(job.createdAt).toLocaleDateString()}
+              </p>
+            </div>
           </div>
 
-          {/* Job title */}
-          <h3 className="font-display font-semibold text-slate-900 text-base leading-snug mb-2 line-clamp-2">
+          <div className="flex items-center gap-2">
+            {isVerified ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                Verified Employer
+              </span>
+            ) : hasRisk ? (
+              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                Under Audit
+              </span>
+            ) : null}
+          </div>
+        </div>
+
+        {/* Title & Description */}
+        <Link to={`/jobs/${job._id}`}>
+          <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
             {job.title}
           </h3>
+        </Link>
+        <p className="text-sm text-slate-400 mt-2 line-clamp-2 leading-relaxed">
+          {job.description}
+        </p>
 
-          {/* Meta row */}
-          <div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-slate-500">
-            <span className="flex items-center gap-1">
-              <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-              {location}
+        {/* Requirements Pills */}
+        <div className="flex flex-wrap gap-2 mt-4">
+          {job.requirements?.slice(0, 3).map((req, i) => (
+            <span
+              key={i}
+              className="text-xs font-medium bg-slate-800/80 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700/50"
+            >
+              {req}
             </span>
-            <span className="flex items-center gap-1">
-              <Briefcase className="w-3.5 h-3.5 flex-shrink-0" />
-              {JOB_TYPE_LABELS[job.jobType]}
+          ))}
+          {job.requirements?.length > 3 && (
+            <span className="text-xs text-slate-500 self-center">
+              +{job.requirements.length - 3} more
             </span>
-            <span className="flex items-center gap-1">
-              <Users className="w-3.5 h-3.5 flex-shrink-0" />
-              {EXP_LABELS[job.experienceLevel]}
-            </span>
-          </div>
-        </div>
-
-        {/* Save button */}
-        <button
-          onClick={handleSave}
-          disabled={saving}
-          className="flex-shrink-0 p-1.5 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-navy-600 transition-colors"
-          title={isSaved ? 'Remove from saved' : 'Save job'}
-        >
-          {isSaved ? (
-            <BookmarkCheck className="w-5 h-5 text-navy-600" />
-          ) : (
-            <BookmarkPlus className="w-5 h-5" />
           )}
-        </button>
+        </div>
       </div>
 
-      {/* Footer */}
-      <div className="mt-3 pt-3 border-t border-slate-50 flex items-center justify-between flex-wrap gap-2">
-        <span className="text-sm font-semibold text-navy-600">{salary}</span>
-        <div className="flex items-center gap-3 text-xs text-slate-400">
+      {/* Footer Info */}
+      <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
+        <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
-            <Clock className="w-3 h-3" />
-            {postedLabel}
+            <MapPin className="w-3.5 h-3.5 text-slate-500" />
+            {job.location}
           </span>
-          {job.applicationCount > 0 && (
-            <span>{job.applicationCount} applied</span>
-          )}
+          <span className="flex items-center gap-1">
+            <Briefcase className="w-3.5 h-3.5 text-slate-500" />
+            {job.jobType}
+          </span>
         </div>
-      </div>
 
-      {/* Fraud warning banner */}
-      {employer?.fraudReportCount >= 3 && (
-        <div className="mt-3 flex items-center gap-2 text-xs text-trust-red bg-red-50 rounded-lg px-3 py-2">
-          <AlertTriangle className="w-3.5 h-3.5 flex-shrink-0" />
-          <span>
-            {employer.fraudReportCount} people have reported this employer. Proceed with caution.
-          </span>
-        </div>
-      )}
-    </Link>
+        <span className="font-semibold text-emerald-400 flex items-center gap-0.5 text-sm">
+          <DollarSign className="w-4 h-4" />
+          {job.salary?.min?.toLocaleString()} -{" "}
+          {job.salary?.max?.toLocaleString()}/yr
+        </span>
+      </div>
+    </div>
   );
-}
+};

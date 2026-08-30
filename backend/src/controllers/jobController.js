@@ -1,258 +1,111 @@
-const { z } = require('zod');
-const JobListing = require('../models/JobListing');
-const Employer = require('../models/Employer');
-const JobSeekerProfile = require('../models/JobSeekerProfile');
+// backend/src/controllers/jobController.js
+import JobListing from "../models/JobListing.js";
+import Employer from "../models/Employer.js";
+import Alert from "../models/Alert.js";
+import { analyzeJobRisk } from "../services/verificationService.js";
 
-
-// Escape special regex characters to prevent ReDoS attacks
-const escapeRegex = (str) => str.replace(/[.*+?^${}()|[\]\\]/g, '\\const jobSchema = z.object({');
-const jobSchema = z.object({
-  title: z.string().min(3).max(150),
-  description: z.string().min(50).max(5000),
-  responsibilities: z.string().max(3000).optional(),
-  requirements: z.string().max(3000).optional(),
-  location: z.object({
-    city: z.string().optional(),
-    state: z.string().optional(),
-    isRemote: z.boolean().default(false),
-  }),
-  salaryRange: z.object({
-    min: z.number().min(0).optional(),
-    max: z.number().min(0).optional(),
-    isDisclosed: z.boolean().default(true),
-  }).optional(),
-  jobType: z.enum(['fulltime', 'parttime', 'internship', 'contract', 'freelance']),
-  experienceLevel: z.enum(['fresher', '1-2', '2-5', '5-10', '10+']).default('fresher'),
-  skills: z.array(z.string()).max(15).optional(),
-  education: z.string().optional(),
-  openings: z.number().int().min(1).max(100).default(1),
-  applyMethod: z.enum(['platform', 'email', 'external']).default('platform'),
-  applyEmail: z.string().email().optional(),
-  applyLink: z.string().url().optional(),
-  closesAt: z.string().datetime().optional(),
-});
-
-// ── Create Job Listing ────────────────────────────────────────────────────────
-exports.createJob = async (req, res, next) => {
+export const createJob = async (req, res, next) => {
   try {
-    const data = jobSchema.parse(req.body);
-
-    const employer = await Employer.findOne({ userId: req.user._id });
+    const employer = await Employer.findOne({ userId: req.user.id });
     if (!employer) {
-      return res.status(404).json({ success: false, message: 'Employer profile not found.' });
+      return res
+        .status(403)
+        .json({
+          success: false,
+          message: "Employer profile required to post jobs.",
+        });
     }
 
-    if (employer.isSuspended) {
-      return res.status(403).json({
-        success: false,
-        message: 'Your account is suspended. You cannot post jobs.',
+    const {
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      jobType,
+      experienceLevel,
+    } = req.body;
+
+    // Run heuristic risk analysis
+    const riskAnalysis = analyzeJobRisk(req.body, employer);
+
+    const job = await JobListing.create({
+      employerId: employer._id,
+      postedBy: req.user.id,
+      title,
+      description,
+      requirements,
+      salary,
+      location,
+      jobType,
+      experienceLevel,
+      verificationStatus: riskAnalysis.isAutoFlagged
+        ? "Under_Review"
+        : "Verified",
+      riskScore: riskAnalysis.riskScore,
+      riskFlags: riskAnalysis.flags,
+      isActive: !riskAnalysis.isAutoFlagged,
+    });
+
+    // Notify moderation if risk detected
+    if (riskAnalysis.isAutoFlagged) {
+      await Alert.create({
+        type: "JOB_AUTO_FLAGGED",
+        targetId: job._id,
+        message: `Job "${job.title}" flagged with risk score ${riskAnalysis.riskScore}/100`,
+        metadata: { flags: riskAnalysis.flags },
       });
     }
 
-    const job = await JobListing.create({
-      ...data,
-      employerId: employer._id,
-      isFromVerifiedEmployer: employer.verificationStatus === 'verified',
+    return res.status(201).json({
+      success: true,
+      message: riskAnalysis.isAutoFlagged
+        ? "Job created but held for manual trust review due to risk indicators."
+        : "Job successfully posted.",
+      data: job,
     });
-
-    // Update employer listing count
-    await Employer.findByIdAndUpdate(employer._id, {
-      $inc: { totalListings: 1, activeListings: 1 },
-    });
-
-    res.status(201).json({ success: true, job });
   } catch (error) {
     next(error);
   }
 };
 
-// ── Search / List Jobs (Public) ───────────────────────────────────────────────
-exports.getJobs = async (req, res, next) => {
+export const getJobs = async (req, res, next) => {
   try {
     const {
-      q,
-      city,
-      state,
+      search,
+      location,
       jobType,
-      experienceLevel,
       verifiedOnly,
-      remote,
-      salaryMin,
       page = 1,
-      limit = 20,
+      limit = 10,
     } = req.query;
 
-    const query = { status: 'active' };
+    const query = { isActive: true };
 
-    // Text search
-    if (q) {
-      query.$text = { $search: q };
+    if (search) {
+      query.$or = [
+        { title: { $regex: search, $options: "i" } },
+        { description: { $regex: search, $options: "i" } },
+      ];
     }
-
-    // Location filters
-    if (city) query['location.city'] = { $regex: escapeRegex(city), $options: 'i' };
-    if (state) query['location.state'] = { $regex: escapeRegex(state), $options: 'i' };
-    if (remote === 'true') query['location.isRemote'] = true;
-
-    // Type filters
+    if (location) query.location = { $regex: location, $options: "i" };
     if (jobType) query.jobType = jobType;
-    if (experienceLevel) query.experienceLevel = experienceLevel;
-    if (verifiedOnly === 'true') query.isFromVerifiedEmployer = true;
-
-    // Salary filter
-    if (salaryMin) {
-      query['salaryRange.min'] = { $gte: parseInt(salaryMin) };
-    }
-
-    const skip = (parseInt(page) - 1) * parseInt(limit);
-
-    const [jobs, total] = await Promise.all([
-      JobListing.find(query)
-        .populate({
-          path: 'employerId',
-          select: 'companyName verificationStatus trustScore fraudReportCount logoUrl',
-        })
-        .sort(q ? { score: { $meta: 'textScore' } } : { createdAt: -1 })
-        .skip(skip)
-        .limit(parseInt(limit))
-        .lean(),
-      JobListing.countDocuments(query),
-    ]);
-
-    res.json({
-      success: true,
-      jobs,
-      pagination: {
-        total,
-        page: parseInt(page),
-        pages: Math.ceil(total / parseInt(limit)),
-        limit: parseInt(limit),
-      },
-    });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ── Get Single Job ────────────────────────────────────────────────────────────
-exports.getJob = async (req, res, next) => {
-  try {
-    const job = await JobListing.findById(req.params.jobId).populate({
-      path: 'employerId',
-      select:
-        'companyName verificationStatus trustScore fraudReportCount verifiedReportCount logoUrl industry companySize website description verificationData',
-    });
-
-    if (!job || job.status === 'suspended') {
-      return res.status(404).json({ success: false, message: 'Job not found.' });
-    }
-
-    // Increment view count (fire and forget)
-    JobListing.findByIdAndUpdate(job._id, { $inc: { viewCount: 1 } }).exec();
-
-    res.json({ success: true, job });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ── Update Job ────────────────────────────────────────────────────────────────
-exports.updateJob = async (req, res, next) => {
-  try {
-    const employer = await Employer.findOne({ userId: req.user._id });
-    const job = await JobListing.findById(req.params.jobId);
-
-    if (!job) return res.status(404).json({ success: false, message: 'Job not found.' });
-    if (!job.employerId.equals(employer._id)) {
-      return res.status(403).json({ success: false, message: 'Not your listing.' });
-    }
-
-    const allowedUpdates = jobSchema.partial().parse(req.body);
-    Object.assign(job, allowedUpdates);
-    await job.save();
-
-    res.json({ success: true, job });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ── Close / Delete Job ────────────────────────────────────────────────────────
-exports.updateJobStatus = async (req, res, next) => {
-  try {
-    const { status } = z
-      .object({ status: z.enum(['active', 'closed', 'draft']) })
-      .parse(req.body);
-
-    const employer = await Employer.findOne({ userId: req.user._id });
-    const job = await JobListing.findById(req.params.jobId);
-
-    if (!job) return res.status(404).json({ success: false, message: 'Job not found.' });
-    if (!job.employerId.equals(employer._id)) {
-      return res.status(403).json({ success: false, message: 'Not your listing.' });
-    }
-
-    const wasActive = job.status === 'active';
-    job.status = status;
-    await job.save();
-
-    // Update employer active count
-    if (wasActive && status !== 'active') {
-      await Employer.findByIdAndUpdate(employer._id, { $inc: { activeListings: -1 } });
-    } else if (!wasActive && status === 'active') {
-      await Employer.findByIdAndUpdate(employer._id, { $inc: { activeListings: 1 } });
-    }
-
-    res.json({ success: true, job });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ── Employer's Own Listings ───────────────────────────────────────────────────
-exports.getMyListings = async (req, res, next) => {
-  try {
-    const employer = await Employer.findOne({ userId: req.user._id });
-    if (!employer) return res.status(404).json({ success: false, message: 'Not found.' });
-
-    const { status = 'active', page = 1, limit = 20 } = req.query;
-    const query = { employerId: employer._id };
-    if (status !== 'all') query.status = status;
+    if (verifiedOnly === "true") query.verificationStatus = "Verified";
 
     const jobs = await JobListing.find(query)
+      .populate("employerId", "companyName verifiedStatus logo website")
       .sort({ createdAt: -1 })
       .skip((page - 1) * limit)
-      .limit(parseInt(limit));
+      .limit(Number(limit));
 
-    res.json({ success: true, jobs });
-  } catch (error) {
-    next(error);
-  }
-};
+    const total = await JobListing.countDocuments(query);
 
-// ── Save / Unsave Job ─────────────────────────────────────────────────────────
-exports.toggleSaveJob = async (req, res, next) => {
-  try {
-    const profile = await JobSeekerProfile.findOne({ userId: req.user._id });
-    if (!profile) return res.status(404).json({ success: false, message: 'Profile not found.' });
-
-    const jobId = req.params.jobId;
-    const isSaved = profile.savedJobs.includes(jobId);
-
-    if (isSaved) {
-      profile.savedJobs.pull(jobId);
-      await JobListing.findByIdAndUpdate(jobId, { $inc: { savedCount: -1 } });
-    } else {
-      profile.savedJobs.push(jobId);
-      await JobListing.findByIdAndUpdate(jobId, { $inc: { savedCount: 1 } });
-    }
-
-    await profile.save();
-
-    res.json({
+    return res.status(200).json({
       success: true,
-      saved: !isSaved,
-      message: isSaved ? 'Job removed from saved.' : 'Job saved.',
+      count: jobs.length,
+      totalPages: Math.ceil(total / limit),
+      currentPage: Number(page),
+      data: jobs,
     });
   } catch (error) {
     next(error);
