@@ -11,8 +11,8 @@ import {
 } from "lucide-react";
 
 export const JobCard = ({ job }) => {
-  const isVerified = job.employerId?.verifiedStatus === "Verified";
-  const hasRisk = job.riskScore > 30;
+  const isVerified = job?.employerId?.verifiedStatus === "Verified";
+  const hasRisk = (job?.riskScore || 0) > 30;
 
   return (
     <div className="group relative bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] backdrop-blur-xl flex flex-col justify-between">
@@ -21,7 +21,7 @@ export const JobCard = ({ job }) => {
         <div className="flex items-center justify-between gap-4 mb-4">
           <div className="flex items-center gap-3">
             <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden">
-              {job.employerId?.logo ? (
+              {job?.employerId?.logo ? (
                 <img
                   src={job.employerId.logo}
                   alt={job.employerId.companyName}
@@ -33,10 +33,12 @@ export const JobCard = ({ job }) => {
             </div>
             <div>
               <h4 className="text-sm font-semibold text-slate-300">
-                {job.employerId?.companyName || "Verified Recruiter"}
+                {job?.employerId?.companyName || "Verified Recruiter"}
               </h4>
               <p className="text-xs text-slate-500">
-                {new Date(job.createdAt).toLocaleDateString()}
+                {job?.createdAt
+                  ? new Date(job.createdAt).toLocaleDateString()
+                  : ""}
               </p>
             </div>
           </div>
@@ -57,18 +59,18 @@ export const JobCard = ({ job }) => {
         </div>
 
         {/* Title & Description */}
-        <Link to={`/jobs/${job._id}`}>
+        <Link to={`/jobs/${job?._id}`}>
           <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
-            {job.title}
+            {job?.title}
           </h3>
         </Link>
         <p className="text-sm text-slate-400 mt-2 line-clamp-2 leading-relaxed">
-          {job.description}
+          {job?.description}
         </p>
 
         {/* Requirements Pills */}
         <div className="flex flex-wrap gap-2 mt-4">
-          {job.requirements?.slice(0, 3).map((req, i) => (
+          {job?.requirements?.slice(0, 3).map((req, i) => (
             <span
               key={i}
               className="text-xs font-medium bg-slate-800/80 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700/50"
@@ -76,7 +78,7 @@ export const JobCard = ({ job }) => {
               {req}
             </span>
           ))}
-          {job.requirements?.length > 3 && (
+          {job?.requirements?.length > 3 && (
             <span className="text-xs text-slate-500 self-center">
               +{job.requirements.length - 3} more
             </span>
@@ -89,20 +91,23 @@ export const JobCard = ({ job }) => {
         <div className="flex items-center gap-4">
           <span className="flex items-center gap-1">
             <MapPin className="w-3.5 h-3.5 text-slate-500" />
-            {job.location}
+            {job?.location || "Remote"}
           </span>
           <span className="flex items-center gap-1">
             <Briefcase className="w-3.5 h-3.5 text-slate-500" />
-            {job.jobType}
+            {job?.jobType || "Full-time"}
           </span>
         </div>
 
         <span className="font-semibold text-emerald-400 flex items-center gap-0.5 text-sm">
           <DollarSign className="w-4 h-4" />
-          {job.salary?.min?.toLocaleString()} -{" "}
-          {job.salary?.max?.toLocaleString()}/yr
+          {job?.salary?.min?.toLocaleString()} -{" "}
+          {job?.salary?.max?.toLocaleString()}/yr
         </span>
       </div>
     </div>
   );
 };
+
+// Default export to satisfy default imports across the app
+export default JobCard;
