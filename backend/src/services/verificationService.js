@@ -15,6 +15,8 @@
 
 // backend/src/services/verificationService.js
 
+// backend/src/services/verificationService.js
+
 const SUSPICIOUS_KEYWORDS = [
   "wire transfer",
   "western union",
@@ -37,14 +39,24 @@ const HIGH_RISK_DOMAINS = [
   "proton.me",
 ];
 
-export const analyzeJobRisk = (jobData, employerCompany) => {
+const verifyCompanyEmail = (email) => {
+  if (!email) return false;
+  const domain = email.split("@")[1]?.toLowerCase();
+  return domain && !HIGH_RISK_DOMAINS.includes(domain);
+};
+
+const verifyRegistrationNumber = (regNumber) => {
+  if (!regNumber) return false;
+  return /^[A-Z0-9-]{6,20}$/i.test(regNumber);
+};
+
+const analyzeJobRisk = (jobData, employerCompany) => {
   let riskScore = 0;
   const flags = [];
 
   const textToScan =
-    `${jobData.title} ${jobData.description} ${jobData.requirements?.join(" ")}`.toLowerCase();
+    `${jobData.title || ""} ${jobData.description || ""} ${(jobData.requirements || []).join(" ")}`.toLowerCase();
 
-  // 1. Scan for extortion & upfront fee phrases
   SUSPICIOUS_KEYWORDS.forEach((keyword) => {
     if (textToScan.includes(keyword)) {
       riskScore += 25;
@@ -52,13 +64,11 @@ export const analyzeJobRisk = (jobData, employerCompany) => {
     }
   });
 
-  // 2. Scan for salary anomaly (e.g. entry-level > $200k/year)
   if (jobData.salary?.max > 250000 && jobData.experienceLevel === "Entry") {
     riskScore += 20;
     flags.push("Unusually high salary for entry-level designation");
   }
 
-  // 3. Scan for generic/free email use for registered enterprise companies
   if (employerCompany?.email) {
     const emailDomain = employerCompany.email.split("@")[1];
     if (
@@ -80,4 +90,12 @@ export const analyzeJobRisk = (jobData, employerCompany) => {
     flags,
     isAutoFlagged: riskScore >= 50,
   };
+};
+
+module.exports = {
+  verifyCompanyEmail,
+  verifyRegistrationNumber,
+  analyzeJobRisk,
+  SUSPICIOUS_KEYWORDS,
+  HIGH_RISK_DOMAINS,
 };

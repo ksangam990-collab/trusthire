@@ -1,8 +1,7 @@
 const { z } = require('zod');
 const Employer = require('../models/Employer');
 const FraudReport = require('../models/FraudReport');
-const { verifyCIN, verifyGSTIN } = require('../services/verificationService');
-
+const { verifyCompanyEmail, verifyRegistrationNumber } = require('../services/verificationService');
 // ── Verify Employer (CIN or GSTIN) ────────────────────────────────────────────
 exports.verifyEmployer = async (req, res, next) => {
   try {
