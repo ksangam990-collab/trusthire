@@ -1,29 +1,14 @@
-const express = require('express');
+// backend/src/routes/jobs.js
+import express from 'express';
+import { createJob, getJobs } from '../controllers/jobController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+
 const router = express.Router();
-const {
-  createJob,
-  getJobs,
-  getJob,
-  updateJob,
-  updateJobStatus,
-  getMyListings,
-  toggleSaveJob,
-} = require('../controllers/jobController');
-const { applyToJob } = require('../controllers/applicationController');
-const { protect, restrictTo, optionalAuth } = require('../middleware/auth');
 
-// Static routes MUST come before dynamic /:jobId to avoid conflicts
+// Public: Get all verified jobs with filters
 router.get('/', getJobs);
-router.get('/employer/mine', protect, restrictTo('employer'), getMyListings);
 
-// Dynamic routes
-router.get('/:jobId', optionalAuth, getJob);
-router.post('/:jobId/apply', protect, restrictTo('jobseeker'), applyToJob);
-router.post('/:jobId/save', protect, restrictTo('jobseeker'), toggleSaveJob);
-router.patch('/:jobId', protect, restrictTo('employer'), updateJob);
-router.patch('/:jobId/status', protect, restrictTo('employer'), updateJobStatus);
+// Protected: Only authenticated employers can post jobs
+router.post('/', authenticate, authorize('employer', 'admin'), createJob);
 
-// Employer only
-router.post('/', protect, restrictTo('employer'), createJob);
-
-module.exports = router;
+export default router;

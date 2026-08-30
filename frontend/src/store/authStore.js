@@ -1,69 +1,27 @@
+// frontend/src/store/authStore.js
 import { create } from 'zustand';
-import { authAPI } from '../api';
 
-const useAuthStore = create((set, get) => ({
-  user: null,
-  accessToken: localStorage.getItem('accessToken') || null,
-  isLoading: false,
-  isInitialized: false,
+const useAuthStore = create((set) => ({
+  user: JSON.parse(localStorage.getItem('trusthire_user')) || null,
+  token: localStorage.getItem('trusthire_token') || null,
+  isAuthenticated: !!localStorage.getItem('trusthire_token'),
 
-  setUser: (user) => set({ user }),
-
-  initialize: async () => {
-    const token = localStorage.getItem('accessToken');
-    if (!token) {
-      set({ isInitialized: true });
-      return;
-    }
-    try {
-      const res = await authAPI.getMe();
-      set({ user: res.data.user, accessToken: token, isInitialized: true });
-    } catch {
-      localStorage.removeItem('accessToken');
-      set({ user: null, accessToken: null, isInitialized: true });
-    }
+  setAuth: (user, token) => {
+    localStorage.setItem('trusthire_user', JSON.stringify(user));
+    localStorage.setItem('trusthire_token', token);
+    set({ user, token, isAuthenticated: true });
   },
 
-  login: async (credentials) => {
-    set({ isLoading: true });
-    try {
-      const res = await authAPI.login(credentials);
-      const { accessToken, user } = res.data;
-      localStorage.setItem('accessToken', accessToken);
-      set({ user, accessToken, isLoading: false });
-      return { success: true, user };
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
+  logout: () => {
+    localStorage.removeItem('trusthire_user');
+    localStorage.removeItem('trusthire_token');
+    set({ user: null, token: null, isAuthenticated: false });
   },
 
-  register: async (data) => {
-    set({ isLoading: true });
-    try {
-      const res = await authAPI.register(data);
-      const { accessToken, user } = res.data;
-      localStorage.setItem('accessToken', accessToken);
-      set({ user, accessToken, isLoading: false });
-      return { success: true, user };
-    } catch (error) {
-      set({ isLoading: false });
-      throw error;
-    }
-  },
-
-  logout: async () => {
-    try {
-      await authAPI.logout();
-    } catch (_) {}
-    localStorage.removeItem('accessToken');
-    set({ user: null, accessToken: null });
-  },
-
-  isAuthenticated: () => !!get().user,
-  isEmployer: () => get().user?.role === 'employer',
-  isJobSeeker: () => get().user?.role === 'jobseeker',
-  isAdmin: () => get().user?.role === 'admin',
+  updateUser: (updatedUser) => {
+    localStorage.setItem('trusthire_user', JSON.stringify(updatedUser));
+    set({ user: updatedUser });
+  }
 }));
 
 export default useAuthStore;
