@@ -1,0 +1,8 @@
+{
+  "name": "trusthire-monorepo",
+  "private": true,
+  "scripts": {
+    "build": "npm --prefix frontend run build",
+    "install": "npm --prefix frontend install --legacy-peer-deps"
+  }
+}
