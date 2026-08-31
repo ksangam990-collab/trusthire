@@ -1,68 +1,68 @@
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck } from 'lucide-react';
+import { ShieldCheck, ShieldAlert, Lock, CheckCircle2 } from 'lucide-react';
 
 export default function Footer() {
   return (
-    <footer className="bg-white border-t border-slate-100 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10">
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-8">
-          {/* Brand */}
-          <div className="col-span-2 sm:col-span-1">
-            <Link to="/" className="flex items-center gap-2 mb-3">
-              <div className="w-7 h-7 bg-navy-600 rounded-lg flex items-center justify-center">
-                <ShieldCheck className="w-4 h-4 text-white" />
+    <footer className="bg-[#070A0F] border-t border-slate-800 text-slate-400 text-sm">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
+          <div className="md:col-span-2 space-y-4">
+            <div className="flex items-center space-x-2">
+              <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center">
+                <ShieldCheck className="w-5 h-5 text-emerald-400" />
               </div>
-              <span className="font-display font-bold text-navy-600">TrustHire</span>
-            </Link>
-            <p className="text-xs text-slate-500 leading-relaxed">
-              India's verified job board. Every employer verified against MCA &amp; GST records.
+              <span className="text-base font-bold text-white tracking-tight">TrustHire</span>
+            </div>
+            <p className="text-slate-400 text-xs leading-relaxed max-w-sm">
+              TrustHire is India's verified hiring network protecting job seekers against recruitment fraud, identity theft, and fake placements through verified employer credentials and live fraud intelligence.
             </p>
+            <div className="flex items-center space-x-4 text-xs text-slate-500 font-mono">
+              <span className="flex items-center space-x-1">
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                <span>MCA Verified</span>
+              </span>
+              <span className="flex items-center space-x-1">
+                <Lock className="w-3.5 h-3.5 text-blue-400" />
+                <span>AES-256 Encrypted</span>
+              </span>
+            </div>
           </div>
 
-          {/* Job Seekers */}
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">For Job Seekers</p>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li><Link to="/jobs" className="hover:text-navy-600 transition-colors">Browse jobs</Link></li>
-              <li><Link to="/jobs?verifiedOnly=true" className="hover:text-navy-600 transition-colors">Verified jobs only</Link></li>
-              <li><Link to="/fraud-board" className="hover:text-navy-600 transition-colors">Fraud board</Link></li>
-              <li><Link to="/register" className="hover:text-navy-600 transition-colors">Create account</Link></li>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Job Seekers</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link to="/jobs" className="hover:text-emerald-400 transition">Browse Verified Jobs</Link></li>
+              <li><Link to="/jobs?verifiedOnly=true" className="hover:text-emerald-400 transition">100% TrustScore Listings</Link></li>
+              <li><Link to="/candidate/dashboard" className="hover:text-emerald-400 transition">Application Tracker</Link></li>
+              <li><Link to="/report-fraud" className="hover:text-rose-400 transition">Submit Scam Report</Link></li>
             </ul>
           </div>
 
-          {/* Employers */}
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">For Employers</p>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li><Link to="/register?role=employer" className="hover:text-navy-600 transition-colors">Post a job</Link></li>
-              <li><Link to="/how-it-works" className="hover:text-navy-600 transition-colors">Get verified</Link></li>
-              <li><Link to="/employer/dashboard" className="hover:text-navy-600 transition-colors">Employer dashboard</Link></li>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Employers</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link to="/employer/verify" className="hover:text-emerald-400 transition">CIN & GSTIN Verification</Link></li>
+              <li><Link to="/employer/post-job" className="hover:text-emerald-400 transition">Post Verified Opening</Link></li>
+              <li><Link to="/employer/dashboard" className="hover:text-emerald-400 transition">Candidate Pipeline</Link></li>
+              <li><Link to="/employer/dashboard" className="hover:text-emerald-400 transition">TrustScore Optimization</Link></li>
             </ul>
           </div>
 
-          {/* Company */}
           <div>
-            <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-3">Company</p>
-            <ul className="space-y-2 text-sm text-slate-500">
-              <li><Link to="/about" className="hover:text-navy-600 transition-colors">About</Link></li>
-              <li><Link to="/how-it-works" className="hover:text-navy-600 transition-colors">How it works</Link></li>
-              <li><Link to="/contact" className="hover:text-navy-600 transition-colors">Contact</Link></li>
+            <h4 className="text-xs font-semibold uppercase tracking-wider text-slate-200 mb-3">Security & Trust</h4>
+            <ul className="space-y-2 text-xs">
+              <li><Link to="/fraud-board" className="text-amber-400 hover:underline flex items-center space-x-1"><ShieldAlert className="w-3 h-3" /><span>Public Fraud Board</span></Link></li>
+              <li><span className="text-slate-500">Scam Pattern Database</span></li>
+              <li><span className="text-slate-500">Security Architecture</span></li>
+              <li><span className="text-slate-500">Privacy Policy</span></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-8 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
-          <p>© {new Date().getFullYear()} TrustHire. Built to protect job seekers.</p>
-          <p>
-            Employer verification via{' '}
-            <a href="https://www.mca.gov.in" target="_blank" rel="noreferrer" className="underline hover:text-slate-600">
-              MCA21
-            </a>{' '}
-            &amp;{' '}
-            <a href="https://www.gst.gov.in" target="_blank" rel="noreferrer" className="underline hover:text-slate-600">
-              GST Portal
-            </a>
-          </p>
+        <div className="mt-12 pt-6 border-t border-slate-800/80 flex flex-col sm:flex-row justify-between items-center text-xs text-slate-500">
+          <p>© 2026 TrustHire Technologies Ltd. All rights reserved.</p>
+          <p className="mt-2 sm:mt-0 font-mono">STATUS: SYSTEMS NOMINAL • FRAUD ENGINE ACTIVE</p>
         </div>
       </div>
     </footer>

@@ -1,54 +1,49 @@
-import client from './client';
+import apiClient from './client';
 
-// ── Auth ──────────────────────────────────────────────────────────────────────
-export const authAPI = {
-  register: (data) => client.post('/auth/register', data),
-  login: (data) => client.post('/auth/login', data),
-  logout: () => client.post('/auth/logout'),
-  getMe: () => client.get('/auth/me'),
-  verifyEmail: (token) => client.get(`/auth/verify-email?token=${token}`),
-  resendVerification: () => client.post('/auth/resend-verification'),
-  forgotPassword: (email) => client.post('/auth/forgot-password', { email }),
-  resetPassword: (data) => client.post('/auth/reset-password', data),
+export const authApi = {
+  login: (credentials) => apiClient.post('/auth/login', credentials),
+  register: (payload) => apiClient.post('/auth/register', payload),
+  logout: () => apiClient.post('/auth/logout'),
+  refreshToken: () => apiClient.post('/auth/refresh'),
+  getCurrentUser: () => apiClient.get('/auth/me')
 };
 
-// ── Jobs ──────────────────────────────────────────────────────────────────────
-export const jobsAPI = {
-  getJobs: (params) => client.get('/jobs', { params }),
-  getJob: (id) => client.get(`/jobs/${id}`),
-  createJob: (data) => client.post('/jobs', data),
-  updateJob: (id, data) => client.patch(`/jobs/${id}`, data),
-  updateJobStatus: (id, status) => client.patch(`/jobs/${id}/status`, { status }),
-  getMyListings: (params) => client.get('/jobs/employer/mine', { params }),
-  toggleSave: (id) => client.post(`/jobs/${id}/save`),
-  applyToJob: (id, data) => client.post(`/jobs/${id}/apply`, data),
+export const jobsApi = {
+  getJobs: (params) => apiClient.get('/jobs', { params }),
+  getJobById: (id) => apiClient.get(`/jobs/${id}`),
+  createJob: (jobData) => apiClient.post('/jobs', jobData),
+  updateJob: (id, jobData) => apiClient.put(`/jobs/${id}`, jobData),
+  deleteJob: (id) => apiClient.delete(`/jobs/${id}`)
 };
 
-// ── Employers ─────────────────────────────────────────────────────────────────
-export const employersAPI = {
-  getMyProfile: () => client.get('/employers/me'),
-  getPublicProfile: (id) => client.get(`/employers/${id}/profile`),
-  verify: (data) => client.post('/employers/verify', data),
-  updateProfile: (data) => client.patch('/employers/me', data),
-};
-
-// ── Applications ──────────────────────────────────────────────────────────────
-export const applicationsAPI = {
-  getMyApplications: (params) => client.get('/applications/mine', { params }),
-  getJobApplications: (jobId, params) =>
-    client.get(`/applications/job/${jobId}`, { params }),
-  updateStatus: (id, data) => client.patch(`/applications/${id}/status`, data),
-};
-
-// ── Fraud Reports ─────────────────────────────────────────────────────────────
-export const fraudAPI = {
+export const fraudApi = {
+  getBoard: (params) => apiClient.get('/fraud/board', { params }),
   submitReport: (formData) =>
-    client.post('/fraud-reports', formData, {
-      headers: { 'Content-Type': 'multipart/form-data' },
+    apiClient.post('/fraud/report', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
     }),
-  getEmployerSummary: (employerId) =>
-    client.get(`/fraud-reports/employer/${employerId}`),
-  // Admin
-  getAllReports: (params) => client.get('/fraud-reports/admin/all', { params }),
-  reviewReport: (id, data) => client.patch(`/fraud-reports/admin/${id}`, data),
+  updateReportStatus: (reportId, data) => apiClient.patch(`/fraud/reports/${reportId}/status`, data)
+};
+
+export const employerApi = {
+  getProfile: () => apiClient.get('/employers/profile'),
+  updateProfile: (data) => apiClient.put('/employers/profile', data),
+  verifyCompany: (credentials) => apiClient.post('/employers/verify', credentials),
+  getMetrics: () => apiClient.get('/employers/metrics')
+};
+
+export const applicationsApi = {
+  apply: (formData) =>
+    apiClient.post('/applications/apply', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' }
+    }),
+  getCandidateApplications: () => apiClient.get('/applications/my-applications'),
+  getEmployerApplicants: (jobId) =>
+    apiClient.get(jobId ? `/applications/employer/candidates/${jobId}` : '/applications/employer/candidates'),
+  updateStatus: (applicationId, data) => apiClient.patch(`/applications/status/${applicationId}`, data)
+};
+
+export const profileApi = {
+  getProfile: () => apiClient.get('/profile/me'),
+  updateProfile: (data) => apiClient.put('/profile/me', data)
 };

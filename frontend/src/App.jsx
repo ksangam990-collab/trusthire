@@ -1,127 +1,124 @@
-import { useEffect } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { Toaster } from 'react-hot-toast';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import React, { useEffect } from 'react';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useAuthStore } from './store/authStore';
 
-import useAuthStore from './store/authStore';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import ProtectedRoute from './components/layout/ProtectedRoute';
 
-// Public pages
+// Public Pages
 import HomePage from './pages/public/HomePage';
 import JobSearchPage from './pages/public/JobSearchPage';
 import JobDetailPage from './pages/public/JobDetailPage';
 import FraudBoardPage from './pages/public/FraudBoardPage';
 import ReportPage from './pages/public/ReportPage';
 
-// Auth pages
+// Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
-// Job seeker pages
+// Employer Pages
+import EmployerDashboard from './pages/employer/EmployerDashboard';
+import PostJobPage from './pages/employer/PostJobPage';
+import VerifyPage from './pages/employer/VerifyPage';
+
+// Job Seeker Pages
 import DashboardPage from './pages/jobseeker/DashboardPage';
 
-// Employer pages
-import EmployerDashboard from './pages/employer/EmployerDashboard';
-import VerifyPage from './pages/employer/VerifyPage';
-import PostJobPage from './pages/employer/PostJobPage';
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, isInitialized, user } = useAuthStore();
+  const location = useLocation();
 
-const queryClient = new QueryClient({
-  defaultOptions: {
-    queries: {
-      retry: 1,
-      staleTime: 1000 * 60 * 2, // 2 minutes
-    },
-  },
-});
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-400 text-sm font-mono tracking-wider">INITIALIZING TRUSTHIRE SECURITY CONTEXT...</p>
+        </div>
+      </div>
+    );
+  }
 
-function AppLayout({ children }) {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <Navbar />
-      <main className="flex-1">{children}</main>
-      <Footer />
-    </div>
-  );
-}
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
 
-// Auth pages don't get the full layout (no navbar/footer)
-function AuthLayout({ children }) {
-  return <>{children}</>;
-}
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 export default function App() {
   const { initialize } = useAuthStore();
+  const location = useLocation();
 
   useEffect(() => {
     initialize();
-  }, []);
+  }, [initialize]);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [location.pathname]);
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <BrowserRouter>
-        <Toaster
-          position="top-right"
-          toastOptions={{
-            duration: 4000,
-            style: { fontFamily: 'Inter, sans-serif', fontSize: '14px' },
-          }}
-        />
+    <div className="min-h-screen flex flex-col bg-[#0B0F17] text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
+      <Navbar />
+      <main className="flex-grow">
         <Routes>
-          {/* ── Public ─────────────────────────────────────────────────── */}
-          <Route path="/" element={<AppLayout><HomePage /></AppLayout>} />
-          <Route path="/jobs" element={<AppLayout><JobSearchPage /></AppLayout>} />
-          <Route path="/jobs/:jobId" element={<AppLayout><JobDetailPage /></AppLayout>} />
-          <Route path="/fraud-board" element={<AppLayout><FraudBoardPage /></AppLayout>} />
-          <Route path="/report" element={
-            <ProtectedRoute allowedRoles={['jobseeker']}>
-              <AppLayout><ReportPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          {/* Public Routes */}
+          <Route path="/" element={<HomePage />} />
+          <Route path="/jobs" element={<JobSearchPage />} />
+          <Route path="/jobs/:id" element={<JobDetailPage />} />
+          <Route path="/fraud-board" element={<FraudBoardPage />} />
+          <Route path="/report-fraud" element={<ReportPage />} />
 
-          {/* ── Auth ───────────────────────────────────────────────────── */}
-          <Route path="/login" element={<AuthLayout><LoginPage /></AuthLayout>} />
-          <Route path="/register" element={<AuthLayout><RegisterPage /></AuthLayout>} />
-          <Route path="/forgot-password" element={<AuthLayout><ForgotPasswordPage /></AuthLayout>} />
+          {/* Auth Routes */}
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/register" element={<RegisterPage />} />
 
-          {/* ── Job Seeker ─────────────────────────────────────────────── */}
-          <Route path="/dashboard" element={
-            <ProtectedRoute allowedRoles={['jobseeker']}>
-              <AppLayout><DashboardPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          {/* Employer Protected Routes */}
+          <Route
+            path="/employer/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+                <EmployerDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer/post-job"
+            element={
+              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+                <PostJobPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer/verify"
+            element={
+              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+                <VerifyPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* ── Employer ───────────────────────────────────────────────── */}
-          <Route path="/employer/dashboard" element={
-            <ProtectedRoute allowedRoles={['employer']}>
-              <AppLayout><EmployerDashboard /></AppLayout>
-            </ProtectedRoute>
-          } />
-          <Route path="/employer/verify" element={
-            <ProtectedRoute allowedRoles={['employer']}>
-              <AppLayout><VerifyPage /></AppLayout>
-            </ProtectedRoute>
-          } />
-          <Route path="/employer/post-job" element={
-            <ProtectedRoute allowedRoles={['employer']}>
-              <AppLayout><PostJobPage /></AppLayout>
-            </ProtectedRoute>
-          } />
+          {/* Job Seeker Protected Routes */}
+          <Route
+            path="/candidate/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
+                <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
 
-          {/* ── Fallback ───────────────────────────────────────────────── */}
-          <Route path="*" element={
-            <AppLayout>
-              <div className="min-h-[50vh] flex flex-col items-center justify-center text-center px-4">
-                <p className="text-6xl font-bold text-slate-200 mb-4">404</p>
-                <p className="text-slate-600 mb-6">Page not found.</p>
-                <a href="/" className="btn-primary">Go home</a>
-              </div>
-            </AppLayout>
-          } />
+          {/* Fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
-      </BrowserRouter>
-    </QueryClientProvider>
+      </main>
+      <Footer />
+    </div>
   );
 }

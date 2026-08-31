@@ -1,20 +1,17 @@
-const express = require('express');
+import express from 'express';
+import {
+  getEmployerProfile,
+  updateEmployerProfile,
+  verifyEmployerSimulation,
+  getEmployerDashboardMetrics
+} from '../controllers/employerController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+
 const router = express.Router();
-const {
-  verifyEmployer,
-  getMyProfile,
-  getPublicProfile,
-  updateProfile,
-} = require('../controllers/employerController');
-const { protect, restrictTo } = require('../middleware/auth');
 
-// Public
-router.get('/:employerId/profile', getPublicProfile);
+router.get('/profile', authenticate, authorize('employer', 'admin'), getEmployerProfile);
+router.put('/profile', authenticate, authorize('employer', 'admin'), updateEmployerProfile);
+router.post('/verify', authenticate, authorize('employer', 'admin'), verifyEmployerSimulation);
+router.get('/metrics', authenticate, authorize('employer', 'admin'), getEmployerDashboardMetrics);
 
-// Employer-only
-router.use(protect, restrictTo('employer'));
-router.get('/me', getMyProfile);
-router.post('/verify', verifyEmployer);
-router.patch('/me', updateProfile);
-
-module.exports = router;
+export default router;

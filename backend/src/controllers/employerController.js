@@ -1,183 +1,162 @@
-const { z } = require('zod');
-const Employer = require('../models/Employer');
-const FraudReport = require('../models/FraudReport');
-const { verifyCompanyEmail, verifyRegistrationNumber } = require('../services/verificationService');
-// ── Verify Employer (CIN or GSTIN) ────────────────────────────────────────────
-exports.verifyEmployer = async (req, res, next) => {
+import Employer from '../models/Employer.js';
+import JobListing from '../models/JobListing.js';
+import Application from '../models/Application.js';
+import FraudReport from '../models/FraudReport.js';
+import { recalculateEmployerTrustScore } from './fraudController.js';
+
+export const getEmployerProfile = async (req, res, next) => {
   try {
-    const schema = z.object({
-      cin: z.string().optional(),
-      gstin: z.string().optional(),
-    }).refine((d) => d.cin || d.gstin, {
-      message: 'Provide either CIN or GSTIN for verification.',
-    });
-
-    const { cin, gstin } = schema.parse(req.body);
-
-    const employer = await Employer.findOne({ userId: req.user._id });
+    const employer = await Employer.findOne({ user: req.user._id });
     if (!employer) {
       return res.status(404).json({ success: false, message: 'Employer profile not found.' });
     }
 
-    if (employer.verificationStatus === 'verified') {
-      return res.status(400).json({
-        success: false,
-        message: 'Your company is already verified.',
-        data: employer.verificationData,
-      });
+    res.status(200).json({
+      success: true,
+      data: { employer }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const updateEmployerProfile = async (req, res, next) => {
+  try {
+    const employer = await Employer.findOne({ user: req.user._id });
+    if (!employer) {
+      return res.status(404).json({ success: false, message: 'Employer profile not found.' });
     }
 
-    let result;
-    if (cin) {
-      result = await verifyCIN(cin);
-    } else {
-      result = await verifyGSTIN(gstin);
-    }
+    const { companyName, website, industry, companySize, description, location } = req.body;
+    
+    if (companyName) employer.companyName = companyName;
+    if (website !== undefined) employer.website = website;
+    if (industry) employer.industry = industry;
+    if (companySize) employer.companySize = companySize;
+    if (description !== undefined) employer.description = description;
+    if (location) employer.location = { ...employer.location, ...location };
 
-    if (!result.success) {
-      employer.verificationStatus = 'failed';
-      await employer.save();
-      return res.status(422).json({
-        success: false,
-        message: result.error,
-        verificationStatus: 'failed',
-      });
-    }
-
-    // Update employer with verified data
-    employer.verificationStatus = 'verified';
-    employer.cin = cin || employer.cin;
-    employer.gstin = gstin || employer.gstin;
-    employer.verificationData = result.data;
+    recalculateEmployerTrustScore(employer);
     await employer.save();
 
-    res.json({
+    res.status(200).json({
       success: true,
-      message: 'Company verified successfully!',
-      verificationStatus: 'verified',
-      verificationData: result.data,
-      trustScore: employer.trustScore,
+      message: 'Employer profile updated.',
+      data: { employer }
     });
   } catch (error) {
     next(error);
   }
 };
 
-// ── Get My Employer Profile ───────────────────────────────────────────────────
-exports.getMyProfile = async (req, res, next) => {
+export const verifyEmployerSimulation = async (req, res, next) => {
   try {
-    const employer = await Employer.findOne({ userId: req.user._id }).populate(
-      'userId',
-      'name email phone'
-    );
+    const { cin, gstin } = req.body;
+    const employer = await Employer.findOne({ user: req.user._id });
+
     if (!employer) {
       return res.status(404).json({ success: false, message: 'Employer profile not found.' });
     }
-    res.json({ success: true, employer });
+
+    // Standard MCA / GSTIN structural pattern check
+    const cinPattern = /^[LUu]{1}[0-9]{5}[A-Za-z]{2}[0-9]{4}[A-Za-z]{3}[0-9]{6}$/;
+    const gstinPattern = /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
+
+    if (cin && !cinPattern.test(cin.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Corporate Identification Number (CIN) format.'
+      });
+    }
+
+    if (gstin && !gstinPattern.test(gstin.trim())) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid Goods and Services Tax Identification Number (GSTIN) format.'
+      });
+    }
+
+    employer.cin = cin ? cin.trim().toUpperCase() : employer.cin;
+    employer.gstin = gstin ? gstin.trim().toUpperCase() : employer.gstin;
+    employer.verificationStatus = 'verified';
+    employer.verificationDate = new Date();
+
+    recalculateEmployerTrustScore(employer);
+    await employer.save();
+
+    // Synchronize existing active job listings
+    await JobListing.updateMany(
+      { employer: employer._id },
+      {
+        isFromVerifiedEmployer: true,
+        trustVerificationStatus: 'verified',
+        employerTrustScore: employer.trustScore
+      }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: 'Corporate identity successfully verified.',
+      data: {
+        verificationStatus: employer.verificationStatus,
+        trustScore: employer.trustScore,
+        scoreBreakdown: employer.scoreBreakdown
+      }
+    });
   } catch (error) {
     next(error);
   }
 };
 
-// ── Get Public Employer Profile ───────────────────────────────────────────────
-exports.getPublicProfile = async (req, res, next) => {
+export const getEmployerDashboardMetrics = async (req, res, next) => {
   try {
-    const employer = await Employer.findById(req.params.employerId).populate(
-      'userId',
-      'name'
-    );
-    if (!employer || employer.isSuspended) {
-      return res.status(404).json({ success: false, message: 'Employer not found.' });
+    const employer = await Employer.findOne({ user: req.user._id });
+    if (!employer) {
+      return res.status(404).json({ success: false, message: 'Employer profile not found.' });
     }
 
-    // Fetch fraud report summary (public, anonymized)
-    const reportSummary = await FraudReport.aggregate([
-      {
-        $match: {
-          employerId: employer._id,
-          status: { $in: ['pending', 'under_review', 'verified'] },
-        },
-      },
-      {
-        $group: {
-          _id: '$reportType',
-          count: { $sum: 1 },
-        },
-      },
+    const [activeJobsCount, totalJobsCount, recentJobs, fraudReportsCount] = await Promise.all([
+      JobListing.countDocuments({ employer: employer._id, status: 'active' }),
+      JobListing.countDocuments({ employer: employer._id }),
+      JobListing.find({ employer: employer._id }).sort({ createdAt: -1 }).limit(5).lean(),
+      FraudReport.countDocuments({ employer: employer._id })
     ]);
 
-    const reportsByType = {};
-    reportSummary.forEach((r) => { reportsByType[r._id] = r.count; });
+    const jobIds = await JobListing.find({ employer: employer._id }).distinct('_id');
 
-    // Recent verified reports (anonymized)
-    const recentReports = await FraudReport.find({
-      employerId: employer._id,
-      status: 'verified',
-    })
-      .select('reportType createdAt')
-      .sort({ createdAt: -1 })
-      .limit(5);
+    const applications = await Application.find({ job: { $in: jobIds } }).lean();
 
-    res.json({
+    const funnel = {
+      applied: 0,
+      reviewing: 0,
+      shortlisted: 0,
+      interview: 0,
+      hired: 0,
+      rejected: 0
+    };
+
+    applications.forEach(app => {
+      if (funnel[app.status] !== undefined) {
+        funnel[app.status] += 1;
+      }
+    });
+
+    res.status(200).json({
       success: true,
-      employer: {
-        _id: employer._id,
-        companyName: employer.companyName,
-        verificationStatus: employer.verificationStatus,
-        verificationData: employer.verificationData
-          ? {
-              registeredName: employer.verificationData.registeredName,
-              incorporationDate: employer.verificationData.incorporationDate,
-              companyType: employer.verificationData.companyType,
-              registeredState: employer.verificationData.registeredState,
-              verifiedAt: employer.verificationData.verifiedAt,
-            }
-          : null,
-        trustScore: employer.trustScore,
-        industry: employer.industry,
-        companySize: employer.companySize,
-        website: employer.website,
-        description: employer.description,
-        logoUrl: employer.logoUrl,
-        totalListings: employer.totalListings,
-        fraudReportCount: employer.fraudReportCount,
-        createdAt: employer.createdAt,
-      },
-      fraudSummary: {
-        total: employer.fraudReportCount,
-        byType: reportsByType,
-        recentVerified: recentReports,
-      },
+      data: {
+        overview: {
+          trustScore: employer.trustScore,
+          verificationStatus: employer.verificationStatus,
+          activeJobs: activeJobsCount,
+          totalJobs: totalJobsCount,
+          totalApplications: applications.length,
+          fraudReportsCount,
+          scoreBreakdown: employer.scoreBreakdown
+        },
+        funnel,
+        recentJobs
+      }
     });
-  } catch (error) {
-    next(error);
-  }
-};
-
-// ── Update Employer Profile ───────────────────────────────────────────────────
-exports.updateProfile = async (req, res, next) => {
-  try {
-    const schema = z.object({
-      companyName: z.string().min(2).max(200).optional(),
-      website: z.string().url().optional().or(z.literal('')),
-      description: z.string().max(1000).optional(),
-      industry: z.string().max(100).optional(),
-      companySize: z.enum(['1-10', '11-50', '51-200', '201-500', '500+']).optional(),
-    });
-
-    const updates = schema.parse(req.body);
-
-    const employer = await Employer.findOneAndUpdate(
-      { userId: req.user._id },
-      { $set: updates },
-      { new: true, runValidators: true }
-    );
-
-    if (!employer) {
-      return res.status(404).json({ success: false, message: 'Employer profile not found.' });
-    }
-
-    res.json({ success: true, employer });
   } catch (error) {
     next(error);
   }

@@ -1,19 +1,21 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect(process.env.MONGO_URI, {
-      serverSelectionTimeoutMS: 5000,
+    const mongoUri = process.env.MONGODB_URI;
+    if (!mongoUri) {
+      throw new Error('MONGODB_URI is not defined in environment variables.');
+    }
+
+    const conn = await mongoose.connect(mongoUri, {
+      autoIndex: true
     });
-    console.log(`✅ MongoDB connected: ${conn.connection.host}`);
+
+    console.log(`[Database] MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
   } catch (error) {
-    console.error(`❌ MongoDB connection failed: ${error.message}`);
+    console.error(`[Database Error] Connection failed: ${error.message}`);
     process.exit(1);
   }
 };
 
-mongoose.connection.on('disconnected', () => {
-  console.warn('⚠️  MongoDB disconnected');
-});
-
-module.exports = connectDB;
+export default connectDB;

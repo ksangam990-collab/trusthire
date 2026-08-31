@@ -1,28 +1,44 @@
-// frontend/src/pages/public/JobSearchPage.jsx
 import React, { useState, useEffect } from 'react';
-import { Search, MapPin } from 'lucide-react';
-import apiClient from '../../api/client';
+import { useSearchParams } from 'react-router-dom';
+import { Search, MapPin, Filter, RotateCcw, Building2 } from 'lucide-react';
+import { jobsApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
 
-export const JobSearchPage = () => {
+export default function JobSearchPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const [jobs, setJobs] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
   const [loading, setLoading] = useState(true);
-  const [search, setSearch] = useState('');
-  const [location, setLocation] = useState('');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
+
+  // Filter State
+  const [keyword, setKeyword] = useState(searchParams.get('keyword') || '');
+  const [city, setCity] = useState(searchParams.get('city') || '');
+  const [jobType, setJobType] = useState(searchParams.get('jobType') || '');
+  const [workplaceType, setWorkplaceType] = useState(searchParams.get('workplaceType') || '');
+  const [experienceLevel, setExperienceLevel] = useState(searchParams.get('experienceLevel') || '');
+  const [verifiedOnly, setVerifiedOnly] = useState(searchParams.get('verifiedOnly') === 'true');
+  const [sortBy, setSortBy] = useState(searchParams.get('sortBy') || 'createdAt');
 
   const fetchJobs = async () => {
+    setLoading(true);
     try {
-      setLoading(true);
-      const params = new URLSearchParams();
-      if (search) params.append('search', search);
-      if (location) params.append('location', location);
-      if (verifiedOnly) params.append('verifiedOnly', 'true');
+      const params = {
+        keyword: keyword || undefined,
+        city: city || undefined,
+        jobType: jobType || undefined,
+        workplaceType: workplaceType || undefined,
+        experienceLevel: experienceLevel || undefined,
+        verifiedOnly: verifiedOnly ? 'true' : undefined,
+        sortBy,
+        page: pagination.page,
+        limit: 10
+      };
 
-      const res = await apiClient.get(`/jobs?${params.toString()}`);
-      setJobs(res.data || res || []);
+      const res = await jobsApi.getJobs(params);
+      setJobs(res?.data?.jobs || []);
+      setPagination(res?.data?.pagination || { page: 1, pages: 1, total: 0 });
     } catch (err) {
-      console.error('Failed to fetch jobs', err);
+      console.error('Failed to load jobs:', err);
     } finally {
       setLoading(false);
     }
@@ -30,80 +46,197 @@ export const JobSearchPage = () => {
 
   useEffect(() => {
     fetchJobs();
-  }, [verifiedOnly]);
+  }, [pagination.page, jobType, workplaceType, experienceLevel, verifiedOnly, sortBy]);
 
-  const handleSearch = (e) => {
+  const handleSearchSubmit = (e) => {
     e.preventDefault();
+    setPagination(prev => ({ ...prev, page: 1 }));
     fetchJobs();
   };
 
+  const handleResetFilters = () => {
+    setKeyword('');
+    setCity('');
+    setJobType('');
+    setWorkplaceType('');
+    setExperienceLevel('');
+    setVerifiedOnly(false);
+    setSortBy('createdAt');
+    setPagination({ page: 1, pages: 1, total: 0 });
+  };
+
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 py-10 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-7xl mx-auto space-y-8">
-        <div className="text-center max-w-2xl mx-auto space-y-3">
-          <h1 className="text-3xl font-extrabold text-white">Find Verified Tech Jobs</h1>
-          <p className="text-sm text-slate-400">
-            Browse legit opportunities scanned for scams and backed by verified employers.
-          </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Page Heading */}
+      <div>
+        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+          Explore Verified Opportunities
+        </h1>
+        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          Search job postings verified against corporate registration databases and screened for scam patterns.
+        </p>
+      </div>
+
+      {/* Main Search Input Form */}
+      <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+        <div className="sm:col-span-5 relative">
+          <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={keyword}
+            onChange={(e) => setKeyword(e.target.value)}
+            placeholder="Role, skill, or employer name..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+          />
         </div>
-
-        <form onSubmit={handleSearch} className="bg-slate-900/80 border border-slate-800 rounded-2xl p-4 shadow-xl flex flex-col md:flex-row gap-3 items-center">
-          <div className="relative flex-1 w-full">
-            <Search className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
-            <input
-              type="text"
-              placeholder="Job title, keywords, or skills..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/50"
-            />
-          </div>
-
-          <div className="relative flex-1 w-full">
-            <MapPin className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
-            <input
-              type="text"
-              placeholder="City, country, or remote..."
-              value={location}
-              onChange={(e) => setLocation(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:border-emerald-500/50"
-            />
-          </div>
-
-          <label className="flex items-center gap-2 text-xs font-medium text-slate-300 cursor-pointer px-2">
-            <input
-              type="checkbox"
-              checked={verifiedOnly}
-              onChange={(e) => setVerifiedOnly(e.target.checked)}
-              className="rounded bg-slate-950 border-slate-700 text-emerald-500 focus:ring-0"
-            />
-            Verified Only
-          </label>
-
+        <div className="sm:col-span-4 relative">
+          <MapPin className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
+          <input
+            type="text"
+            value={city}
+            onChange={(e) => setCity(e.target.value)}
+            placeholder="City (e.g. Bengaluru, Mumbai)..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+          />
+        </div>
+        <div className="sm:col-span-3 flex gap-2">
           <button
             type="submit"
-            className="w-full md:w-auto px-6 py-2 bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-semibold rounded-xl text-sm transition-all"
+            className="flex-grow py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-semibold rounded-lg text-sm transition"
           >
-            Search
+            Apply Search
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={handleResetFilters}
+            title="Reset Filters"
+            className="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
+        </div>
+      </form>
 
-        {loading ? (
-          <div className="py-20 text-center text-slate-500 animate-pulse">Loading opportunities...</div>
-        ) : jobs.length === 0 ? (
-          <div className="py-20 text-center text-slate-500 bg-slate-900/40 rounded-2xl border border-slate-800/60">
-            No matching jobs found. Try adjusting your filters.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {jobs.map((job) => (
-              <JobCard key={job._id || job.id} job={job} />
-            ))}
-          </div>
-        )}
+      {/* Filter Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-800 text-xs">
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            onClick={() => setVerifiedOnly(!verifiedOnly)}
+            className={`px-3 py-1.5 rounded-lg font-medium border transition ${
+              verifiedOnly
+                ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
+                : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
+            }`}
+          >
+            ✓ Verified Employers Only
+          </button>
+
+          <select
+            value={workplaceType}
+            onChange={(e) => setWorkplaceType(e.target.value)}
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+          >
+            <option value="">All Workplace Types</option>
+            <option value="Remote">Remote</option>
+            <option value="Hybrid">Hybrid</option>
+            <option value="On-site">On-site</option>
+          </select>
+
+          <select
+            value={jobType}
+            onChange={(e) => setJobType(e.target.value)}
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+          >
+            <option value="">All Job Types</option>
+            <option value="Full-time">Full-time</option>
+            <option value="Part-time">Part-time</option>
+            <option value="Contract">Contract</option>
+            <option value="Internship">Internship</option>
+          </select>
+
+          <select
+            value={experienceLevel}
+            onChange={(e) => setExperienceLevel(e.target.value)}
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+          >
+            <option value="">All Experience Levels</option>
+            <option value="Entry Level">Entry Level</option>
+            <option value="Mid Level">Mid Level</option>
+            <option value="Senior Level">Senior Level</option>
+            <option value="Lead / Manager">Lead / Manager</option>
+          </select>
+        </div>
+
+        <div className="flex items-center space-x-2 text-slate-400">
+          <span>Sort:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value)}
+            className="bg-slate-900 border border-slate-800 text-slate-200 rounded-lg px-2 py-1 focus:outline-none"
+          >
+            <option value="createdAt">Latest</option>
+            <option value="employerTrustScore">Highest TrustScore</option>
+            <option value="salary.max">Highest Salary</option>
+          </select>
+        </div>
       </div>
+
+      {/* Results Count */}
+      <div className="text-xs font-mono text-slate-400">
+        Showing {jobs.length} of {pagination.total} verified positions
+      </div>
+
+      {/* Job Cards Stream */}
+      {loading ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {[1, 2, 3, 4, 5, 6].map((i) => (
+            <div key={i} className="h-44 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse" />
+          ))}
+        </div>
+      ) : jobs.length > 0 ? (
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {jobs.map((job) => (
+            <JobCard key={job._id} job={job} />
+          ))}
+        </div>
+      ) : (
+        <div className="text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800 space-y-3">
+          <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
+          <h3 className="text-base font-semibold text-white">No job openings match your criteria</h3>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            Try adjusting your search query, removing workplace filters, or checking back later.
+          </p>
+          <button
+            onClick={handleResetFilters}
+            className="px-4 py-2 rounded-lg bg-slate-800 text-xs font-medium text-slate-200 hover:bg-slate-700"
+          >
+            Reset Filters
+          </button>
+        </div>
+      )}
+
+      {/* Pagination Controls */}
+      {pagination.pages > 1 && (
+        <div className="flex justify-center items-center space-x-2 pt-6">
+          <button
+            disabled={pagination.page <= 1}
+            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+            className="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 disabled:opacity-40"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-slate-400 font-mono px-2">
+            Page {pagination.page} of {pagination.pages}
+          </span>
+          <button
+            disabled={pagination.page >= pagination.pages}
+            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+            className="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 disabled:opacity-40"
+          >
+            Next
+          </button>
+        </div>
+      )}
     </div>
   );
-};
-
-export default JobSearchPage;
+}

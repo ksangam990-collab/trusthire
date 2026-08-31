@@ -1,45 +1,62 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const applicationSchema = new mongoose.Schema(
   {
-    jobId: {
+    job: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'JobListing',
-      required: true,
-      index: true,
+      required: [true, 'Job listing reference is required'],
+      index: true
     },
-    jobSeekerId: {
+    candidate: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
-      index: true,
+      required: [true, 'Candidate user reference is required'],
+      index: true
     },
-    employerId: {
+    employer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Employer',
-      required: true,
-      index: true,
+      required: [true, 'Employer reference is required'],
+      index: true
     },
-    resumeUrl: { type: String }, // snapshot at time of application
-    coverNote: {
+    resumeUrl: {
+      type: String,
+      required: [true, 'Resume document is required']
+    },
+    coverLetter: {
+      type: String,
+      maxlength: [3000, 'Cover letter cannot exceed 3000 characters'],
+      default: ''
+    },
+    contactPhone: {
       type: String,
       trim: true,
-      maxlength: [1000, 'Cover note max 1000 characters'],
+      default: ''
+    },
+    portfolioUrl: {
+      type: String,
+      trim: true,
+      default: ''
     },
     status: {
       type: String,
-      enum: ['applied', 'viewed', 'shortlisted', 'rejected', 'hired'],
+      enum: ['applied', 'reviewing', 'shortlisted', 'interview', 'rejected', 'hired'],
       default: 'applied',
+      index: true
     },
-    employerNote: { type: String, trim: true }, // internal note by employer
-    appliedAt: { type: Date, default: Date.now },
-    viewedAt: { type: Date },
-    statusUpdatedAt: { type: Date },
+    notes: {
+      type: String,
+      default: ''
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-// Prevent duplicate applications
-applicationSchema.index({ jobId: 1, jobSeekerId: 1 }, { unique: true });
+// Prevent duplicate applications by the same candidate to the same job listing
+applicationSchema.index({ job: 1, candidate: 1 }, { unique: true });
 
-module.exports = mongoose.model('Application', applicationSchema);
+const Application = mongoose.model('Application', applicationSchema);
+export default Application;

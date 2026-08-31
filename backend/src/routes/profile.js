@@ -1,19 +1,10 @@
-const express = require('express');
+import express from 'express';
+import { getUserProfile, updateUserProfile } from '../controllers/profileController.js';
+import { authenticate } from '../middleware/auth.js';
+
 const router = express.Router();
-const {
-  getMyProfile,
-  updateProfile,
-  uploadResume,
-  updateUserInfo,
-} = require('../controllers/profileController');
-const { protect, restrictTo } = require('../middleware/auth');
-const { upload } = require('../config/cloudinary');
 
-router.use(protect, restrictTo('jobseeker'));
+router.get('/me', authenticate, getUserProfile);
+router.put('/me', authenticate, updateUserProfile);
 
-router.get('/me', getMyProfile);
-router.patch('/me', updateProfile);
-router.patch('/me/user', updateUserInfo);
-router.post('/me/resume', upload.single('resume'), uploadResume);
-
-module.exports = router;
+export default router;

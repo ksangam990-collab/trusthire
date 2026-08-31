@@ -1,151 +1,139 @@
-import { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { AlertTriangle, ShieldOff, DollarSign, Ghost, Mic, FileX, HelpCircle, Flag } from 'lucide-react';
-import { useQuery } from '@tanstack/react-query';
-import { fraudAPI } from '../../api';
-import useAuthStore from '../../store/authStore';
-import { PageSpinner } from '../../components/ui';
-
-const REPORT_TYPE_META = {
-  asked_for_money:      { label: 'Asked for money',        icon: DollarSign,  color: 'text-red-600 bg-red-50 border-red-200' },
-  fake_company:         { label: 'Fake company',           icon: Ghost,        color: 'text-orange-600 bg-orange-50 border-orange-200' },
-  identity_impersonation:{ label: 'Company impersonation', icon: ShieldOff,   color: 'text-purple-600 bg-purple-50 border-purple-200' },
-  scam_interview:       { label: 'Scam interview',         icon: Mic,          color: 'text-amber-600 bg-amber-50 border-amber-200' },
-  misleading_job:       { label: 'Misleading job',         icon: FileX,        color: 'text-blue-600 bg-blue-50 border-blue-200' },
-  other:                { label: 'Other',                  icon: HelpCircle,   color: 'text-slate-600 bg-slate-50 border-slate-200' },
-};
-
-// Static curated examples — in a real deployment these come from the admin-verified reports API
-const EXAMPLE_REPORTS = [
-  { company: 'QuickHire Solutions', type: 'asked_for_money', count: 7, city: 'Delhi', lastReport: '2 days ago' },
-  { company: 'TalentBridge India', type: 'fake_company', count: 5, city: 'Mumbai', lastReport: '4 days ago' },
-  { company: 'Infosys Technologies Ltd', type: 'identity_impersonation', count: 4, city: 'Bengaluru', lastReport: '1 week ago' },
-  { company: 'HR Connect Services', type: 'scam_interview', count: 3, city: 'Hyderabad', lastReport: '1 week ago' },
-  { company: 'Global Placement Hub', type: 'asked_for_money', count: 6, city: 'Kolkata', lastReport: '3 days ago' },
-  { company: 'ProTech Staffing', type: 'misleading_job', count: 4, city: 'Pune', lastReport: '5 days ago' },
-];
-
-function ReportRow({ company, type, count, city, lastReport }) {
-  const meta = REPORT_TYPE_META[type] || REPORT_TYPE_META.other;
-  const Icon = meta.icon;
-  return (
-    <div className="flex items-center gap-4 py-3 border-b border-slate-50 last:border-0">
-      <div className={`p-2 rounded-lg border flex-shrink-0 ${meta.color}`}>
-        <Icon className="w-4 h-4" />
-      </div>
-      <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-slate-800 truncate">{company}</p>
-        <p className="text-xs text-slate-400">{meta.label} · {city} · {lastReport}</p>
-      </div>
-      <span className={`flex-shrink-0 text-xs font-bold px-2.5 py-1 rounded-full border ${meta.color}`}>
-        {count} reports
-      </span>
-    </div>
-  );
-}
+import React, { useState, useEffect } from 'react';
+import { ShieldAlert, AlertTriangle, Filter, RotateCcw, Building2, ExternalLink } from 'lucide-react';
+import { fraudApi } from '../../api';
 
 export default function FraudBoardPage() {
-  const { user, isJobSeeker } = useAuthStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const [reports, setReports] = useState([]);
+  const [pagination, setPagination] = useState({ page: 1, pages: 1, total: 0 });
+  const [category, setCategory] = useState('');
+  const [severity, setSeverity] = useState('');
+  const [loading, setLoading] = useState(true);
 
-  const filteredReports = EXAMPLE_REPORTS.filter((r) =>
-    r.company.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const fetchFraudBoard = async () => {
+    setLoading(true);
+    try {
+      const res = await fraudApi.getBoard({
+        category: category || undefined,
+        severity: severity || undefined,
+        page: pagination.page,
+        limit: 10
+      });
+      setReports(res?.data?.reports || []);
+      setPagination(res?.data?.pagination || { page: 1, pages: 1, total: 0 });
+    } catch (err) {
+      console.error('Failed to load fraud feed:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchFraudBoard();
+  }, [category, severity, pagination.page]);
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-2 mb-3">
-          <div className="w-8 h-8 bg-red-100 rounded-lg flex items-center justify-center">
-            <AlertTriangle className="w-4 h-4 text-trust-red" />
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+      {/* Header Banner */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-rose-950/30 via-slate-900 to-slate-900 border border-rose-500/30">
+        <div className="flex items-center space-x-3 mb-2">
+          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+            <ShieldAlert className="w-6 h-6" />
           </div>
-          <span className="text-xs font-bold uppercase tracking-widest text-trust-red">
-            Public Fraud Board
-          </span>
+          <span className="text-xs font-mono font-bold text-rose-400 tracking-wider uppercase">TRUSTHIRE SECURITY RADAR</span>
         </div>
-        <h1 className="font-display font-bold text-3xl text-slate-900 mb-3">
-          Employer fraud reports
-        </h1>
-        <p className="text-slate-500 max-w-2xl">
-          Every fraud report submitted on TrustHire is logged here publicly. When 3 or more people
-          report the same employer for the same issue, the listing is suspended automatically.
-          Reports are anonymized — your identity is never disclosed.
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Public Fraud Intelligence Feed</h1>
+        <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
+          Public safety notices for fraudulent recruiters demanding security deposits, circulating fake offer letters, or harvesting identities.
         </p>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {Object.entries(REPORT_TYPE_META).slice(0, 4).map(([type, meta]) => {
-          const Icon = meta.icon;
-          const count = EXAMPLE_REPORTS.filter((r) => r.type === type).reduce((a, r) => a + r.count, 0);
-          return (
-            <div key={type} className={`rounded-xl border p-4 ${meta.color}`}>
-              <Icon className="w-5 h-5 mb-2" />
-              <p className="text-xl font-bold">{count}</p>
-              <p className="text-xs font-medium mt-0.5">{meta.label}</p>
+      {/* Filter Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
+        <div className="flex flex-wrap items-center gap-3">
+          <select
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
+            className="bg-slate-950 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 focus:outline-none"
+          >
+            <option value="">All Fraud Categories</option>
+            <option value="Registration Fee / Security Deposit">Registration Fee / Security Deposit</option>
+            <option value="Fake Offer Letter">Fake Offer Letter</option>
+            <option value="Identity Theft / Document Misuse">Identity Theft / Document Misuse</option>
+            <option value="Phishing / Impersonation">Phishing / Impersonation</option>
+            <option value="Unpaid Trial Work">Unpaid Trial Work</option>
+          </select>
+
+          <select
+            value={severity}
+            onChange={(e) => setSeverity(e.target.value)}
+            className="bg-slate-950 border border-slate-700 text-slate-200 rounded-lg px-3 py-2 focus:outline-none"
+          >
+            <option value="">All Severity Levels</option>
+            <option value="Critical">Critical</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+          </select>
+        </div>
+
+        <button
+          onClick={() => {
+            setCategory('');
+            setSeverity('');
+          }}
+          className="inline-flex items-center space-x-1.5 px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg transition"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
+          <span>Reset Filters</span>
+        </button>
+      </div>
+
+      {/* Reports List */}
+      {loading ? (
+        <div className="space-y-4">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-32 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse" />
+          ))}
+        </div>
+      ) : reports.length > 0 ? (
+        <div className="space-y-4">
+          {reports.map((report) => (
+            <div key={report._id} className="p-5 rounded-xl bg-[#111827]/80 border border-slate-800 hover:border-slate-700 transition space-y-3">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div className="flex items-center space-x-2">
+                  <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/30">
+                    {report.severity} RISK
+                  </span>
+                  <span className="text-xs font-semibold text-slate-300">
+                    {report.fraudCategory}
+                  </span>
+                </div>
+                <span className="text-[11px] font-mono text-slate-500">
+                  Logged on {new Date(report.createdAt).toLocaleDateString()}
+                </span>
+              </div>
+
+              <h3 className="text-base font-semibold text-white">{report.title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed">{report.description}</p>
+
+              <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+                <div className="flex items-center space-x-4">
+                  <span>Targeted Entity: <strong className="text-slate-200">{report.employer?.companyName || 'Unregistered Recruiter'}</strong></span>
+                  {report.amountDemanded > 0 && (
+                    <span className="text-rose-400 font-mono font-semibold">Demand: ₹{report.amountDemanded.toLocaleString()}</span>
+                  )}
+                </div>
+                <span className="text-[11px] font-mono text-emerald-400 uppercase">
+                  Status: {report.status}
+                </span>
+              </div>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Search + list */}
-      <div className="card p-5">
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <h2 className="font-display font-semibold text-slate-800">
-            Recent reports
-          </h2>
-          <input
-            type="text"
-            placeholder="Search by company name"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="input max-w-xs text-sm py-2"
-          />
+          ))}
         </div>
-
-        {filteredReports.length === 0 ? (
-          <p className="text-center text-sm text-slate-400 py-8">No reports match your search.</p>
-        ) : (
-          filteredReports.map((r, i) => <ReportRow key={i} {...r} />)
-        )}
-
-        <p className="mt-4 text-xs text-slate-400 text-center">
-          Showing curated recent reports. All reports are reviewed by TrustHire before being listed.
-        </p>
-      </div>
-
-      {/* Important notice */}
-      <div className="mt-6 bg-amber-50 border border-amber-200 rounded-xl p-4">
-        <p className="text-sm font-semibold text-amber-800 mb-1">Important</p>
-        <p className="text-sm text-amber-700">
-          A report does not prove that an employer is fraudulent. Reports reflect user submissions.
-          Employers can dispute reports. Always do your own research. Never pay any fee to apply for
-          a job — legitimate employers do not charge candidates.
-        </p>
-      </div>
-
-      {/* CTA */}
-      {(!user || isJobSeeker()) && (
-        <div className="mt-6 card p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <div>
-            <p className="font-semibold text-slate-800 flex items-center gap-2">
-              <Flag className="w-4 h-4 text-trust-red" />
-              Encountered a suspicious job?
-            </p>
-            <p className="text-sm text-slate-500 mt-0.5">
-              Your report helps protect thousands of other job seekers.
-            </p>
-          </div>
-          {user ? (
-            <Link to="/report" className="btn-danger text-sm flex-shrink-0">
-              Submit a report
-            </Link>
-          ) : (
-            <Link to="/register" className="btn-primary text-sm flex-shrink-0">
-              Create account to report
-            </Link>
-          )}
+      ) : (
+        <div className="text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800 space-y-3">
+          <ShieldAlert className="w-10 h-10 text-slate-600 mx-auto" />
+          <h3 className="text-base font-semibold text-white">No active fraud reports found</h3>
+          <p className="text-xs text-slate-400">No incident reports currently match the selected severity and category filters.</p>
         </div>
       )}
     </div>

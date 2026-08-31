@@ -1,56 +1,68 @@
 const errorHandler = (err, req, res, next) => {
-  let statusCode = err.statusCode || 500;
-  let message = err.message || 'Something went wrong';
+  let error = { ...err };
+  error.message = err.message || 'Internal Server Error';
 
-  // Mongoose validation error
-  if (err.name === 'ValidationError') {
-    statusCode = 400;
-    const errors = Object.values(err.errors).map((e) => e.message);
-    message = errors.join('. ');
+  if (process.env.NODE_ENV !== 'production') {
+    console.error('[Error Handler Detail]:', err);
   }
 
-  // Mongoose duplicate key
-  if (err.code === 11000) {
-    statusCode = 409;
-    const field = Object.keys(err.keyValue)[0];
-    message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists.`;
-  }
-
-  // Mongoose bad ObjectId
+  // Mongoose Bad ObjectId (CastError)
   if (err.name === 'CastError') {
-    statusCode = 400;
-    message = `Invalid ${err.path}: ${err.value}`;
+    const message = `Resource not found with id of ${err.value}`;
+    return res.status(404).json({
+      success: false,
+      message
+    });
   }
 
-  // Multer file size error
-  if (err.code === 'LIMIT_FILE_SIZE') {
-    statusCode = 400;
-    message = 'File too large. Maximum size is 5MB.';
+  // Mongoose Duplicate Key Error (11000)
+  if (err.code === 11000) {
+    const field = Object.keys(err.keyValue || {})[0] || 'field';
+    const message = `Duplicate value entered for ${field}. Value already exists.`;
+    return res.status(409).json({
+      success: false,
+      message,
+      field
+    });
   }
 
-  // Zod validation
-  if (err.name === 'ZodError') {
-    statusCode = 400;
-    message = err.errors.map((e) => `${e.path.join('.')}: ${e.message}`).join('. ');
+  // Mongoose Validation Error
+  if (err.name === 'ValidationError') {
+    const messages = Object.values(err.errors).map(val => val.message);
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed.',
+      errors: messages
+    });
   }
 
-  if (process.env.NODE_ENV === 'development') {
-    console.error('❌ Error:', err);
+  // Multer Upload Errors
+  if (err.name === 'MulterError') {
+    if (err.code === 'LIMIT_FILE_SIZE') {
+      return res.status(400).json({
+        success: false,
+        message: 'File upload exceeds allowable limit.'
+      });
+    }
+    return res.status(400).json({
+      success: false,
+      message: `File upload error: ${err.message}`
+    });
   }
 
+  // JSON Web Token Errors
+  if (err.name === 'JsonWebTokenError') {
+    return res.status(401).json({
+      success: false,
+      message: 'Invalid authorization token.'
+    });
+  }
+
+  const statusCode = error.statusCode || err.status || 500;
   res.status(statusCode).json({
     success: false,
-    message,
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack }),
+    message: error.message || 'Internal Server Error'
   });
 };
 
-// Catch-all for unhandled routes
-const notFound = (req, res) => {
-  res.status(404).json({
-    success: false,
-    message: `Route not found: ${req.method} ${req.originalUrl}`,
-  });
-};
-
-module.exports = { errorHandler, notFound };
+export default errorHandler;

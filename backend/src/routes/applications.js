@@ -1,17 +1,25 @@
-const express = require('express');
+import express from 'express';
+import {
+  applyToJob,
+  getCandidateApplications,
+  getJobApplicantsForEmployer,
+  updateApplicationStatus
+} from '../controllers/applicationController.js';
+import { authenticate, authorize } from '../middleware/auth.js';
+import { uploadResume } from '../config/cloudinary.js';
+
 const router = express.Router();
-const {
-  getMyApplications,
-  getJobApplications,
-  updateApplicationStatus,
-} = require('../controllers/applicationController');
-const { protect, restrictTo } = require('../middleware/auth');
 
-// Job seeker
-router.get('/mine', protect, restrictTo('jobseeker'), getMyApplications);
+router.post(
+  '/apply',
+  authenticate,
+  authorize('jobseeker'),
+  uploadResume.single('resume'),
+  applyToJob
+);
+router.get('/my-applications', authenticate, authorize('jobseeker'), getCandidateApplications);
+router.get('/employer/candidates', authenticate, authorize('employer', 'admin'), getJobApplicantsForEmployer);
+router.get('/employer/candidates/:jobId', authenticate, authorize('employer', 'admin'), getJobApplicantsForEmployer);
+router.patch('/status/:applicationId', authenticate, authorize('employer', 'admin'), updateApplicationStatus);
 
-// Employer
-router.get('/job/:jobId', protect, restrictTo('employer'), getJobApplications);
-router.patch('/:applicationId/status', protect, restrictTo('employer'), updateApplicationStatus);
-
-module.exports = router;
+export default router;

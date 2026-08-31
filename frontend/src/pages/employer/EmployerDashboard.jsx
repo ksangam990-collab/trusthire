@@ -1,181 +1,270 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { ShieldCheck, ShieldAlert, Plus, Briefcase, Users, AlertTriangle, TrendingUp } from 'lucide-react';
-import useAuthStore from '../../store/authStore';
-import { employersAPI, jobsAPI } from '../../api';
-import { TrustScoreRing, PageSpinner } from '../../components/ui';
-
-const STATUS_COLORS = {
-  active:    'bg-green-50 text-trust-green border-green-200',
-  closed:    'bg-slate-50 text-slate-500 border-slate-200',
-  suspended: 'bg-red-50 text-trust-red border-red-200',
-  draft:     'bg-amber-50 text-trust-amber border-amber-200',
-};
+import { 
+  Building2, 
+  Briefcase, 
+  Users, 
+  ShieldCheck, 
+  PlusCircle, 
+  CheckCircle2, 
+  Clock, 
+  AlertTriangle, 
+  ChevronRight,
+  UserCheck,
+  UserX,
+  Eye
+} from 'lucide-react';
+import { employerApi, applicationsApi } from '../../api';
+import TrustScoreBadge from '../../components/ui/TrustScoreBadge';
 
 export default function EmployerDashboard() {
-  const { user } = useAuthStore();
+  const [metrics, setMetrics] = useState(null);
+  const [applicants, setApplicants] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedJobId, setSelectedJobId] = useState('');
+  const [updatingId, setUpdatingId] = useState(null);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const { data: employerData, isLoading: empLoading } = useQuery({
-    queryKey: ['employer-profile'],
-    queryFn: () => employersAPI.getMyProfile().then((r) => r.data.employer),
-  });
+  const loadDashboardData = async () => {
+    setLoading(true);
+    try {
+      const [metricsRes, applicantsRes] = await Promise.all([
+        employerApi.getMetrics(),
+        applicationsApi.getEmployerApplicants(selectedJobId || undefined)
+      ]);
+      setMetrics(metricsRes?.data || null);
+      setApplicants(applicantsRes?.data?.applications || []);
+    } catch (err) {
+      setErrorMessage(err.message || 'Failed to load employer metrics.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
-  const { data: listingsData, isLoading: listLoading } = useQuery({
-    queryKey: ['my-listings'],
-    queryFn: () => jobsAPI.getMyListings({ limit: 5, status: 'all' }).then((r) => r.data),
-    enabled: !!employerData,
-  });
+  useEffect(() => {
+    loadDashboardData();
+  }, [selectedJobId]);
 
-  if (empLoading) return <PageSpinner />;
+  const handleStatusChange = async (applicationId, newStatus) => {
+    setUpdatingId(applicationId);
+    try {
+      await applicationsApi.updateStatus(applicationId, { status: newStatus });
+      setApplicants(prev =>
+        prev.map(app => (app._id === applicationId ? { ...app, status: newStatus } : app))
+      );
+      if (metrics?.funnel) {
+        const updatedFunnel = { ...metrics.funnel };
+        loadDashboardData();
+      }
+    } catch (err) {
+      alert(err.message || 'Failed to update candidate status.');
+    } finally {
+      setUpdatingId(null);
+    }
+  };
 
-  const employer = employerData;
-  const listings = listingsData?.jobs || [];
-  const isVerified = employer?.verificationStatus === 'verified';
+  if (loading && !metrics) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="h-96 rounded-2xl bg-slate-900/60 border border-slate-800 animate-pulse" />
+      </div>
+    );
+  }
+
+  const { overview, funnel, recentJobs } = metrics || {
+    overview: { trustScore: 40, verificationStatus: 'unverified', activeJobs: 0, totalJobs: 0, totalApplications: 0, fraudReportsCount: 0 },
+    funnel: { applied: 0, reviewing: 0, shortlisted: 0, interview: 0, hired: 0, rejected: 0 },
+    recentJobs: []
+  };
+
+  const isVerified = overview.verificationStatus === 'verified';
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
-        <div>
-          <h1 className="font-display font-bold text-2xl text-slate-900">
-            {employer?.companyName}
-          </h1>
-          <p className="text-sm text-slate-500 mt-1">Employer dashboard</p>
-        </div>
-        <Link to="/employer/post-job" className="btn-primary flex items-center gap-2">
-          <Plus className="w-4 h-4" />
-          Post a job
-        </Link>
-      </div>
-
-      {/* Verification banner */}
-      {!isVerified && (
-        <div className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-5 py-4">
-          <ShieldAlert className="w-5 h-5 text-trust-amber flex-shrink-0 mt-0.5" />
-          <div className="flex-1">
-            <p className="text-sm font-semibold text-amber-800">
-              Your company is not verified
-            </p>
-            <p className="text-xs text-amber-700 mt-1">
-              Verified employers get 3× more applications. Verification is free and takes under 2 minutes.
-            </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Top Banner */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#111827] border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-2.5">
+            <h1 className="text-2xl font-extrabold text-white tracking-tight">Employer Command Center</h1>
+            {isVerified ? (
+              <span className="inline-flex items-center space-x-1 text-xs font-semibold text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded border border-emerald-500/20">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>Verified Entity</span>
+              </span>
+            ) : (
+              <span className="inline-flex items-center space-x-1 text-xs font-semibold text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded border border-amber-500/20">
+                <AlertTriangle className="w-3.5 h-3.5" />
+                <span>Verification Pending</span>
+              </span>
+            )}
           </div>
-          <Link to="/employer/verify" className="btn-primary text-sm flex-shrink-0">
-            Get verified
-          </Link>
-        </div>
-      )}
-
-      {/* Stats row */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-8">
-        <div className="card p-4">
-          <div className="flex items-center justify-between mb-1">
-            <span className="text-xs text-slate-400">Trust score</span>
-            <TrustScoreRing score={employer?.trustScore ?? 50} size={44} />
-          </div>
-        </div>
-        <div className="card p-4">
-          <p className="font-display font-bold text-2xl text-slate-900">{employer?.totalListings ?? 0}</p>
-          <p className="text-xs text-slate-500 mt-1">Jobs posted</p>
-        </div>
-        <div className="card p-4">
-          <p className="font-display font-bold text-2xl text-trust-green">{employer?.activeListings ?? 0}</p>
-          <p className="text-xs text-slate-500 mt-1">Active listings</p>
-        </div>
-        <div className="card p-4">
-          <p className={`font-display font-bold text-2xl ${employer?.fraudReportCount > 0 ? 'text-trust-red' : 'text-slate-900'}`}>
-            {employer?.fraudReportCount ?? 0}
-          </p>
-          <p className="text-xs text-slate-500 mt-1">Fraud reports</p>
-        </div>
-      </div>
-
-      {/* Verification status card */}
-      <div className={`card p-5 mb-6 flex items-start gap-4 ${isVerified ? 'border-green-200 bg-green-50' : ''}`}>
-        {isVerified ? (
-          <>
-            <ShieldCheck className="w-6 h-6 text-trust-green flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-trust-green">Company verified</p>
-              <p className="text-sm text-green-700 mt-0.5">
-                Registered as <strong>{employer?.verificationData?.registeredName}</strong> ·{' '}
-                {employer?.verificationData?.companyType} ·{' '}
-                {employer?.verificationData?.registeredState}
-              </p>
-              <p className="text-xs text-green-600 mt-1">
-                Verified via {employer?.verificationData?.verifiedVia?.toUpperCase()} on{' '}
-                {new Date(employer?.verificationData?.verifiedAt).toLocaleDateString('en-IN')}
-              </p>
-            </div>
-          </>
-        ) : (
-          <>
-            <ShieldAlert className="w-6 h-6 text-trust-amber flex-shrink-0 mt-0.5" />
-            <div>
-              <p className="font-semibold text-trust-amber">Not yet verified</p>
-              <p className="text-sm text-amber-700 mt-0.5">
-                Submit your CIN or GSTIN to get the verified badge on all your listings.
-              </p>
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Recent listings */}
-      <div className="card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-slate-800">Your job listings</h2>
-          <Link to="/employer/listings" className="text-sm text-navy-600 hover:underline">
-            Manage all
-          </Link>
+          <p className="text-xs text-slate-400">Manage authentic talent pipelines, track listings, and audit compliance signals.</p>
         </div>
 
-        {listLoading ? (
-          <div className="space-y-3">
-            {[1,2,3].map(i => <div key={i} className="h-14 bg-slate-50 animate-pulse rounded-lg" />)}
-          </div>
-        ) : listings.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-slate-500 text-sm mb-4">You haven't posted any jobs yet.</p>
-            <Link to="/employer/post-job" className="btn-primary text-sm">
-              Post your first job
+        <div className="flex flex-wrap items-center gap-3">
+          {!isVerified && (
+            <Link
+              to="/employer/verify"
+              className="px-4 py-2.5 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold text-xs transition flex items-center space-x-1.5 shadow-lg shadow-emerald-500/10"
+            >
+              <ShieldCheck className="w-4 h-4" />
+              <span>Verify CIN & GSTIN</span>
             </Link>
-          </div>
-        ) : (
-          <div className="space-y-3">
-            {listings.map((job) => (
-              <div key={job._id} className="flex items-center gap-4 py-3 border-b border-slate-50 last:border-0">
-                <div className="flex-1 min-w-0">
-                  <Link to={`/employer/listings/${job._id}`} className="text-sm font-semibold text-slate-800 hover:text-navy-600 truncate block">
-                    {job.title}
-                  </Link>
-                  <p className="text-xs text-slate-400 mt-0.5">
-                    {job.applicationCount} applicants · Posted {new Date(job.createdAt).toLocaleDateString('en-IN')}
-                  </p>
-                </div>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-full border capitalize flex-shrink-0 ${STATUS_COLORS[job.status]}`}>
-                  {job.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        )}
+          )}
+          <Link
+            to="/employer/post-job"
+            className="px-4 py-2.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs border border-slate-700 transition flex items-center space-x-1.5"
+          >
+            <PlusCircle className="w-4 h-4 text-emerald-400" />
+            <span>Post New Opening</span>
+          </Link>
+        </div>
       </div>
 
-      {/* Quick links */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-6">
-        <Link to="/employer/verify" className="card p-4 hover:shadow-card-hover transition-shadow flex items-center gap-3">
-          <ShieldCheck className="w-5 h-5 text-trust-green" />
-          <span className="text-sm font-medium text-slate-700">{isVerified ? 'View verification' : 'Verify company'}</span>
-        </Link>
-        <Link to="/employer/post-job" className="card p-4 hover:shadow-card-hover transition-shadow flex items-center gap-3">
-          <Plus className="w-5 h-5 text-navy-600" />
-          <span className="text-sm font-medium text-slate-700">Post a new job</span>
-        </Link>
-        <Link to="/employer/profile" className="card p-4 hover:shadow-card-hover transition-shadow flex items-center gap-3">
-          <Briefcase className="w-5 h-5 text-slate-500" />
-          <span className="text-sm font-medium text-slate-700">Edit company profile</span>
-        </Link>
+      {/* Metrics Row */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-slate-400 font-mono">TRUST SCORE</span>
+            <div className="text-2xl font-bold font-mono text-white mt-1">{overview.trustScore}/100</div>
+          </div>
+          <TrustScoreBadge score={overview.trustScore} size="sm" showLabel={false} />
+        </div>
+
+        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-slate-400 font-mono">ACTIVE OPENINGS</span>
+            <div className="text-2xl font-bold font-mono text-white mt-1">{overview.activeJobs}</div>
+          </div>
+          <Briefcase className="w-8 h-8 text-emerald-400/40" />
+        </div>
+
+        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-slate-400 font-mono">TOTAL CANDIDATES</span>
+            <div className="text-2xl font-bold font-mono text-white mt-1">{overview.totalApplications}</div>
+          </div>
+          <Users className="w-8 h-8 text-blue-400/40" />
+        </div>
+
+        <div className="p-5 rounded-xl bg-slate-900/60 border border-slate-800 flex items-center justify-between">
+          <div>
+            <span className="text-xs text-slate-400 font-mono">FRAUD FLAGS</span>
+            <div className={`text-2xl font-bold font-mono mt-1 ${overview.fraudReportsCount > 0 ? 'text-rose-400' : 'text-emerald-400'}`}>
+              {overview.fraudReportsCount}
+            </div>
+          </div>
+          <AlertTriangle className={`w-8 h-8 ${overview.fraudReportsCount > 0 ? 'text-rose-400/40' : 'text-slate-600'}`} />
+        </div>
+      </div>
+
+      {/* Hiring Pipeline Funnel */}
+      <div className="p-6 rounded-2xl bg-slate-900/80 border border-slate-800 space-y-4">
+        <h2 className="text-sm font-bold font-mono text-slate-300 uppercase tracking-wider">Hiring Pipeline Funnel</h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          {Object.entries(funnel).map(([statusKey, count]) => (
+            <div key={statusKey} className="p-3.5 rounded-lg bg-slate-950 border border-slate-800 text-center">
+              <span className="text-[11px] font-mono uppercase text-slate-400">{statusKey}</span>
+              <div className="text-xl font-bold font-mono text-white mt-1">{count}</div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Applicant Review Board */}
+      <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800 space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div>
+            <h2 className="text-base font-bold text-white">Candidate Review Stream</h2>
+            <p className="text-xs text-slate-400">Review submitted resumes, verify candidate phone details, and transition hiring states.</p>
+          </div>
+          {recentJobs.length > 0 && (
+            <select
+              value={selectedJobId}
+              onChange={(e) => setSelectedJobId(e.target.value)}
+              className="bg-slate-950 border border-slate-700 text-slate-200 text-xs rounded-lg px-3 py-2 focus:outline-none"
+            >
+              <option value="">All Job Openings ({applicants.length} candidates)</option>
+              {recentJobs.map(job => (
+                <option key={job._id} value={job._id}>{job.title}</option>
+              ))}
+            </select>
+          )}
+        </div>
+
+        {applicants.length > 0 ? (
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs text-slate-300">
+              <thead className="bg-slate-950/80 text-slate-400 uppercase font-mono text-[10px] border-b border-slate-800">
+                <tr>
+                  <th className="py-3 px-4">Candidate</th>
+                  <th className="py-3 px-4">Role</th>
+                  <th className="py-3 px-4">Contact</th>
+                  <th className="py-3 px-4">Resume</th>
+                  <th className="py-3 px-4">Status</th>
+                  <th className="py-3 px-4 text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-slate-800/60">
+                {applicants.map((app) => (
+                  <tr key={app._id} className="hover:bg-slate-900/40">
+                    <td className="py-3 px-4">
+                      <div className="font-semibold text-white">{app.candidate?.name || 'Applicant'}</div>
+                      <div className="text-[11px] text-slate-500 font-mono">{app.candidate?.email}</div>
+                    </td>
+                    <td className="py-3 px-4 text-slate-300">{app.job?.title || 'Job Opening'}</td>
+                    <td className="py-3 px-4 font-mono text-slate-400">{app.contactPhone || '—'}</td>
+                    <td className="py-3 px-4">
+                      {app.resumeUrl ? (
+                        <a
+                          href={app.resumeUrl}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="text-emerald-400 hover:underline font-mono inline-flex items-center space-x-1"
+                        >
+                          <Eye className="w-3.5 h-3.5" />
+                          <span>View Doc</span>
+                        </a>
+                      ) : (
+                        <span className="text-slate-600">None</span>
+                      )}
+                    </td>
+                    <td className="py-3 px-4">
+                      <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase font-mono ${
+                        app.status === 'hired' ? 'bg-emerald-500/20 text-emerald-400' :
+                        app.status === 'rejected' ? 'bg-rose-500/20 text-rose-400' :
+                        app.status === 'interview' ? 'bg-blue-500/20 text-blue-400' :
+                        'bg-slate-800 text-slate-300'
+                      }`}>
+                        {app.status}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right space-x-1">
+                      <select
+                        disabled={updatingId === app._id}
+                        value={app.status}
+                        onChange={(e) => handleStatusChange(app._id, e.target.value)}
+                        className="bg-slate-950 border border-slate-700 text-slate-200 text-[11px] rounded px-2 py-1 focus:outline-none"
+                      >
+                        <option value="applied">applied</option>
+                        <option value="reviewing">reviewing</option>
+                        <option value="shortlisted">shortlisted</option>
+                        <option value="interview">interview</option>
+                        <option value="hired">hired</option>
+                        <option value="rejected">rejected</option>
+                      </select>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <div className="text-center py-12 bg-slate-950/40 rounded-xl border border-slate-800 space-y-2">
+            <Users className="w-8 h-8 text-slate-600 mx-auto" />
+            <p className="text-xs text-slate-400">No candidate applications received yet.</p>
+          </div>
+        )}
       </div>
     </div>
   );

@@ -1,113 +1,103 @@
-// frontend/src/components/jobs/JobCard.jsx
-import React from "react";
-import { Link } from "react-router-dom";
-import {
-  ShieldCheck,
-  AlertTriangle,
-  MapPin,
-  Briefcase,
-  DollarSign,
-  Building,
-} from "lucide-react";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { MapPin, Building2, Briefcase, IndianRupee, Clock, CheckCircle2 } from 'lucide-react';
+import TrustScoreBadge from '../ui/TrustScoreBadge';
 
-export const JobCard = ({ job }) => {
-  const isVerified = job?.employerId?.verifiedStatus === "Verified";
-  const hasRisk = (job?.riskScore || 0) > 30;
+export default function JobCard({ job }) {
+  const {
+    _id,
+    title,
+    employer,
+    location,
+    jobType,
+    workplaceType,
+    experienceLevel,
+    salary,
+    isFromVerifiedEmployer,
+    employerTrustScore,
+    createdAt
+  } = job;
+
+  const formatSalary = (sal) => {
+    if (!sal || (!sal.min && !sal.max)) return 'Undisclosed';
+    if (sal.min && sal.max) {
+      return `₹${(sal.min / 100000).toFixed(1)}L - ₹${(sal.max / 100000).toFixed(1)}L / yr`;
+    }
+    return `Up to ₹${((sal.max || sal.min) / 100000).toFixed(1)}L / yr`;
+  };
+
+  const timeAgo = (dateStr) => {
+    const diff = Math.floor((new Date() - new Date(dateStr)) / (1000 * 60 * 60 * 24));
+    if (diff === 0) return 'Today';
+    if (diff === 1) return '1d ago';
+    return `${diff}d ago`;
+  };
 
   return (
-    <div className="group relative bg-slate-900/70 border border-slate-800 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 hover:shadow-[0_0_30px_rgba(16,185,129,0.1)] backdrop-blur-xl flex flex-col justify-between">
-      <div>
-        {/* Header Badges */}
-        <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-xl bg-slate-800 border border-slate-700 flex items-center justify-center overflow-hidden">
-              {job?.employerId?.logo ? (
-                <img
-                  src={job.employerId.logo}
-                  alt={job.employerId.companyName}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <Building className="w-6 h-6 text-slate-400" />
+    <div className="group relative bg-[#111827]/80 hover:bg-[#151E30] border border-slate-800 hover:border-slate-700 rounded-xl p-5 transition-all duration-200 shadow-sm hover:shadow-lg hover:shadow-emerald-950/10">
+      <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
+        {/* Left Info */}
+        <div className="flex items-start space-x-3.5">
+          <div className="w-11 h-11 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center flex-shrink-0 text-slate-300 font-bold text-sm">
+            {employer?.logo ? (
+              <img src={employer.logo} alt={employer.companyName} className="w-full h-full object-cover rounded-lg" />
+            ) : (
+              employer?.companyName?.charAt(0) || <Building2 className="w-5 h-5 text-slate-400" />
+            )}
+          </div>
+          <div>
+            <div className="flex items-center space-x-2 flex-wrap">
+              <span className="text-xs font-medium text-slate-400">{employer?.companyName || 'Verified Org'}</span>
+              {isFromVerifiedEmployer && (
+                <span className="inline-flex items-center space-x-1 text-[11px] font-medium text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                  <CheckCircle2 className="w-3 h-3" />
+                  <span>MCA Verified</span>
+                </span>
               )}
             </div>
-            <div>
-              <h4 className="text-sm font-semibold text-slate-300">
-                {job?.employerId?.companyName || "Verified Recruiter"}
-              </h4>
-              <p className="text-xs text-slate-500">
-                {job?.createdAt
-                  ? new Date(job.createdAt).toLocaleDateString()
-                  : ""}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex items-center gap-2">
-            {isVerified ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                <ShieldCheck className="w-3.5 h-3.5" />
-                Verified Employer
-              </span>
-            ) : hasRisk ? (
-              <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                <AlertTriangle className="w-3.5 h-3.5" />
-                Under Audit
-              </span>
-            ) : null}
+            <Link to={`/jobs/${_id}`}>
+              <h3 className="text-base font-semibold text-white group-hover:text-emerald-400 transition mt-1 line-clamp-1">
+                {title}
+              </h3>
+            </Link>
           </div>
         </div>
 
-        {/* Title & Description */}
-        <Link to={`/jobs/${job?._id}`}>
-          <h3 className="text-lg font-bold text-white group-hover:text-emerald-400 transition-colors">
-            {job?.title}
-          </h3>
-        </Link>
-        <p className="text-sm text-slate-400 mt-2 line-clamp-2 leading-relaxed">
-          {job?.description}
-        </p>
-
-        {/* Requirements Pills */}
-        <div className="flex flex-wrap gap-2 mt-4">
-          {job?.requirements?.slice(0, 3).map((req, i) => (
-            <span
-              key={i}
-              className="text-xs font-medium bg-slate-800/80 text-slate-300 px-2.5 py-1 rounded-md border border-slate-700/50"
-            >
-              {req}
-            </span>
-          ))}
-          {job?.requirements?.length > 3 && (
-            <span className="text-xs text-slate-500 self-center">
-              +{job.requirements.length - 3} more
-            </span>
-          )}
+        {/* Right Trust Badge */}
+        <div className="flex-shrink-0">
+          <TrustScoreBadge score={employerTrustScore || employer?.trustScore || 40} size="sm" />
         </div>
       </div>
 
-      {/* Footer Info */}
-      <div className="mt-6 pt-4 border-t border-slate-800/80 flex items-center justify-between text-xs text-slate-400">
-        <div className="flex items-center gap-4">
-          <span className="flex items-center gap-1">
-            <MapPin className="w-3.5 h-3.5 text-slate-500" />
-            {job?.location || "Remote"}
-          </span>
-          <span className="flex items-center gap-1">
-            <Briefcase className="w-3.5 h-3.5 text-slate-500" />
-            {job?.jobType || "Full-time"}
-          </span>
-        </div>
-
-        <span className="font-semibold text-emerald-400 flex items-center gap-0.5 text-sm">
-          <DollarSign className="w-4 h-4" />
-          {job?.salary?.min?.toLocaleString()} -{" "}
-          {job?.salary?.max?.toLocaleString()}/yr
+      {/* Meta Badges */}
+      <div className="mt-4 flex flex-wrap gap-2 text-xs text-slate-400">
+        <span className="inline-flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700/60">
+          <MapPin className="w-3.5 h-3.5 text-slate-400" />
+          <span>{location?.city}{location?.state ? `, ${location.state}` : ''} ({workplaceType})</span>
         </span>
+        <span className="inline-flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700/60">
+          <Briefcase className="w-3.5 h-3.5 text-slate-400" />
+          <span>{jobType} • {experienceLevel}</span>
+        </span>
+        <span className="inline-flex items-center space-x-1 bg-slate-800/80 px-2.5 py-1 rounded-md border border-slate-700/60 text-slate-300">
+          <IndianRupee className="w-3.5 h-3.5 text-emerald-400" />
+          <span>{formatSalary(salary)}</span>
+        </span>
+      </div>
+
+      {/* Footer */}
+      <div className="mt-4 pt-3.5 border-t border-slate-800/80 flex items-center justify-between text-xs">
+        <span className="inline-flex items-center space-x-1 text-slate-500 font-mono">
+          <Clock className="w-3 h-3" />
+          <span>Posted {timeAgo(createdAt)}</span>
+        </span>
+        <Link
+          to={`/jobs/${_id}`}
+          className="text-emerald-400 hover:text-emerald-300 font-medium inline-flex items-center space-x-1"
+        >
+          <span>View Verification & Details →</span>
+        </Link>
       </div>
     </div>
   );
-};
-
-// Default export to satisfy default imports across the app
-export default JobCard;
+}

@@ -1,41 +1,67 @@
-const cloudinary = require('cloudinary').v2;
-const multer = require('multer');
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
+import multer from 'multer';
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
   api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true
 });
 
-// Memory storage — stream directly to Cloudinary, never write to disk
-const storage = multer.memoryStorage();
+const allowedMimeTypes = [
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+];
+
+const evidenceStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    const isDoc = file.mimetype === 'application/pdf' || 
+                  file.mimetype.includes('word');
+    return {
+      folder: 'trusthire/fraud_evidence',
+      resource_type: isDoc ? 'raw' : 'image',
+      public_id: `evidence_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'doc', 'docx']
+    };
+  }
+});
+
+const resumeStorage = new CloudinaryStorage({
+  cloudinary,
+  params: async (req, file) => {
+    return {
+      folder: 'trusthire/resumes',
+      resource_type: 'raw',
+      public_id: `resume_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
+      allowed_formats: ['pdf', 'doc', 'docx']
+    };
+  }
+});
 
 const fileFilter = (req, file, cb) => {
-  const allowed = ['image/jpeg', 'image/png', 'image/webp', 'application/pdf'];
-  if (allowed.includes(file.mimetype)) {
+  if (allowedMimeTypes.includes(file.mimetype)) {
     cb(null, true);
   } else {
-    cb(new Error('Only JPEG, PNG, WebP, and PDF files are allowed'), false);
+    cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed types: JPEG, PNG, WEBP, PDF, DOC, DOCX`), false);
   }
 };
 
-const upload = multer({
-  storage,
-  fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+export const uploadEvidence = multer({
+  storage: evidenceStorage,
+  limits: { fileSize: 5 * 1024 * 1024, files: 4 },
+  fileFilter
 });
 
-const uploadToCloudinary = (buffer, folder, resourceType = 'auto') => {
-  return new Promise((resolve, reject) => {
-    const stream = cloudinary.uploader.upload_stream(
-      { folder: `trusthire/${folder}`, resource_type: resourceType },
-      (error, result) => {
-        if (error) reject(error);
-        else resolve(result);
-      }
-    );
-    stream.end(buffer);
-  });
-};
+export const uploadResume = multer({
+  storage: resumeStorage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  fileFilter
+});
 
-module.exports = { cloudinary, upload, uploadToCloudinary };
+export default cloudinary;

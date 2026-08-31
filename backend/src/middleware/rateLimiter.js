@@ -1,38 +1,34 @@
-const rateLimit = require('express-rate-limit');
+import rateLimit from 'express-rate-limit';
 
-// Strict limiter for auth routes
-const authLimiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
+export const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many requests from this IP. Please try again after 15 minutes.'
+  }
+});
+
+export const authLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: {
+    success: false,
+    message: 'Too many authentication attempts. Please try again after 15 minutes.'
+  }
+});
+
+export const reportLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
   max: 10,
-  message: {
-    success: false,
-    message: 'Too many attempts. Please try again after 15 minutes.',
-  },
   standardHeaders: true,
   legacyHeaders: false,
-});
-
-// General API limiter
-const apiLimiter = rateLimit({
-  windowMs: 60 * 1000, // 1 minute
-  max: 100,
   message: {
     success: false,
-    message: 'Too many requests. Please slow down.',
-  },
-  standardHeaders: true,
-  legacyHeaders: false,
+    message: 'Fraud reporting limit reached. Maximum 10 reports per hour per IP.'
+  }
 });
-
-// Fraud report limiter — max 5 reports per user per day
-const fraudReportLimiter = rateLimit({
-  windowMs: 24 * 60 * 60 * 1000, // 24 hours
-  max: 5,
-  keyGenerator: (req) => req.user?.id || req.ip,
-  message: {
-    success: false,
-    message: 'You can submit at most 5 fraud reports per day.',
-  },
-});
-
-module.exports = { authLimiter, apiLimiter, fraudReportLimiter };

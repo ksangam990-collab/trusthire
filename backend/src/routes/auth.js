@@ -1,25 +1,20 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   register,
   login,
-  verifyEmail,
-  resendVerification,
-  forgotPassword,
-  resetPassword,
-  getMe,
+  refreshToken,
   logout,
-} = require('../controllers/authController');
-const { protect } = require('../middleware/auth');
-const { authLimiter } = require('../middleware/rateLimiter');
+  getCurrentUser
+} from '../controllers/authController.js';
+import { authenticate } from '../middleware/auth.js';
+import { authLimiter } from '../middleware/rateLimiter.js';
+
+const router = express.Router();
 
 router.post('/register', authLimiter, register);
 router.post('/login', authLimiter, login);
-router.get('/verify-email', verifyEmail);
-router.post('/resend-verification', protect, resendVerification);
-router.post('/forgot-password', authLimiter, forgotPassword);
-router.post('/reset-password', authLimiter, resetPassword);
-router.get('/me', protect, getMe);
-router.post('/logout', protect, logout);
+router.post('/refresh', refreshToken);
+router.post('/logout', logout);
+router.get('/me', authenticate, getCurrentUser);
 
-module.exports = router;
+export default router;

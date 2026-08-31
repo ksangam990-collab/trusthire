@@ -1,95 +1,108 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const employerSchema = new mongoose.Schema(
   {
-    userId: {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
       required: true,
-      unique: true,
+      unique: true
     },
     companyName: {
       type: String,
       required: [true, 'Company name is required'],
       trim: true,
-      maxlength: [200, 'Company name too long'],
-      index: true,
+      maxlength: [120, 'Company name cannot exceed 120 characters']
+    },
+    website: {
+      type: String,
+      trim: true,
+      default: ''
+    },
+    industry: {
+      type: String,
+      trim: true,
+      default: 'Information Technology'
+    },
+    companySize: {
+      type: String,
+      enum: ['1-10', '11-50', '51-200', '201-500', '501-1000', '1000+'],
+      default: '11-50'
+    },
+    description: {
+      type: String,
+      maxlength: [2000, 'Description cannot exceed 2000 characters'],
+      default: ''
+    },
+    logo: {
+      type: String,
+      default: ''
+    },
+    location: {
+      city: { type: String, trim: true, default: '' },
+      state: { type: String, trim: true, default: '' },
+      country: { type: String, trim: true, default: 'India' },
+      address: { type: String, trim: true, default: '' }
+    },
+    verificationStatus: {
+      type: String,
+      enum: ['unverified', 'pending', 'verified', 'rejected', 'suspended'],
+      default: 'unverified'
     },
     cin: {
       type: String,
       trim: true,
       uppercase: true,
-      sparse: true, // allow multiple nulls
+      default: ''
     },
     gstin: {
       type: String,
       trim: true,
       uppercase: true,
-      sparse: true,
+      default: ''
     },
-    verificationStatus: {
-      type: String,
-      enum: ['unverified', 'pending', 'verified', 'failed', 'manual_review'],
-      default: 'unverified',
+    verificationDate: {
+      type: Date
     },
-    verificationData: {
-      registeredName: String,
-      incorporationDate: Date,
-      companyType: String,       // e.g. "Private Limited"
-      registeredState: String,
-      cin: String,
-      gstin: String,
-      verifiedAt: Date,
-      verifiedVia: String,       // "cin" | "gstin" | "manual"
-    },
-    // Trust score: 0–100, computed from reports + registration age + activity
     trustScore: {
       type: Number,
-      default: 50,
       min: 0,
       max: 100,
+      default: 40
     },
-    website: { type: String, trim: true },
-    description: { type: String, trim: true, maxlength: 1000 },
-    industry: { type: String, trim: true },
-    companySize: {
+    scoreBreakdown: {
+      legalVerification: { type: Number, default: 0 },
+      domainVerified: { type: Number, default: 0 },
+      companyAge: { type: Number, default: 0 },
+      cleanRecordBonus: { type: Number, default: 0 },
+      fraudPenalty: { type: Number, default: 0 }
+    },
+    totalSubmittedReports: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    verifiedFraudReports: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    isSuspended: {
+      type: Boolean,
+      default: false
+    },
+    suspensionReason: {
       type: String,
-      enum: ['1-10', '11-50', '51-200', '201-500', '500+'],
-    },
-    logoUrl: { type: String },
-    totalListings: { type: Number, default: 0 },
-    activeListings: { type: Number, default: 0 },
-    fraudReportCount: { type: Number, default: 0 },
-    verifiedReportCount: { type: Number, default: 0 }, // admin-confirmed fraud
-    isSuspended: { type: Boolean, default: false },
-    suspensionReason: { type: String },
+      default: ''
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-// Auto-compute trust score before save
-employerSchema.pre('save', function (next) {
-  let score = 50;
+employerSchema.index({ companyName: 'text', industry: 'text' });
+employerSchema.index({ verificationStatus: 1, trustScore: -1 });
 
-  // Verified = +30
-  if (this.verificationStatus === 'verified') score += 30;
-
-  // Each admin-verified fraud report = -15
-  score -= this.verifiedReportCount * 15;
-
-  // Active without reports = small bonus
-  if (this.totalListings > 5 && this.fraudReportCount === 0) score += 10;
-
-  // Registered long ago (data from verificationData)
-  if (this.verificationData?.incorporationDate) {
-    const yearsOld =
-      (Date.now() - new Date(this.verificationData.incorporationDate)) /
-      (1000 * 60 * 60 * 24 * 365);
-    if (yearsOld > 3) score += 10;
-  }
-
-  this.trustScore = Math.min(100, Math.max(0, Math.round(score)));
-  next();
-});
-
-module.exports = mongoose.model('Employer', employerSchema);
+const Employer = mongoose.model('Employer', employerSchema);
+export default Employer;

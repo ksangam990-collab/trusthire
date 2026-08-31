@@ -1,136 +1,146 @@
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Search, Bookmark, FileText, Bell, ShieldCheck, AlertCircle } from 'lucide-react';
-import useAuthStore from '../../store/authStore';
-import { applicationsAPI } from '../../api';
-import { PageSpinner } from '../../components/ui';
-
-const STATUS_STYLES = {
-  applied:     'bg-blue-50 text-blue-700 border-blue-200',
-  viewed:      'bg-slate-50 text-slate-600 border-slate-200',
-  shortlisted: 'bg-green-50 text-trust-green border-green-200',
-  rejected:    'bg-red-50 text-trust-red border-red-200',
-  hired:       'bg-purple-50 text-purple-700 border-purple-200',
-};
+import { Briefcase, Building2, Clock, CheckCircle2, AlertCircle, FileText, ArrowRight, ExternalLink } from 'lucide-react';
+import { applicationsApi } from '../../api';
+import TrustScoreBadge from '../../components/ui/TrustScoreBadge';
 
 export default function DashboardPage() {
-  const { user } = useAuthStore();
+  const [applications, setApplications] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const { data: appsData, isLoading } = useQuery({
-    queryKey: ['my-applications'],
-    queryFn: () => applicationsAPI.getMyApplications({ limit: 5 }).then((r) => r.data),
-  });
+  useEffect(() => {
+    const fetchCandidateData = async () => {
+      setLoading(true);
+      try {
+        const res = await applicationsApi.getCandidateApplications();
+        setApplications(res?.data?.applications || []);
+      } catch (err) {
+        setErrorMessage(err.message || 'Failed to load your applications.');
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCandidateData();
+  }, []);
 
-  const applications = appsData?.applications || [];
-
-  const stats = {
-    total: applications.length,
-    shortlisted: applications.filter((a) => a.status === 'shortlisted').length,
-    viewed: applications.filter((a) => a.status === 'viewed').length,
+  const getStatusBadge = (status) => {
+    const statusMap = {
+      applied: { label: 'Applied', color: 'bg-slate-800 text-slate-300 border-slate-700' },
+      reviewing: { label: 'Under Review', color: 'bg-blue-500/10 text-blue-400 border-blue-500/30' },
+      shortlisted: { label: 'Shortlisted', color: 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30' },
+      interview: { label: 'Interview Scheduled', color: 'bg-amber-500/10 text-amber-400 border-amber-500/30' },
+      hired: { label: 'Hired', color: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50' },
+      rejected: { label: 'Not Selected', color: 'bg-rose-500/10 text-rose-400 border-rose-500/30' }
+    };
+    const current = statusMap[status] || statusMap.applied;
+    return (
+      <span className={`px-2.5 py-0.5 rounded-full text-[11px] font-mono font-semibold border ${current.color}`}>
+        {current.label}
+      </span>
+    );
   };
 
+  if (loading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="h-80 rounded-2xl bg-slate-900/60 border border-slate-800 animate-pulse" />
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
-      {/* Greeting */}
-      <div className="mb-8">
-        <h1 className="font-display font-bold text-2xl text-slate-900">
-          Good to see you, {user?.name?.split(' ')[0]} 👋
-        </h1>
-        <p className="text-slate-500 text-sm mt-1">Here's what's happening with your job search.</p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+      {/* Header Banner */}
+      <div className="p-6 sm:p-8 rounded-2xl bg-[#111827] border border-slate-800 flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <h1 className="text-2xl font-extrabold text-white tracking-tight">Candidate Portal</h1>
+          <p className="text-xs text-slate-400">Track application lifecycles, employer authenticity signals, and status transitions.</p>
+        </div>
+        <Link
+          to="/jobs"
+          className="px-5 py-2.5 rounded-lg bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold text-xs transition flex items-center space-x-1.5 self-start md:self-auto shadow-lg shadow-emerald-500/10"
+        >
+          <Briefcase className="w-4 h-4" />
+          <span>Browse More Verified Jobs</span>
+        </Link>
       </div>
 
-      {/* Email verification banner */}
-      {!user?.isEmailVerified && (
-        <div className="mb-6 flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl px-4 py-3">
-          <AlertCircle className="w-5 h-5 text-trust-amber flex-shrink-0 mt-0.5" />
-          <div>
-            <p className="text-sm font-semibold text-amber-800">Verify your email</p>
-            <p className="text-xs text-amber-700 mt-0.5">
-              Check your inbox and click the verification link to unlock all features.
-            </p>
-          </div>
+      {errorMessage && (
+        <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl flex items-center space-x-2">
+          <AlertCircle className="w-4 h-4 flex-shrink-0" />
+          <span>{errorMessage}</span>
         </div>
       )}
 
-      {/* Quick actions */}
-      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
-        {[
-          { icon: Search, label: 'Find jobs', to: '/jobs', color: 'bg-navy-50 text-navy-600' },
-          { icon: Bookmark, label: 'Saved jobs', to: '/dashboard/saved', color: 'bg-blue-50 text-blue-600' },
-          { icon: FileText, label: 'My applications', to: '/dashboard/applications', color: 'bg-green-50 text-trust-green' },
-          { icon: Bell, label: 'Job alerts', to: '/dashboard/alerts', color: 'bg-purple-50 text-purple-600' },
-        ].map(({ icon: Icon, label, to, color }) => (
-          <Link key={to} to={to} className="card-hover p-4 flex flex-col items-center gap-2 text-center">
-            <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${color}`}>
-              <Icon className="w-5 h-5" />
-            </div>
-            <span className="text-xs font-medium text-slate-600">{label}</span>
-          </Link>
-        ))}
-      </div>
-
-      {/* Stats row */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <div className="card p-4 text-center">
-          <p className="font-display font-bold text-2xl text-slate-900">{stats.total}</p>
-          <p className="text-xs text-slate-500 mt-1">Applications</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="font-display font-bold text-2xl text-trust-green">{stats.shortlisted}</p>
-          <p className="text-xs text-slate-500 mt-1">Shortlisted</p>
-        </div>
-        <div className="card p-4 text-center">
-          <p className="font-display font-bold text-2xl text-blue-600">{stats.viewed}</p>
-          <p className="text-xs text-slate-500 mt-1">Viewed</p>
-        </div>
-      </div>
-
-      {/* Recent applications */}
-      <div className="card p-5">
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-display font-semibold text-slate-800">Recent applications</h2>
-          <Link to="/dashboard/applications" className="text-sm text-navy-600 hover:underline">
-            View all
-          </Link>
+      {/* Applications List */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h2 className="text-sm font-bold font-mono text-slate-300 uppercase tracking-wider">
+            Submitted Applications ({applications.length})
+          </h2>
         </div>
 
-        {isLoading ? (
+        {applications.length > 0 ? (
           <div className="space-y-3">
-            {[1,2,3].map(i => (
-              <div key={i} className="h-14 bg-slate-50 animate-pulse rounded-lg" />
+            {applications.map((app) => (
+              <div
+                key={app._id}
+                className="p-5 rounded-xl bg-[#111827]/80 border border-slate-800 hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4"
+              >
+                <div className="flex items-start space-x-4">
+                  <div className="w-12 h-12 rounded-lg bg-slate-800 border border-slate-700 flex items-center justify-center text-slate-300 font-bold text-base flex-shrink-0">
+                    {app.job?.employer?.logo ? (
+                      <img src={app.job.employer.logo} alt={app.job.employer.companyName} className="w-full h-full object-cover rounded-lg" />
+                    ) : (
+                      app.job?.employer?.companyName?.charAt(0) || <Building2 className="w-6 h-6 text-slate-500" />
+                    )}
+                  </div>
+
+                  <div className="space-y-1">
+                    <div className="flex items-center space-x-2 flex-wrap">
+                      <span className="text-xs font-semibold text-slate-300">{app.job?.employer?.companyName}</span>
+                      {app.job?.employer?.verificationStatus === 'verified' && (
+                        <span className="inline-flex items-center space-x-1 text-[10px] font-semibold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
+                          <CheckCircle2 className="w-3 h-3" />
+                          <span>Verified Org</span>
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-base font-bold text-white">
+                      {app.job?.title || 'Position'}
+                    </h3>
+                    <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
+                      <span>{app.job?.location?.city} ({app.job?.workplaceType})</span>
+                      <span className="text-slate-600">•</span>
+                      <span className="inline-flex items-center space-x-1 font-mono text-slate-500">
+                        <Clock className="w-3 h-3" />
+                        <span>Applied {new Date(app.createdAt).toLocaleDateString()}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex flex-row sm:flex-col sm:items-end justify-between items-center gap-3 pt-3 sm:pt-0 border-t sm:border-0 border-slate-800">
+                  <TrustScoreBadge score={app.job?.employer?.trustScore || 40} size="sm" />
+                  {getStatusBadge(app.status)}
+                </div>
+              </div>
             ))}
           </div>
-        ) : applications.length === 0 ? (
-          <div className="text-center py-8">
-            <p className="text-slate-500 text-sm mb-4">You haven't applied to any jobs yet.</p>
-            <Link to="/jobs?verifiedOnly=true" className="btn-primary text-sm">
-              Browse verified jobs
-            </Link>
-          </div>
         ) : (
-          <div className="space-y-3">
-            {applications.map((app) => {
-              const job = app.jobId;
-              const employer = job?.employerId;
-              return (
-                <div key={app._id} className="flex items-center gap-4 py-3 border-b border-slate-50 last:border-0">
-                  <div className="flex-1 min-w-0">
-                    <Link to={`/jobs/${job?._id}`} className="text-sm font-semibold text-slate-800 hover:text-navy-600 truncate block">
-                      {job?.title}
-                    </Link>
-                    <p className="text-xs text-slate-400 flex items-center gap-1 mt-0.5">
-                      {employer?.verificationStatus === 'verified' && (
-                        <ShieldCheck className="w-3 h-3 text-trust-green" />
-                      )}
-                      {employer?.companyName} · Applied {new Date(app.appliedAt).toLocaleDateString('en-IN')}
-                    </p>
-                  </div>
-                  <span className={`text-xs font-medium px-2.5 py-1 rounded-full border capitalize flex-shrink-0 ${STATUS_STYLES[app.status]}`}>
-                    {app.status}
-                  </span>
-                </div>
-              );
-            })}
+          <div className="text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800 space-y-3">
+            <FileText className="w-10 h-10 text-slate-600 mx-auto" />
+            <h3 className="text-base font-semibold text-white">No applications submitted yet</h3>
+            <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              Browse our verified jobs registry to apply securely without risk of fee-charging recruiters.
+            </p>
+            <Link
+              to="/jobs"
+              className="inline-block px-4 py-2 rounded-lg bg-emerald-400 text-slate-900 font-bold text-xs"
+            >
+              Browse Jobs
+            </Link>
           </div>
         )}
       </div>

@@ -1,30 +1,28 @@
-const express = require('express');
-const router = express.Router();
-const {
+import express from 'express';
+import {
   submitReport,
-  getEmployerFraudSummary,
-  getAllReports,
-  reviewReport,
-} = require('../controllers/fraudController');
-const { protect, restrictTo } = require('../middleware/auth');
-const { fraudReportLimiter } = require('../middleware/rateLimiter');
-const { upload } = require('../config/cloudinary');
+  getPublicFraudBoard,
+  updateReportStatus
+} from '../controllers/fraudController.js';
+import { authenticate, authorize, optionalAuth } from '../middleware/auth.js';
+import { uploadEvidence } from '../config/cloudinary.js';
+import { reportLimiter } from '../middleware/rateLimiter.js';
 
-// Public
-router.get('/employer/:employerId', getEmployerFraudSummary);
+const router = express.Router();
 
-// Job seeker — submit report with optional evidence files
+router.get('/board', getPublicFraudBoard);
 router.post(
-  '/',
-  protect,
-  restrictTo('jobseeker'),
-  fraudReportLimiter,
-  upload.array('evidence', 3),
+  '/report',
+  reportLimiter,
+  optionalAuth,
+  uploadEvidence.array('evidence', 4),
   submitReport
 );
+router.patch(
+  '/reports/:reportId/status',
+  authenticate,
+  authorize('admin'),
+  updateReportStatus
+);
 
-// Admin only
-router.get('/admin/all', protect, restrictTo('admin'), getAllReports);
-router.patch('/admin/:reportId', protect, restrictTo('admin'), reviewReport);
-
-module.exports = router;
+export default router;

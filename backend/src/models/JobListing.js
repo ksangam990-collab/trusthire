@@ -1,79 +1,117 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const jobListingSchema = new mongoose.Schema(
   {
-    employerId: {
+    employer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'Employer',
       required: true,
-      index: true,
+      index: true
     },
     title: {
       type: String,
       required: [true, 'Job title is required'],
       trim: true,
-      maxlength: [150, 'Title too long'],
+      maxlength: [150, 'Title cannot exceed 150 characters']
     },
     description: {
       type: String,
-      required: [true, 'Job description is required'],
-      maxlength: [5000, 'Description too long'],
+      required: [true, 'Job description is required']
     },
-    responsibilities: { type: String, maxlength: 3000 },
-    requirements: { type: String, maxlength: 3000 },
-    location: {
-      city: { type: String, trim: true },
-      state: { type: String, trim: true },
-      isRemote: { type: Boolean, default: false },
-    },
-    salaryRange: {
-      min: { type: Number },
-      max: { type: Number },
-      currency: { type: String, default: 'INR' },
-      isDisclosed: { type: Boolean, default: true },
-    },
+    responsibilities: [
+      {
+        type: String,
+        trim: true
+      }
+    ],
+    requirements: [
+      {
+        type: String,
+        trim: true
+      }
+    ],
+    skills: [
+      {
+        type: String,
+        trim: true,
+        lowercase: true
+      }
+    ],
     jobType: {
       type: String,
-      enum: ['fulltime', 'parttime', 'internship', 'contract', 'freelance'],
-      required: true,
+      enum: ['Full-time', 'Part-time', 'Contract', 'Internship', 'Freelance'],
+      default: 'Full-time'
+    },
+    workplaceType: {
+      type: String,
+      enum: ['On-site', 'Remote', 'Hybrid'],
+      default: 'On-site'
     },
     experienceLevel: {
       type: String,
-      enum: ['fresher', '1-2', '2-5', '5-10', '10+'],
-      default: 'fresher',
+      enum: ['Entry Level', 'Mid Level', 'Senior Level', 'Lead / Manager', 'Executive'],
+      default: 'Entry Level'
     },
-    skills: [{ type: String, trim: true }],
-    education: { type: String, trim: true }, // e.g. "B.Tech / B.E."
-    openings: { type: Number, default: 1, min: 1 },
-    applyMethod: {
-      type: String,
-      enum: ['platform', 'email', 'external'],
-      default: 'platform',
+    location: {
+      city: { type: String, required: true, trim: true },
+      state: { type: String, trim: true, default: '' },
+      country: { type: String, trim: true, default: 'India' }
     },
-    applyEmail: { type: String },
-    applyLink: { type: String },
+    salary: {
+      min: { type: Number, min: 0, default: 0 },
+      max: { type: Number, min: 0, default: 0 },
+      currency: { type: String, default: 'INR' },
+      isNegotiable: { type: Boolean, default: false }
+    },
+    openings: {
+      type: Number,
+      default: 1,
+      min: 1
+    },
     status: {
       type: String,
-      enum: ['active', 'closed', 'suspended', 'draft'],
+      enum: ['draft', 'active', 'closed', 'suspended'],
       default: 'active',
+      index: true
     },
-    isFromVerifiedEmployer: { type: Boolean, default: false },
-    applicationCount: { type: Number, default: 0 },
-    viewCount: { type: Number, default: 0 },
-    savedCount: { type: Number, default: 0 },
-    closesAt: { type: Date },
-    // Fraud flags
-    fraudReportCount: { type: Number, default: 0 },
-    isFlagged: { type: Boolean, default: false },
+    trustVerificationStatus: {
+      type: String,
+      enum: ['pending', 'verified', 'under_review', 'flagged'],
+      default: 'pending',
+      index: true
+    },
+    isFromVerifiedEmployer: {
+      type: Boolean,
+      default: false,
+      index: true
+    },
+    employerTrustScore: {
+      type: Number,
+      default: 40,
+      min: 0,
+      max: 100
+    },
+    verifiedFraudCount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    applicationCount: {
+      type: Number,
+      default: 0,
+      min: 0
+    },
+    deadline: {
+      type: Date
+    }
   },
-  { timestamps: true }
+  {
+    timestamps: true
+  }
 );
 
-// Text index for full-text search
 jobListingSchema.index({ title: 'text', description: 'text', skills: 'text' });
-jobListingSchema.index({ 'location.city': 1, status: 1 });
-jobListingSchema.index({ jobType: 1, status: 1 });
-jobListingSchema.index({ isFromVerifiedEmployer: 1, status: 1 });
-jobListingSchema.index({ createdAt: -1 });
+jobListingSchema.index({ status: 1, isFromVerifiedEmployer: 1, createdAt: -1 });
 
-module.exports = mongoose.model('JobListing', jobListingSchema);
+const JobListing = mongoose.model('JobListing', jobListingSchema);
+export default JobListing;
