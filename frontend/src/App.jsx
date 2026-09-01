@@ -1,4 +1,4 @@
-﻿import React, { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
 import { useThemeStore } from './store/themeStore';
@@ -27,6 +27,9 @@ import VerifyPage from './pages/employer/VerifyPage';
 // Job Seeker Pages
 import DashboardPage from './pages/jobseeker/DashboardPage';
 import ProfilePage from './pages/jobseeker/ProfilePage';
+
+// Admin Pages
+import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 export default function App() {
   const { initialize } = useAuthStore();
@@ -99,6 +102,24 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
                 <ProfilePage />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* Admin Dedicated Routes */}
+          <Route
+            path="/admin"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/dashboard"
+            element={
+              <ProtectedRoute allowedRoles={['admin']}>
+                <AdminDashboardPage />
               </ProtectedRoute>
             }
           />

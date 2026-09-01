@@ -68,6 +68,15 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 app.use('/api', apiLimiter);
 
+app.get('/', (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: 'TrustHire API Server is online and healthy.',
+    version: '1.0.0',
+    documentation: '/health'
+  });
+});
+
 app.get('/health', (req, res) => {
   res.status(200).json({
     success: true,

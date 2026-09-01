@@ -20,6 +20,8 @@ export const jobsApi = {
 
 export const fraudApi = {
   getBoard: (params) => apiClient.get('/fraud/board', { params }),
+  getAdminMetrics: () => apiClient.get('/fraud/admin/metrics'),
+  getAdminReports: (params) => apiClient.get('/fraud/admin/reports', { params }),
   submitReport: (formData) =>
     apiClient.post('/fraud/report', formData, {
       headers: { 'Content-Type': 'multipart/form-data' }

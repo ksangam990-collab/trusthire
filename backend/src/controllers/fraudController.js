@@ -214,3 +214,76 @@ export const updateReportStatus = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getAllReportsAdmin = async (req, res, next) => {
+  try {
+    const { status, category, severity, page = 1, limit = 20 } = req.query;
+    const query = {};
+
+    if (status) query.status = status;
+    if (category) query.fraudCategory = category;
+    if (severity) query.severity = severity;
+
+    const pageNum = Math.max(1, parseInt(page, 10));
+    const limitNum = Math.min(100, Math.max(1, parseInt(limit, 10)));
+    const skip = (pageNum - 1) * limitNum;
+
+    const [reports, total] = await Promise.all([
+      FraudReport.find(query)
+        .populate('employer', 'companyName cin gstin verificationStatus trustScore')
+        .populate('job', 'title location salary')
+        .populate('reporter', 'name email phone')
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limitNum)
+        .lean(),
+      FraudReport.countDocuments(query)
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        reports,
+        pagination: {
+          total,
+          page: pageNum,
+          pages: Math.ceil(total / limitNum),
+          limit: limitNum
+        }
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getAdminMetrics = async (req, res, next) => {
+  try {
+    const [totalUsers, totalEmployers, verifiedEmployers, totalJobs, activeJobs, totalReports, pendingReports, verifiedReports] = await Promise.all([
+      import('../models/User.js').then(m => m.default.countDocuments()),
+      Employer.countDocuments(),
+      Employer.countDocuments({ verificationStatus: 'verified' }),
+      JobListing.countDocuments(),
+      JobListing.countDocuments({ status: 'active' }),
+      FraudReport.countDocuments(),
+      FraudReport.countDocuments({ status: 'pending' }),
+      FraudReport.countDocuments({ status: 'verified' })
+    ]);
+
+    res.status(200).json({
+      success: true,
+      data: {
+        totalUsers,
+        totalEmployers,
+        verifiedEmployers,
+        totalJobs,
+        activeJobs,
+        totalReports,
+        pendingReports,
+        verifiedReports
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
