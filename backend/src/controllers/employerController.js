@@ -52,32 +52,41 @@ export const updateEmployerProfile = async (req, res, next) => {
 export const verifyEmployerSimulation = async (req, res, next) => {
   try {
     const { cin, gstin } = req.body;
+    const normalizedCin = typeof cin === 'string' ? cin.trim().toUpperCase() : '';
+    const normalizedGstin = typeof gstin === 'string' ? gstin.trim().toUpperCase() : '';
     const employer = await Employer.findOne({ user: req.user._id });
 
     if (!employer) {
       return res.status(404).json({ success: false, message: 'Employer profile not found.' });
     }
 
-    // Standard MCA / GSTIN structural pattern check
-    const cinPattern = /^[LUu]{1}[0-9]{5}[A-Za-z]{2}[0-9]{4}[A-Za-z]{3}[0-9]{6}$/;
+    if (!normalizedCin && !normalizedGstin) {
+      return res.status(400).json({
+        success: false,
+        message: 'Provide a valid CIN or GSTIN before requesting verification.'
+      });
+    }
+
+    // Structural validation for the demo verification flow. This does not query MCA/GST.
+    const cinPattern = /^[LU][0-9]{5}[A-Za-z]{2}[0-9]{4}[A-Za-z]{3}[0-9]{6}$/i;
     const gstinPattern = /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
 
-    if (cin && !cinPattern.test(cin.trim())) {
+    if (normalizedCin && !cinPattern.test(normalizedCin)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid Corporate Identification Number (CIN) format.'
       });
     }
 
-    if (gstin && !gstinPattern.test(gstin.trim())) {
+    if (normalizedGstin && !gstinPattern.test(normalizedGstin)) {
       return res.status(400).json({
         success: false,
         message: 'Invalid Goods and Services Tax Identification Number (GSTIN) format.'
       });
     }
 
-    employer.cin = cin ? cin.trim().toUpperCase() : employer.cin;
-    employer.gstin = gstin ? gstin.trim().toUpperCase() : employer.gstin;
+    employer.cin = normalizedCin || employer.cin;
+    employer.gstin = normalizedGstin || employer.gstin;
     employer.verificationStatus = 'verified';
     employer.verificationDate = new Date();
 

@@ -82,7 +82,7 @@ export const getJobs = async (req, res, next) => {
 
 export const getJobById = async (req, res, next) => {
   try {
-    const job = await JobListing.findById(req.params.id)
+    const job = await JobListing.findOne({ _id: req.params.id, status: 'active' })
       .populate('employer', 'companyName logo website industry companySize verificationStatus trustScore scoreBreakdown location totalSubmittedReports verifiedFraudReports')
       .lean();
 

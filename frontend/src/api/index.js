@@ -5,6 +5,7 @@ export const authApi = {
   register: (payload) => apiClient.post('/auth/register', payload),
   logout: () => apiClient.post('/auth/logout'),
   refreshToken: () => apiClient.post('/auth/refresh'),
+  forgotPassword: (email) => apiClient.post('/auth/forgot-password', { email }),
   getCurrentUser: () => apiClient.get('/auth/me')
 };
 

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const jobSeekerProfileSchema = new mongoose.Schema(
   {
@@ -69,4 +69,5 @@ jobSeekerProfileSchema.pre('save', function (next) {
   next();
 });
 
-module.exports = mongoose.model('JobSeekerProfile', jobSeekerProfileSchema);
+const JobSeekerProfile = mongoose.model('JobSeekerProfile', jobSeekerProfileSchema);
+export default JobSeekerProfile;

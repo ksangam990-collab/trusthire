@@ -92,7 +92,7 @@ const analyzeJobRisk = (jobData, employerCompany) => {
   };
 };
 
-module.exports = {
+export {
   verifyCompanyEmail,
   verifyRegistrationNumber,
   analyzeJobRisk,

@@ -173,12 +173,20 @@ export const updateReportStatus = async (req, res, next) => {
         employer.verifiedFraudReports = Math.max(0, employer.verifiedFraudReports - 1);
       }
 
-      // Auto-suspension threshold rule: >= 3 verified reports triggers suspension
-      if (employer.verifiedFraudReports >= 3) {
+      // Auto-suspension threshold: 3 verified reports of the same category.
+      const verifiedOtherReports = await FraudReport.countDocuments({
+        _id: { $ne: report._id },
+        employer: employer._id,
+        fraudCategory: report.fraudCategory,
+        status: 'verified'
+      });
+      const sameCategoryVerifiedReports = verifiedOtherReports + (status === 'verified' ? 1 : 0);
+
+      if (sameCategoryVerifiedReports >= 3) {
         employer.isSuspended = true;
         employer.verificationStatus = 'suspended';
-        employer.suspensionReason = 'Multiple verified fraud allegations confirmed.';
-        
+        employer.suspensionReason = `Three or more verified reports for ${report.fraudCategory}.`;
+
         await JobListing.updateMany(
           { employer: employer._id },
           { status: 'suspended', trustVerificationStatus: 'flagged' }

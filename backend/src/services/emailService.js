@@ -1,4 +1,4 @@
-const nodemailer = require('nodemailer');
+import nodemailer from 'nodemailer';
 
 const transporter = nodemailer.createTransport({
   host: process.env.EMAIL_HOST,
@@ -28,7 +28,7 @@ const sendEmail = async ({ to, subject, html }) => {
 };
 
 const sendVerificationEmail = async (user, token) => {
-  const url = `${process.env.CLIENT_URL}/verify-email?token=${token}`;
+  const url = `${process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173'}/verify-email?token=${token}`;
   await sendEmail({
     to: user.email,
     subject: 'Verify your TrustHire account',
@@ -51,7 +51,7 @@ const sendVerificationEmail = async (user, token) => {
 };
 
 const sendPasswordResetEmail = async (user, token) => {
-  const url = `${process.env.CLIENT_URL}/reset-password?token=${token}`;
+  const url = `${process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173'}/reset-password?token=${token}`;
   await sendEmail({
     to: user.email,
     subject: 'Reset your TrustHire password',
@@ -100,7 +100,7 @@ const sendFraudReportConfirmation = async (user) => {
   });
 };
 
-module.exports = {
+export {
   sendEmail,
   sendVerificationEmail,
   sendPasswordResetEmail,

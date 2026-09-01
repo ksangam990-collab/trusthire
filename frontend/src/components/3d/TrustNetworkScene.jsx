@@ -149,9 +149,17 @@ export default function TrustNetworkScene() {
       observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      if (currentMount && renderer.domElement) {
+      if (currentMount && renderer.domElement && currentMount.contains(renderer.domElement)) {
         currentMount.removeChild(renderer.domElement);
       }
+
+      scene.traverse((object) => {
+        if (object.geometry) object.geometry.dispose();
+        if (object.material) {
+          const materials = Array.isArray(object.material) ? object.material : [object.material];
+          materials.forEach((material) => material.dispose());
+        }
+      });
       renderer.dispose();
     };
   }, []);

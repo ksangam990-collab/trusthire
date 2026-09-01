@@ -16,7 +16,11 @@ import profileRoutes from './routes/profile.js';
 
 dotenv.config();
 
-const requiredEnv = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGODB_URI'];
+const requiredEnv = ['JWT_SECRET', 'JWT_REFRESH_SECRET'];
+if (!process.env.MONGODB_URI && !process.env.MONGO_URI) {
+  console.error('FATAL CONFIG ERROR: Environment variable "MONGODB_URI" (or legacy "MONGO_URI") is required.');
+  process.exit(1);
+}
 for (const envKey of requiredEnv) {
   if (!process.env[envKey]) {
     console.error(`FATAL CONFIG ERROR: Environment variable "${envKey}" is required.`);
@@ -33,7 +37,7 @@ app.use(helmet({
 }));
 
 const allowedOrigins = [
-  process.env.FRONTEND_URL || 'http://localhost:5173',
+  process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173',
   'http://localhost:3000',
   'http://localhost:5173'
 ];
