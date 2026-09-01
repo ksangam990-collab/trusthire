@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ShieldAlert, AlertTriangle, Filter, RotateCcw, Building2, PlusCircle, Search, Radio } from 'lucide-react';
@@ -169,9 +169,21 @@ export default function FraudBoardPage() {
                     <span className="text-rose-600 dark:text-rose-400 font-mono font-bold">Demanded: ₹{report.amountDemanded.toLocaleString()}</span>
                   )}
                 </div>
-                <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold uppercase">
-                  STATUS: {report.status}
-                </span>
+
+                <div className="flex items-center space-x-3">
+                  <button
+                    onClick={() => {
+                      const msg = `⚠️ SCAM ALERT on TrustHire: Beware of fake recruitment offers from "${report.employer?.companyName || 'unverified recruiters'}" claiming "${report.title}". Read full warning: https://trusthire-six.vercel.app/fraud-board`;
+                      window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                    }}
+                    className="text-[11px] font-semibold text-rose-600 dark:text-rose-400 hover:underline flex items-center space-x-1"
+                  >
+                    <span>Alert on WhatsApp 📲</span>
+                  </button>
+                  <span className="text-[11px] font-mono text-emerald-600 dark:text-emerald-400 font-bold uppercase">
+                    STATUS: {report.status}
+                  </span>
+                </div>
               </div>
             </motion.div>
           ))}

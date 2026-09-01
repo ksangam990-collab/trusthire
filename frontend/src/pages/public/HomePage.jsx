@@ -13,8 +13,9 @@ import {
   Building,
   Check,
   Briefcase,
-  FileCheck2,
-  ExternalLink
+  HelpCircle,
+  ChevronDown,
+  ChevronUp
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -39,6 +40,9 @@ export default function HomePage() {
     trustScore: 94,
     depositFeeFlag: 'Zero Fees Verified'
   });
+
+  // FAQ open/close state
+  const [openFaq, setOpenFaq] = useState(null);
 
   const navigate = useNavigate();
 
@@ -100,6 +104,29 @@ export default function HomePage() {
       }
     }, 400);
   };
+
+  const faqs = [
+    {
+      q: 'What is an MCA21 CIN Number and why does TrustHire verify it?',
+      a: 'In India, the Ministry of Corporate Affairs (MCA21) issues a unique 21-digit Corporate Identification Number (CIN) to every registered Private Limited or Public Limited company. TrustHire verifies this number to confirm the employer is a legally registered corporate entity and not an anonymous ghost scammer.'
+    },
+    {
+      q: 'Why do fake recruiters use WhatsApp or Telegram instead of official emails?',
+      a: 'Scammers avoid using corporate domain emails (e.g. hr@company.com) because domain registrations require verification. They instead use WhatsApp or Gmail accounts to demand application deposits, uniform charges, or laptop security fees. TrustHire verifies official domains to eliminate impersonation.'
+    },
+    {
+      q: 'Is TrustHire 100% free for job seekers and college freshers?',
+      a: 'Yes, TrustHire is completely free for candidates forever. Applying for jobs, creating your profile, and reviewing corporate verification audits carry zero charges.'
+    },
+    {
+      q: 'How does the 0–100 Corporate TrustScore work?',
+      a: 'Each employer starts with a baseline quotient. Verified MCA21 registration adds +30 points, official corporate domain validation adds +10 points, and clean candidate feedback adds +10 points. Verified fraud reports deduct -15 points per confirmed incident.'
+    },
+    {
+      q: 'What should I do if an employer asks for money during an interview?',
+      a: 'Legitimate companies NEVER ask for money during recruitment. If an employer requests any payment, immediately stop communication and file an incident report on our Fraud Board. Our admin moderation team will investigate and penalize the listing.'
+    }
+  ];
 
   return (
     <div className="space-y-20 pb-20 theme-transition bg-grid">
@@ -368,6 +395,52 @@ export default function HomePage() {
               </div>
             )}
           </div>
+        </div>
+      </section>
+
+      {/* Frequently Asked Questions (FAQ) Accordion */}
+      <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center space-y-2 mb-8">
+          <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
+            <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
+            <span>Frequently Asked Questions</span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+            Everything you need to know about TrustHire
+          </h2>
+          <p className="text-xs text-slate-500 max-w-lg mx-auto">
+            Clear, transparent answers on statutory verification, zero fees, and fraud prevention.
+          </p>
+        </div>
+
+        <div className="space-y-3">
+          {faqs.map((faq, idx) => {
+            const isOpen = openFaq === idx;
+            return (
+              <div
+                key={idx}
+                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] overflow-hidden transition-colors"
+              >
+                <button
+                  onClick={() => setOpenFaq(isOpen ? null : idx)}
+                  className="w-full p-4 text-left flex items-center justify-between space-x-4 text-xs sm:text-sm font-bold text-slate-900 dark:text-white"
+                >
+                  <span>{faq.q}</span>
+                  {isOpen ? (
+                    <ChevronUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                  ) : (
+                    <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
+                  )}
+                </button>
+
+                {isOpen && (
+                  <div className="px-4 pb-4 text-xs text-slate-600 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
+                    {faq.a}
+                  </div>
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 

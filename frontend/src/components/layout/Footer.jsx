@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { ShieldCheck, Heart, Github, Twitter, Linkedin, ExternalLink } from 'lucide-react';
 
@@ -44,12 +44,15 @@ export default function Footer() {
             </ul>
           </div>
 
-          {/* Security Standards */}
+          {/* Security Standards & Grievance */}
           <div className="space-y-2.5">
-            <h4 className="font-bold text-slate-900 dark:text-white font-mono text-[11px] uppercase tracking-wider">Security & Trust</h4>
+            <h4 className="font-bold text-slate-900 dark:text-white font-mono text-[11px] uppercase tracking-wider">Statutory Compliance</h4>
             <p className="text-[11px] leading-relaxed text-slate-500 dark:text-slate-400">
-              Cryptographically verified employer records. 100% zero placement or screening fees guarantee.
+              MCA21 registry verified. In compliance with the Information Technology (Intermediary Guidelines) Rules, 2021.
             </p>
+            <div className="text-[10px] text-slate-400 font-mono">
+              Grievance Officer: grievance@trusthire.in
+            </div>
             <div className="pt-1 flex items-center space-x-3 text-slate-400">
               <a href="https://github.com/ksangam990-collab/trusthire" target="_blank" rel="noreferrer" className="hover:text-slate-900 dark:hover:text-white transition">
                 <Github className="w-4 h-4" />
@@ -59,7 +62,7 @@ export default function Footer() {
         </div>
 
         <div className="pt-6 border-t border-slate-100 dark:border-slate-800/80 flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500">
-          <div>© {new Date().getFullYear()} TrustHire India. All rights reserved.</div>
+          <div>© {new Date().getFullYear()} TrustHire India. 100% Zero-Fee Candidate Protection Guarantee.</div>
           <div className="flex items-center space-x-4">
             <span>Built by Sangam Kumar (RVS College CSE)</span>
           </div>
