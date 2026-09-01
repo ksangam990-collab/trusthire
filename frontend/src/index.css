@@ -4,29 +4,29 @@
 
 @layer base {
   :root {
-    --bg-page: #ffffff;
-    --bg-surface: #f8fafc;
-    --bg-surface-elevated: #ffffff;
+    --bg-page: #f8fafc;
+    --bg-surface: #ffffff;
+    --bg-card: #ffffff;
     --border-subtle: #e2e8f0;
     --border-strong: #cbd5e1;
     --text-primary: #0f172a;
-    --text-secondary: #475569;
+    --text-secondary: #334155;
     --text-muted: #64748b;
     --brand-primary: #059669;
-    --brand-subtle: #ecfdf5;
+    --brand-hover: #047857;
   }
 
   html.dark {
-    --bg-page: #090d16;
-    --bg-surface: #0f172a;
-    --bg-surface-elevated: #1e293b;
+    --bg-page: #0b0f17;
+    --bg-surface: #111827;
+    --bg-card: #131b26;
     --border-subtle: #1e293b;
     --border-strong: #334155;
     --text-primary: #f8fafc;
     --text-secondary: #cbd5e1;
     --text-muted: #94a3b8;
     --brand-primary: #10b981;
-    --brand-subtle: rgba(16, 185, 129, 0.1);
+    --brand-hover: #059669;
   }
 
   body {
@@ -44,29 +44,6 @@
   ::selection {
     background: rgba(16, 185, 129, 0.2);
     color: #059669;
-  }
-}
-
-@layer utilities {
-  .subtle-border {
-    border: 1px solid var(--border-subtle);
-  }
-
-  .card-surface {
-    background-color: var(--bg-surface-elevated);
-    border: 1px solid var(--border-subtle);
-  }
-
-  .bg-grid {
-    background-size: 24px 24px;
-    background-image:
-      linear-gradient(to right, rgba(0, 0, 0, 0.03) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(0, 0, 0, 0.03) 1px, transparent 1px);
-  }
-  html.dark .bg-grid {
-    background-image:
-      linear-gradient(to right, rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-      linear-gradient(to bottom, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
   }
 }
 
