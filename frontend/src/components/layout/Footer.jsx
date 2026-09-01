@@ -20,11 +20,11 @@ export default function Footer() {
             <div className="flex items-center space-x-4 text-xs text-slate-500 font-mono">
               <span className="flex items-center space-x-1">
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Employer Verification</span>
+                <span>MCA Verified</span>
               </span>
               <span className="flex items-center space-x-1">
                 <Lock className="w-3.5 h-3.5 text-blue-400" />
-                <span>Secure Sessions</span>
+                <span>AES-256 Encrypted</span>
               </span>
             </div>
           </div>

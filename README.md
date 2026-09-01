@@ -54,7 +54,7 @@ cp .env.example .env
 **Backend `.env`** (required before running):
 ```
 PORT=5000
-MONGODB_URI=mongodb+srv://...
+MONGO_URI=mongodb+srv://...
 JWT_SECRET=your_secret_here
 JWT_REFRESH_SECRET=your_refresh_secret_here
 CLOUDINARY_CLOUD_NAME=...
@@ -64,7 +64,7 @@ EMAIL_HOST=smtp.sendgrid.net
 EMAIL_USER=apikey
 EMAIL_PASS=your_sendgrid_key
 EMAIL_FROM=noreply@trusthire.in
-FRONTEND_URL=http://localhost:5173
+CLIENT_URL=http://localhost:5173
 ```
 
 **Frontend `.env`**:

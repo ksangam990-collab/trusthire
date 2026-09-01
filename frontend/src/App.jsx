@@ -4,7 +4,6 @@ import { useAuthStore } from './store/authStore';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
-import ProtectedRoute from './components/layout/ProtectedRoute';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -16,7 +15,6 @@ import ReportPage from './pages/public/ReportPage';
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
-import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 // Employer Pages
 import EmployerDashboard from './pages/employer/EmployerDashboard';
@@ -25,6 +23,32 @@ import VerifyPage from './pages/employer/VerifyPage';
 
 // Job Seeker Pages
 import DashboardPage from './pages/jobseeker/DashboardPage';
+
+const ProtectedRoute = ({ children, allowedRoles }) => {
+  const { isAuthenticated, isInitialized, user } = useAuthStore();
+  const location = useLocation();
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
+          <p className="text-slate-400 text-sm font-mono tracking-wider">INITIALIZING TRUSTHIRE SECURITY CONTEXT...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" state={{ from: location }} replace />;
+  }
+
+  if (allowedRoles && !allowedRoles.includes(user?.role)) {
+    return <Navigate to="/" replace />;
+  }
+
+  return children;
+};
 
 export default function App() {
   const { initialize } = useAuthStore();
@@ -53,7 +77,6 @@ export default function App() {
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* Employer Protected Routes */}
           <Route

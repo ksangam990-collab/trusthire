@@ -45,7 +45,7 @@ apiClient.interceptors.response.use(
 
     // Handle 401 & token expiration
     if (error.response?.status === 401 && !originalRequest._retry) {
-      if (originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/refresh') || originalRequest.url.includes('/auth/logout')) {
+      if (originalRequest.url.includes('/auth/login') || originalRequest.url.includes('/auth/refresh')) {
         return Promise.reject(error.response?.data || { message: 'Authentication failed.' });
       }
 
