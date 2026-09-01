@@ -66,7 +66,7 @@ export default function App() {
           <Route
             path="/employer/dashboard"
             element={
-              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+              <ProtectedRoute allowedRoles={['employer']}>
                 <EmployerDashboard />
               </ProtectedRoute>
             }
@@ -74,7 +74,7 @@ export default function App() {
           <Route
             path="/employer/post-job"
             element={
-              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+              <ProtectedRoute allowedRoles={['employer']}>
                 <PostJobPage />
               </ProtectedRoute>
             }
@@ -82,7 +82,7 @@ export default function App() {
           <Route
             path="/employer/verify"
             element={
-              <ProtectedRoute allowedRoles={['employer', 'admin']}>
+              <ProtectedRoute allowedRoles={['employer']}>
                 <VerifyPage />
               </ProtectedRoute>
             }
@@ -92,7 +92,7 @@ export default function App() {
           <Route
             path="/candidate/dashboard"
             element={
-              <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
+              <ProtectedRoute allowedRoles={['jobseeker']}>
                 <DashboardPage />
               </ProtectedRoute>
             }
@@ -100,7 +100,7 @@ export default function App() {
           <Route
             path="/profile"
             element={
-              <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
+              <ProtectedRoute allowedRoles={['jobseeker']}>
                 <ProfilePage />
               </ProtectedRoute>
             }

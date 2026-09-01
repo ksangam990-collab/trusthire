@@ -172,40 +172,14 @@ export default function Navbar() {
                     </div>
 
                     {user?.role === 'admin' ? (
-                      <>
-                        <Link
-                          to="/admin/dashboard"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center space-x-2 px-3.5 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-bold"
-                        >
-                          <ShieldAlert className="w-3.5 h-3.5" strokeWidth={1.5} />
-                          <span>Admin Control Center</span>
-                        </Link>
-                        <Link
-                          to="/employer/dashboard"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center space-x-2 px-3.5 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                        >
-                          <LayoutDashboard className="w-3.5 h-3.5 text-slate-400" strokeWidth={1.5} />
-                          <span>Employer & Job Manager</span>
-                        </Link>
-                        <Link
-                          to="/employer/verify"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center space-x-2 px-3.5 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                        >
-                          <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" strokeWidth={1.5} />
-                          <span>MCA / GST Statutory Audit</span>
-                        </Link>
-                        <Link
-                          to="/employer/post-job"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center space-x-2 px-3.5 py-2 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800/60"
-                        >
-                          <Plus className="w-3.5 h-3.5 text-blue-600" strokeWidth={1.5} />
-                          <span>Publish Verified Listing</span>
-                        </Link>
-                      </>
+                      <Link
+                        to="/admin/dashboard"
+                        onClick={() => setProfileDropdownOpen(false)}
+                        className="flex items-center space-x-2 px-3.5 py-2 text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-500/10 font-bold"
+                      >
+                        <ShieldAlert className="w-3.5 h-3.5" strokeWidth={1.5} />
+                        <span>Admin Control Center</span>
+                      </Link>
                     ) : user?.role === 'employer' ? (
                       <>
                         <Link

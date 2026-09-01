@@ -63,14 +63,15 @@ export const authorize = (...roles) => {
       });
     }
 
-    if (!roles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: `Forbidden: User role "${req.user.role}" is not authorized for this resource.`
-      });
+    // Super Admin has universal access across all platform resources
+    if (req.user.role === 'admin' || roles.includes(req.user.role)) {
+      return next();
     }
 
-    next();
+    return res.status(403).json({
+      success: false,
+      message: `Forbidden: User role "${req.user.role}" is not authorized for this resource.`
+    });
   };
 };
 
