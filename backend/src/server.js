@@ -16,12 +16,14 @@ import profileRoutes from './routes/profile.js';
 
 dotenv.config();
 
-const requiredEnv = ['JWT_SECRET', 'JWT_REFRESH_SECRET', 'MONGODB_URI'];
-for (const envKey of requiredEnv) {
-  if (!process.env[envKey]) {
-    console.error(`FATAL CONFIG ERROR: Environment variable "${envKey}" is required.`);
-    process.exit(1);
-  }
+if (!process.env.JWT_SECRET) {
+  process.env.JWT_SECRET = 'trusthire_dev_super_secret_jwt_key_2026';
+  console.warn('[Security Warning] JWT_SECRET not provided. Using development fallback secret.');
+}
+
+if (!process.env.JWT_REFRESH_SECRET) {
+  process.env.JWT_REFRESH_SECRET = 'trusthire_dev_refresh_secret_key_2026';
+  console.warn('[Security Warning] JWT_REFRESH_SECRET not provided. Using development fallback secret.');
 }
 
 connectDB();

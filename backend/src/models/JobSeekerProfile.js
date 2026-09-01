@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 
 const jobSeekerProfileSchema = new mongoose.Schema(
   {
@@ -65,8 +65,9 @@ jobSeekerProfileSchema.pre('save', function (next) {
   if (this.resumeUrl) score += 15;
   if (this.preferredLocations?.length > 0) score += 5;
   if (this.preferredRoles?.length > 0) score += 5;
-  this.profileCompleteness = score;
+  this.profileCompleteness = Math.min(100, score);
   next();
 });
 
-module.exports = mongoose.model('JobSeekerProfile', jobSeekerProfileSchema);
+const JobSeekerProfile = mongoose.model('JobSeekerProfile', jobSeekerProfileSchema);
+export default JobSeekerProfile;

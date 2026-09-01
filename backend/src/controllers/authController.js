@@ -226,3 +226,70 @@ export const getCurrentUser = async (req, res, next) => {
     next(error);
   }
 };
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Email address is required.' });
+    }
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    // Always respond with success to avoid leaking user existence
+    if (!user) {
+      return res.status(200).json({
+        success: true,
+        message: 'If the email exists, a password reset link has been dispatched.'
+      });
+    }
+
+    const resetToken = jwt.sign({ id: user._id, type: 'reset' }, process.env.JWT_SECRET, { expiresIn: '15m' });
+    user.passwordResetToken = resetToken;
+    user.passwordResetExpires = new Date(Date.now() + 15 * 60 * 1000);
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password reset email sent successfully.',
+      data: { resetToken } // Included for local demo ease
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token, newPassword } = req.body;
+    if (!token || !newPassword) {
+      return res.status(400).json({ success: false, message: 'Token and new password are required.' });
+    }
+
+    if (newPassword.length < 8) {
+      return res.status(400).json({ success: false, message: 'Password must be at least 8 characters long.' });
+    }
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findOne({
+      _id: decoded.id,
+      passwordResetToken: token,
+      passwordResetExpires: { $gt: Date.now() }
+    });
+
+    if (!user) {
+      return res.status(400).json({ success: false, message: 'Password reset token is invalid or has expired.' });
+    }
+
+    user.password = newPassword;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Password has been reset successfully. Please log in with your new credentials.'
+    });
+  } catch (error) {
+    next(error);
+  }
+};

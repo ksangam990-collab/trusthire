@@ -1,19 +1,23 @@
+import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
-import useAuthStore from '../../store/authStore';
+import { useAuthStore } from '../../store/authStore';
 
 export default function ProtectedRoute({ children, allowedRoles }) {
-  const { user, isInitialized } = useAuthStore();
+  const { user, isInitialized, isAuthenticated } = useAuthStore();
   const location = useLocation();
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-navy-200 border-t-navy-600 rounded-full animate-spin" />
+      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
+        <div className="flex flex-col items-center space-y-4">
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <p className="text-slate-400 text-xs font-mono tracking-wider">VERIFYING AUTHENTICATION CONTEXT...</p>
+        </div>
       </div>
     );
   }
 
-  if (!user) {
+  if (!isAuthenticated || !user) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 

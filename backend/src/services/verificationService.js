@@ -17,7 +17,7 @@
 
 // backend/src/services/verificationService.js
 
-const SUSPICIOUS_KEYWORDS = [
+export const SUSPICIOUS_KEYWORDS = [
   "wire transfer",
   "western union",
   "telegram @",
@@ -31,7 +31,7 @@ const SUSPICIOUS_KEYWORDS = [
   "package forwarding",
 ];
 
-const HIGH_RISK_DOMAINS = [
+export const HIGH_RISK_DOMAINS = [
   "gmail.com",
   "yahoo.com",
   "hotmail.com",
@@ -39,18 +39,18 @@ const HIGH_RISK_DOMAINS = [
   "proton.me",
 ];
 
-const verifyCompanyEmail = (email) => {
+export const verifyCompanyEmail = (email) => {
   if (!email) return false;
   const domain = email.split("@")[1]?.toLowerCase();
   return domain && !HIGH_RISK_DOMAINS.includes(domain);
 };
 
-const verifyRegistrationNumber = (regNumber) => {
+export const verifyRegistrationNumber = (regNumber) => {
   if (!regNumber) return false;
   return /^[A-Z0-9-]{6,20}$/i.test(regNumber);
 };
 
-const analyzeJobRisk = (jobData, employerCompany) => {
+export const analyzeJobRisk = (jobData, employerCompany) => {
   let riskScore = 0;
   const flags = [];
 
@@ -92,7 +92,7 @@ const analyzeJobRisk = (jobData, employerCompany) => {
   };
 };
 
-module.exports = {
+export default {
   verifyCompanyEmail,
   verifyRegistrationNumber,
   analyzeJobRisk,

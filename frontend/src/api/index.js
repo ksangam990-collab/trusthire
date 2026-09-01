@@ -5,7 +5,9 @@ export const authApi = {
   register: (payload) => apiClient.post('/auth/register', payload),
   logout: () => apiClient.post('/auth/logout'),
   refreshToken: () => apiClient.post('/auth/refresh'),
-  getCurrentUser: () => apiClient.get('/auth/me')
+  getCurrentUser: () => apiClient.get('/auth/me'),
+  forgotPassword: (email) => apiClient.post('/auth/forgot-password', { email }),
+  resetPassword: (payload) => apiClient.post('/auth/reset-password', payload)
 };
 
 export const jobsApi = {
@@ -29,7 +31,8 @@ export const employerApi = {
   getProfile: () => apiClient.get('/employers/profile'),
   updateProfile: (data) => apiClient.put('/employers/profile', data),
   verifyCompany: (credentials) => apiClient.post('/employers/verify', credentials),
-  getMetrics: () => apiClient.get('/employers/metrics')
+  getMetrics: () => apiClient.get('/employers/metrics'),
+  getPublicEmployers: (params) => apiClient.get('/employers', { params })
 };
 
 export const applicationsApi = {
@@ -45,5 +48,15 @@ export const applicationsApi = {
 
 export const profileApi = {
   getProfile: () => apiClient.get('/profile/me'),
-  updateProfile: (data) => apiClient.put('/profile/me', data)
+  updateProfile: (data) => apiClient.put('/profile/me', data),
+  getCandidateProfile: () => apiClient.get('/profile/candidate'),
+  updateCandidateProfile: (data) => apiClient.put('/profile/candidate', data)
 };
+
+// Aliases for compatibility
+export const authAPI = authApi;
+export const jobsAPI = jobsApi;
+export const fraudAPI = fraudApi;
+export const employerAPI = employerApi;
+export const applicationsAPI = applicationsApi;
+export const profileAPI = profileApi;

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, MapPin, Filter, RotateCcw, Building2 } from 'lucide-react';
+import { Search, MapPin, Filter, RotateCcw, Building2, CheckCircle2 } from 'lucide-react';
 import { jobsApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
+import { JobCardSkeleton } from '../../components/ui/Skeleton';
 
 export default function JobSearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
@@ -67,26 +68,26 @@ export default function JobSearchPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
-      {/* Page Heading */}
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-          Explore Verified Opportunities
+      {/* Page Heading Banner */}
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          Verified Opportunities Marketplace
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
-          Search job postings verified against corporate registration databases and screened for scam patterns.
+        <p className="text-xs sm:text-sm text-slate-400">
+          Explore openings screened for authentic employer registrations and zero fee demands.
         </p>
       </div>
 
-      {/* Main Search Input Form */}
-      <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-slate-900/80 p-4 rounded-xl border border-slate-800">
+      {/* Main Search Bar Form */}
+      <form onSubmit={handleSearchSubmit} className="grid grid-cols-1 sm:grid-cols-12 gap-3 bg-[#111827] p-4 rounded-2xl border border-slate-800 shadow-lg">
         <div className="sm:col-span-5 relative">
           <Search className="absolute left-3.5 top-3.5 w-4 h-4 text-slate-400" />
           <input
             type="text"
             value={keyword}
             onChange={(e) => setKeyword(e.target.value)}
-            placeholder="Role, skill, or employer name..."
-            className="w-full pl-10 pr-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+            placeholder="Search by title, role, skill, or employer..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
           />
         </div>
         <div className="sm:col-span-4 relative">
@@ -95,46 +96,47 @@ export default function JobSearchPage() {
             type="text"
             value={city}
             onChange={(e) => setCity(e.target.value)}
-            placeholder="City (e.g. Bengaluru, Mumbai)..."
-            className="w-full pl-10 pr-3 py-2.5 rounded-lg bg-slate-950 border border-slate-700 text-white placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+            placeholder="City (e.g. Bengaluru, Mumbai, Pune)..."
+            className="w-full pl-10 pr-3 py-2.5 rounded-xl bg-slate-950 border border-slate-700/80 text-white placeholder-slate-500 text-xs sm:text-sm focus:outline-none focus:border-emerald-500"
           />
         </div>
         <div className="sm:col-span-3 flex gap-2">
           <button
             type="submit"
-            className="flex-grow py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-semibold rounded-lg text-sm transition"
+            className="flex-grow py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl text-xs sm:text-sm transition shadow-glow-sm"
           >
-            Apply Search
+            Apply Filters
           </button>
           <button
             type="button"
             onClick={handleResetFilters}
             title="Reset Filters"
-            className="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 transition"
+            className="px-3 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl border border-slate-700 transition"
           >
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
       </form>
 
-      {/* Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 pb-2 border-b border-slate-800 text-xs">
+      {/* Filter Control Bar */}
+      <div className="flex flex-wrap items-center justify-between gap-4 pb-3 border-b border-slate-800/80 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           <button
             onClick={() => setVerifiedOnly(!verifiedOnly)}
-            className={`px-3 py-1.5 rounded-lg font-medium border transition ${
+            className={`px-3 py-1.5 rounded-lg font-medium border transition flex items-center space-x-1.5 ${
               verifiedOnly
                 ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/40'
                 : 'bg-slate-900 text-slate-400 border-slate-800 hover:text-white'
             }`}
           >
-            ✓ Verified Employers Only
+            <CheckCircle2 className="w-3.5 h-3.5" />
+            <span>Verified Employers Only</span>
           </button>
 
           <select
             value={workplaceType}
             onChange={(e) => setWorkplaceType(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-3 py-1.5 focus:outline-none"
           >
             <option value="">All Workplace Types</option>
             <option value="Remote">Remote</option>
@@ -145,7 +147,7 @@ export default function JobSearchPage() {
           <select
             value={jobType}
             onChange={(e) => setJobType(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-3 py-1.5 focus:outline-none"
           >
             <option value="">All Job Types</option>
             <option value="Full-time">Full-time</option>
@@ -157,7 +159,7 @@ export default function JobSearchPage() {
           <select
             value={experienceLevel}
             onChange={(e) => setExperienceLevel(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-2.5 py-1.5 focus:outline-none"
+            className="bg-slate-900 border border-slate-800 text-slate-300 rounded-lg px-3 py-1.5 focus:outline-none"
           >
             <option value="">All Experience Levels</option>
             <option value="Entry Level">Entry Level</option>
@@ -172,25 +174,25 @@ export default function JobSearchPage() {
           <select
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
-            className="bg-slate-900 border border-slate-800 text-slate-200 rounded-lg px-2 py-1 focus:outline-none"
+            className="bg-slate-900 border border-slate-800 text-slate-200 rounded-lg px-2.5 py-1.5 focus:outline-none font-medium"
           >
-            <option value="createdAt">Latest</option>
+            <option value="createdAt">Latest Added</option>
             <option value="employerTrustScore">Highest TrustScore</option>
-            <option value="salary.max">Highest Salary</option>
+            <option value="salary.max">Highest Compensation</option>
           </select>
         </div>
       </div>
 
-      {/* Results Count */}
-      <div className="text-xs font-mono text-slate-400">
-        Showing {jobs.length} of {pagination.total} verified positions
+      {/* Results Header */}
+      <div className="text-xs font-mono text-slate-400 flex items-center justify-between">
+        <span>Showing {jobs.length} of {pagination.total} verified positions</span>
       </div>
 
-      {/* Job Cards Stream */}
+      {/* Grid of Job Cards */}
       {loading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <div key={i} className="h-44 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse" />
+            <JobCardSkeleton key={i} />
           ))}
         </div>
       ) : jobs.length > 0 ? (
@@ -200,17 +202,17 @@ export default function JobSearchPage() {
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800 space-y-3">
-          <Building2 className="w-10 h-10 text-slate-600 mx-auto" />
-          <h3 className="text-base font-semibold text-white">No job openings match your criteria</h3>
+        <div className="text-center py-20 bg-slate-900/40 rounded-2xl border border-slate-800 space-y-3">
+          <Building2 className="w-12 h-12 text-slate-600 mx-auto" />
+          <h3 className="text-base font-bold text-white">No openings matched your filters</h3>
           <p className="text-xs text-slate-400 max-w-sm mx-auto">
-            Try adjusting your search query, removing workplace filters, or checking back later.
+            Try resetting your workplace location or search keyword to see all active listings.
           </p>
           <button
             onClick={handleResetFilters}
-            className="px-4 py-2 rounded-lg bg-slate-800 text-xs font-medium text-slate-200 hover:bg-slate-700"
+            className="px-4 py-2 rounded-lg bg-emerald-400 text-xs font-bold text-slate-900 hover:bg-emerald-300 transition"
           >
-            Reset Filters
+            Reset All Filters
           </button>
         </div>
       )}
@@ -221,17 +223,17 @@ export default function JobSearchPage() {
           <button
             disabled={pagination.page <= 1}
             onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
-            className="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 disabled:opacity-40"
+            className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 disabled:opacity-40 hover:bg-slate-800"
           >
             Previous
           </button>
-          <span className="text-xs text-slate-400 font-mono px-2">
+          <span className="text-xs text-slate-400 font-mono px-3">
             Page {pagination.page} of {pagination.pages}
           </span>
           <button
             disabled={pagination.page >= pagination.pages}
             onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
-            className="px-3 py-1.5 rounded-md bg-slate-900 border border-slate-800 text-xs text-slate-300 disabled:opacity-40"
+            className="px-4 py-2 rounded-lg bg-slate-900 border border-slate-800 text-xs font-medium text-slate-300 disabled:opacity-40 hover:bg-slate-800"
           >
             Next
           </button>

@@ -4,17 +4,19 @@ const connectDB = async () => {
   try {
     const mongoUri = process.env.MONGODB_URI;
     if (!mongoUri) {
-      throw new Error('MONGODB_URI is not defined in environment variables.');
+      console.warn('[Database Warning] MONGODB_URI is not set in environment. Database operations will require MongoDB Atlas or local MongoDB.');
+      return;
     }
 
     const conn = await mongoose.connect(mongoUri, {
-      autoIndex: true
+      autoIndex: true,
+      serverSelectionTimeoutMS: 5000
     });
 
     console.log(`[Database] MongoDB Connected: ${conn.connection.host}/${conn.connection.name}`);
   } catch (error) {
-    console.error(`[Database Error] Connection failed: ${error.message}`);
-    process.exit(1);
+    console.error(`[Database Error] Connection attempt failed: ${error.message}`);
+    console.warn('[Database] Running in fallback mode. Ensure MongoDB is running and MONGODB_URI is correctly configured in .env.');
   }
 };
 

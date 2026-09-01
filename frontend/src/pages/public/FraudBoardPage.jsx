@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import { ShieldAlert, AlertTriangle, Filter, RotateCcw, Building2, ExternalLink } from 'lucide-react';
+﻿import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
+import { ShieldAlert, AlertTriangle, Filter, RotateCcw, Building2, PlusCircle, Search } from 'lucide-react';
 import { fraudApi } from '../../api';
+import { Skeleton } from '../../components/ui/Skeleton';
 
 export default function FraudBoardPage() {
   const [reports, setReports] = useState([]);
@@ -21,7 +23,7 @@ export default function FraudBoardPage() {
       setReports(res?.data?.reports || []);
       setPagination(res?.data?.pagination || { page: 1, pages: 1, total: 0 });
     } catch (err) {
-      console.error('Failed to load fraud feed:', err);
+      console.error('Failed to load fraud radar feed:', err);
     } finally {
       setLoading(false);
     }
@@ -34,21 +36,35 @@ export default function FraudBoardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header Banner */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-rose-950/30 via-slate-900 to-slate-900 border border-rose-500/30">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
-            <ShieldAlert className="w-6 h-6" />
+      <div className="p-6 sm:p-8 rounded-2xl bg-gradient-to-r from-rose-950/30 via-slate-900 to-slate-900 border border-rose-500/30 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-6">
+        <div className="space-y-2">
+          <div className="flex items-center space-x-3">
+            <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+              <ShieldAlert className="w-6 h-6" />
+            </div>
+            <span className="text-xs font-mono font-bold text-rose-400 tracking-wider uppercase">
+              TRUSTHIRE THREAT RADAR
+            </span>
           </div>
-          <span className="text-xs font-mono font-bold text-rose-400 tracking-wider uppercase">TRUSTHIRE SECURITY RADAR</span>
+          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+            Public Fraud Intelligence Board
+          </h1>
+          <p className="text-xs sm:text-sm text-slate-300 max-w-2xl leading-relaxed">
+            Real-time public incident summaries of scam recruiters demanding money, fake job placements, or spoofing corporate identity.
+          </p>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Public Fraud Intelligence Feed</h1>
-        <p className="text-xs sm:text-sm text-slate-300 mt-2 max-w-2xl leading-relaxed">
-          Public safety notices for fraudulent recruiters demanding security deposits, circulating fake offer letters, or harvesting identities.
-        </p>
+
+        <Link
+          to="/report-fraud"
+          className="px-5 py-3 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold text-xs sm:text-sm transition flex items-center space-x-2 self-start md:self-auto shadow-lg shadow-rose-950/30 flex-shrink-0"
+        >
+          <PlusCircle className="w-4 h-4" />
+          <span>Report an Incident</span>
+        </Link>
       </div>
 
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-slate-900/80 border border-slate-800 text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-[#111827] border border-slate-800 text-xs">
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={category}
@@ -61,6 +77,7 @@ export default function FraudBoardPage() {
             <option value="Identity Theft / Document Misuse">Identity Theft / Document Misuse</option>
             <option value="Phishing / Impersonation">Phishing / Impersonation</option>
             <option value="Unpaid Trial Work">Unpaid Trial Work</option>
+            <option value="Misleading Salary / Job Role">Misleading Salary / Job Role</option>
           </select>
 
           <select
@@ -72,6 +89,7 @@ export default function FraudBoardPage() {
             <option value="Critical">Critical</option>
             <option value="High">High</option>
             <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
           </select>
         </div>
 
@@ -87,21 +105,35 @@ export default function FraudBoardPage() {
         </button>
       </div>
 
-      {/* Reports List */}
+      {/* Reports Feed */}
       {loading ? (
         <div className="space-y-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="h-32 rounded-xl bg-slate-900/50 border border-slate-800 animate-pulse" />
+          {[1, 2, 3, 4].map((i) => (
+            <div key={i} className="p-5 rounded-2xl bg-[#111827] border border-slate-800 space-y-3 animate-pulse">
+              <div className="flex justify-between">
+                <Skeleton className="w-28 h-5" />
+                <Skeleton className="w-20 h-4" />
+              </div>
+              <Skeleton className="w-64 h-5" />
+              <Skeleton className="w-full h-12" />
+            </div>
           ))}
         </div>
       ) : reports.length > 0 ? (
         <div className="space-y-4">
           {reports.map((report) => (
-            <div key={report._id} className="p-5 rounded-xl bg-[#111827]/80 border border-slate-800 hover:border-slate-700 transition space-y-3">
+            <div
+              key={report._id}
+              className="p-5 sm:p-6 rounded-2xl bg-[#111827] border border-slate-800 hover:border-slate-700 transition space-y-3.5 shadow-sm"
+            >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                <div className="flex items-center space-x-2">
-                  <span className="px-2.5 py-0.5 rounded text-[11px] font-bold uppercase tracking-wider bg-rose-500/10 text-rose-400 border border-rose-500/30">
-                    {report.severity} RISK
+                <div className="flex items-center space-x-2 flex-wrap">
+                  <span className={`px-2.5 py-0.5 rounded text-[10px] font-bold uppercase font-mono border ${
+                    report.severity === 'Critical' ? 'bg-rose-500/20 text-rose-400 border-rose-500/30' :
+                    report.severity === 'High' ? 'bg-rose-500/10 text-rose-400 border-rose-500/20' :
+                    'bg-amber-500/10 text-amber-400 border-amber-500/20'
+                  }`}>
+                    {report.severity} Severity
                   </span>
                   <span className="text-xs font-semibold text-slate-300">
                     {report.fraudCategory}
@@ -112,28 +144,37 @@ export default function FraudBoardPage() {
                 </span>
               </div>
 
-              <h3 className="text-base font-semibold text-white">{report.title}</h3>
-              <p className="text-xs text-slate-300 leading-relaxed">{report.description}</p>
+              <h3 className="text-base font-bold text-white">{report.title}</h3>
+              <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line">{report.description}</p>
 
-              <div className="pt-2 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
+              {report.adminNotes && (
+                <div className="p-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-slate-400 space-y-1">
+                  <span className="font-mono text-[10px] uppercase font-bold text-emerald-400">Moderator Verification Note:</span>
+                  <p>{report.adminNotes}</p>
+                </div>
+              )}
+
+              <div className="pt-3 border-t border-slate-800/80 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-400">
                 <div className="flex items-center space-x-4">
-                  <span>Targeted Entity: <strong className="text-slate-200">{report.employer?.companyName || 'Unregistered Recruiter'}</strong></span>
+                  <span>Reported Entity: <strong className="text-slate-200">{report.employer?.companyName || 'Unregistered Entity'}</strong></span>
                   {report.amountDemanded > 0 && (
-                    <span className="text-rose-400 font-mono font-semibold">Demand: ₹{report.amountDemanded.toLocaleString()}</span>
+                    <span className="text-rose-400 font-mono font-bold">Demanded: ₹{report.amountDemanded.toLocaleString()}</span>
                   )}
                 </div>
-                <span className="text-[11px] font-mono text-emerald-400 uppercase">
-                  Status: {report.status}
+                <span className="text-[11px] font-mono text-emerald-400 font-semibold uppercase">
+                  STATUS: {report.status}
                 </span>
               </div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-center py-16 bg-slate-900/40 rounded-xl border border-slate-800 space-y-3">
-          <ShieldAlert className="w-10 h-10 text-slate-600 mx-auto" />
-          <h3 className="text-base font-semibold text-white">No active fraud reports found</h3>
-          <p className="text-xs text-slate-400">No incident reports currently match the selected severity and category filters.</p>
+        <div className="text-center py-20 bg-slate-900/40 rounded-2xl border border-slate-800 space-y-3">
+          <ShieldAlert className="w-12 h-12 text-slate-600 mx-auto" />
+          <h3 className="text-base font-bold text-white">No active fraud reports found</h3>
+          <p className="text-xs text-slate-400 max-w-sm mx-auto">
+            No scam warnings match your selected filter categories. Help keep the network safe by reporting bad actors.
+          </p>
         </div>
       )}
     </div>

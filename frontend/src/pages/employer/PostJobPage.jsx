@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Briefcase, CheckCircle2, ArrowLeft } from 'lucide-react';
+﻿import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
+import { Briefcase, CheckCircle2, ArrowLeft, PlusCircle } from 'lucide-react';
 import { jobsApi } from '../../api';
+import { Spinner } from '../../components/ui/Skeleton';
 
 export default function PostJobPage() {
   const navigate = useNavigate();
@@ -32,8 +33,8 @@ export default function PostJobPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!formData.title || !formData.description || !formData.city) {
-      setErrorMessage('Title, description, and job city are required.');
+    if (!formData.title.trim() || !formData.description.trim() || !formData.city.trim()) {
+      setErrorMessage('Title, description, and city location are required.');
       return;
     }
 
@@ -66,7 +67,7 @@ export default function PostJobPage() {
       await jobsApi.createJob(payload);
       navigate('/employer/dashboard');
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to post opening. Ensure your profile is active.');
+      setErrorMessage(err.message || 'Failed to post opening.');
     } finally {
       setLoading(false);
     }
@@ -74,27 +75,27 @@ export default function PostJobPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-      <button
-        onClick={() => navigate('/employer/dashboard')}
-        className="inline-flex items-center space-x-1 text-xs text-slate-400 hover:text-white"
+      <Link
+        to="/employer/dashboard"
+        className="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white transition"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Return to Dashboard</span>
-      </button>
+      </Link>
 
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#111827] border border-slate-800 shadow-xl space-y-6">
-        <div className="flex items-center space-x-3">
+      <div className="p-6 sm:p-10 rounded-3xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
+        <div className="flex items-center space-x-3.5 border-b border-slate-800 pb-6">
           <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
             <Briefcase className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-white">Create Verified Job Listing</h1>
-            <p className="text-xs text-slate-400">Postings inherit your verified TrustScore and are automatically indexed on the marketplace.</p>
+            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Post Verified Job Opening</h1>
+            <p className="text-xs text-slate-400">Published openings automatically carry your organization's statutory TrustScore.</p>
           </div>
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-lg">
+          <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">
             {errorMessage}
           </div>
         )}
@@ -108,8 +109,8 @@ export default function PostJobPage() {
               required
               value={formData.title}
               onChange={handleChange}
-              placeholder="e.g. Senior Backend Engineer (Node.js/Go)"
-              className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+              placeholder="e.g. Lead Distributed Systems Engineer"
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
             />
           </div>
 
@@ -120,7 +121,7 @@ export default function PostJobPage() {
                 name="jobType"
                 value={formData.jobType}
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
               >
                 <option value="Full-time">Full-time</option>
                 <option value="Part-time">Part-time</option>
@@ -130,12 +131,12 @@ export default function PostJobPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Workplace Type</label>
+              <label className="block text-slate-300 font-medium mb-1">Workplace Arrangement</label>
               <select
                 name="workplaceType"
                 value={formData.workplaceType}
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
               >
                 <option value="On-site">On-site</option>
                 <option value="Remote">Remote</option>
@@ -144,17 +145,18 @@ export default function PostJobPage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Experience Level</label>
+              <label className="block text-slate-300 font-medium mb-1">Experience Designation</label>
               <select
                 name="experienceLevel"
                 value={formData.experienceLevel}
                 onChange={handleChange}
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
               >
                 <option value="Entry Level">Entry Level</option>
                 <option value="Mid Level">Mid Level</option>
                 <option value="Senior Level">Senior Level</option>
                 <option value="Lead / Manager">Lead / Manager</option>
+                <option value="Executive">Executive</option>
               </select>
             </div>
           </div>
@@ -169,7 +171,7 @@ export default function PostJobPage() {
                 value={formData.city}
                 onChange={handleChange}
                 placeholder="e.g. Bengaluru"
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
               />
             </div>
 
@@ -181,100 +183,100 @@ export default function PostJobPage() {
                 value={formData.state}
                 onChange={handleChange}
                 placeholder="e.g. Karnataka"
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
               />
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Min Salary (INR / Year)</label>
+              <label className="block text-slate-300 font-medium mb-1">Min Compensation (INR / Year)</label>
               <input
                 type="number"
                 name="salaryMin"
                 value={formData.salaryMin}
                 onChange={handleChange}
-                placeholder="e.g. 1200000"
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono"
+                placeholder="e.g. 1500000"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Max Salary (INR / Year)</label>
+              <label className="block text-slate-300 font-medium mb-1">Max Compensation (INR / Year)</label>
               <input
                 type="number"
                 name="salaryMax"
                 value={formData.salaryMax}
                 onChange={handleChange}
-                placeholder="e.g. 1800000"
-                className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono"
+                placeholder="e.g. 2400000"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Skills (Comma-separated)</label>
+            <label className="block text-slate-300 font-medium mb-1">Required Skills (Comma separated)</label>
             <input
               type="text"
               name="skills"
               value={formData.skills}
               onChange={handleChange}
-              placeholder="React, TypeScript, Docker, Node.js"
-              className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+              placeholder="React, Node.js, AWS, Kubernetes, TypeScript"
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Job Description *</label>
+            <label className="block text-slate-300 font-medium mb-1">Full Job Description *</label>
             <textarea
               name="description"
               rows={4}
               required
               value={formData.description}
               onChange={handleChange}
-              placeholder="Detailed overview of the team, role, and mission..."
-              className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white"
+              placeholder="Overview of the mission, technical stack, and core goals..."
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Responsibilities (One per line)</label>
+            <label className="block text-slate-300 font-medium mb-1">Key Responsibilities (One per line)</label>
             <textarea
               name="responsibilities"
               rows={3}
               value={formData.responsibilities}
               onChange={handleChange}
-              placeholder="Design scalable distributed APIs&#10;Lead architectural design reviews&#10;Mentor junior software engineers"
-              className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono"
+              placeholder="Architect high-concurrency microservices&#10;Lead core API design & code reviews&#10;Collaborate with product and QA engineering"
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Requirements (One per line)</label>
+            <label className="block text-slate-300 font-medium mb-1">Requirements & Qualifications (One per line)</label>
             <textarea
               name="requirements"
               rows={3}
               value={formData.requirements}
               onChange={handleChange}
-              placeholder="4+ years of production experience with Node.js&#10;Experience with high-throughput MongoDB clusters"
-              className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono"
+              placeholder="3+ years of professional backend engineering&#10;Deep understanding of distributed data stores&#10;Track record in fast-paced software delivery"
+              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono"
             />
           </div>
 
-          <div className="pt-3 flex justify-end space-x-3">
-            <button
-              type="button"
-              onClick={() => navigate('/employer/dashboard')}
-              className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-lg"
+          <div className="pt-3 flex justify-end space-x-3 border-t border-slate-800">
+            <Link
+              to="/employer/dashboard"
+              className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold rounded-xl"
             >
               Cancel
-            </button>
+            </Link>
             <button
               type="submit"
               disabled={loading}
-              className="px-6 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-lg disabled:opacity-50"
+              className="px-6 py-2.5 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl transition disabled:opacity-50 flex items-center space-x-2 shadow-glow-sm"
             >
-              {loading ? 'Publishing Listing...' : 'Publish Opening'}
+              {loading && <Spinner className="w-4 h-4 text-slate-900" />}
+              <span>{loading ? 'Publishing...' : 'Publish Verified Listing'}</span>
             </button>
           </div>
         </form>

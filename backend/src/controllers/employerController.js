@@ -161,3 +161,25 @@ export const getEmployerDashboardMetrics = async (req, res, next) => {
     next(error);
   }
 };
+
+export const getPublicEmployers = async (req, res, next) => {
+  try {
+    const { search } = req.query;
+    const query = {};
+    if (search && search.trim()) {
+      query.companyName = { $regex: search.trim(), $options: 'i' };
+    }
+
+    const employers = await Employer.find(query)
+      .select('companyName logo verificationStatus trustScore industry location website')
+      .limit(30)
+      .lean();
+
+    res.status(200).json({
+      success: true,
+      data: { employers }
+    });
+  } catch (error) {
+    next(error);
+  }
+};

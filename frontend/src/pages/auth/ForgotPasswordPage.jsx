@@ -1,8 +1,8 @@
-import { useState } from 'react';
+﻿import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { ShieldCheck, ArrowLeft } from 'lucide-react';
-import { authAPI } from '../../api';
-import { Spinner } from '../../components/ui';
+import { ShieldCheck, ArrowLeft, Mail, CheckCircle2, AlertCircle } from 'lucide-react';
+import { authApi } from '../../api';
+import { Spinner } from '../../components/ui/Skeleton';
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('');
@@ -12,78 +12,81 @@ export default function ForgotPasswordPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!email.trim()) return;
+
     setError('');
     setLoading(true);
     try {
-      await authAPI.forgotPassword(email);
+      await authApi.forgotPassword(email.trim());
       setSent(true);
     } catch (err) {
-      setError('Something went wrong. Please try again.');
+      setError(err.message || 'Something went wrong. Please try again.');
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="min-h-screen bg-surface flex items-center justify-center px-4 py-12">
-      <div className="w-full max-w-md">
-        <Link to="/" className="flex items-center justify-center gap-2 mb-8">
-          <div className="w-9 h-9 bg-navy-600 rounded-lg flex items-center justify-center">
-            <ShieldCheck className="w-5 h-5 text-white" />
-          </div>
-          <span className="font-display font-bold text-navy-600 text-xl">TrustHire</span>
+    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full p-8 rounded-3xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
+        <Link to="/login" className="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white transition">
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Sign In</span>
         </Link>
 
-        <div className="card p-8">
-          {sent ? (
-            <div className="text-center">
-              <div className="w-14 h-14 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                <span className="text-2xl">📧</span>
-              </div>
-              <h2 className="font-display font-bold text-xl text-slate-900 mb-2">Check your email</h2>
-              <p className="text-sm text-slate-500 mb-6">
-                If <strong>{email}</strong> is registered, we've sent a password reset link. It expires in 15 minutes.
-              </p>
-              <Link to="/login" className="btn-primary w-full block text-center">
-                Back to login
-              </Link>
-            </div>
-          ) : (
-            <>
-              <Link to="/login" className="flex items-center gap-1.5 text-sm text-slate-500 hover:text-slate-700 mb-6">
-                <ArrowLeft className="w-4 h-4" /> Back to login
-              </Link>
-              <h1 className="font-display font-bold text-2xl text-slate-900 mb-2">Forgot password?</h1>
-              <p className="text-sm text-slate-500 mb-6">
-                Enter your email and we'll send you a reset link.
-              </p>
-
-              {error && (
-                <div className="mb-4 text-sm text-trust-red bg-red-50 border border-red-100 rounded-lg px-4 py-3">
-                  {error}
-                </div>
-              )}
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <label className="label">Email address</label>
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="input"
-                    placeholder="you@example.com"
-                    required
-                  />
-                </div>
-                <button type="submit" disabled={loading || !email} className="btn-primary w-full flex items-center justify-center gap-2">
-                  {loading && <Spinner className="w-4 h-4" />}
-                  {loading ? 'Sending…' : 'Send reset link'}
-                </button>
-              </form>
-            </>
-          )}
+        <div className="text-center space-y-2">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-glow-sm">
+            <ShieldCheck className="w-6 h-6" />
+          </div>
+          <h1 className="text-2xl font-black text-white tracking-tight">Password Recovery</h1>
+          <p className="text-xs text-slate-400">Enter your registered email address to receive reset instructions.</p>
         </div>
+
+        {sent ? (
+          <div className="p-6 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-3">
+            <CheckCircle2 className="w-10 h-10 text-emerald-400 mx-auto" />
+            <h3 className="text-sm font-bold text-white">Reset Link Dispatched</h3>
+            <p className="text-xs text-slate-300">
+              If an account with <strong>{email}</strong> exists, recovery instructions have been sent.
+            </p>
+            <Link to="/login" className="inline-block px-5 py-2.5 bg-emerald-400 text-slate-900 font-bold rounded-xl text-xs">
+              Return to Sign In
+            </Link>
+          </div>
+        ) : (
+          <form onSubmit={handleSubmit} className="space-y-4 text-xs">
+            {error && (
+              <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 flex-shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <div>
+              <label className="block text-slate-300 font-medium mb-1">Registered Email Address</label>
+              <div className="relative">
+                <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@domain.com"
+                  className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                />
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              disabled={loading || !email}
+              className="w-full py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl transition disabled:opacity-50 flex items-center justify-center space-x-2 text-xs shadow-glow-sm"
+            >
+              {loading && <Spinner className="w-4 h-4 text-slate-900" />}
+              <span>{loading ? 'Transmitting Request...' : 'Send Recovery Link'}</span>
+            </button>
+          </form>
+        )}
       </div>
     </div>
   );

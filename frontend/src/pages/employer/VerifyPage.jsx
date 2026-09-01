@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+﻿import React, { useState } from 'react';
+import { useNavigate, Link } from 'react-router-dom';
 import { ShieldCheck, CheckCircle2, Lock, ArrowRight, ArrowLeft, Building2, AlertCircle } from 'lucide-react';
 import { employerApi } from '../../api';
 import { useAuthStore } from '../../store/authStore';
+import { Spinner } from '../../components/ui/Skeleton';
 
 export default function VerifyPage() {
   const navigate = useNavigate();
@@ -40,25 +41,25 @@ export default function VerifyPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-12 space-y-6">
-      <button
-        onClick={() => navigate('/employer/dashboard')}
-        className="inline-flex items-center space-x-1 text-xs text-slate-400 hover:text-white"
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+      <Link
+        to="/employer/dashboard"
+        className="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white transition"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Return to Dashboard</span>
-      </button>
+      </Link>
 
-      <div className="p-6 sm:p-10 rounded-2xl bg-[#111827] border border-slate-800 shadow-xl space-y-6">
+      <div className="p-6 sm:p-10 rounded-3xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
         {/* Step Header */}
         <div className="flex items-center justify-between border-b border-slate-800 pb-6">
-          <div className="flex items-center space-x-3">
+          <div className="flex items-center space-x-3.5">
             <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-white">MCA / GST Corporate Verification</h1>
-              <p className="text-xs text-slate-400">Statutory entity validation gateway for Indian registered employers.</p>
+              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">MCA & GST Statutory Verification</h1>
+              <p className="text-xs text-slate-400">Validate statutory registry identifiers to attain TrustHire Verified status.</p>
             </div>
           </div>
           <div className="text-xs font-mono text-emerald-400 font-bold bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20">
@@ -67,7 +68,7 @@ export default function VerifyPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-lg flex items-center space-x-2">
+          <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -75,10 +76,10 @@ export default function VerifyPage() {
 
         {step === 1 && (
           <form onSubmit={handleVerificationSubmit} className="space-y-5 text-xs">
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-              <span className="font-semibold text-slate-200">How verification works:</span>
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2">
+              <span className="font-semibold text-slate-200">Statutory Validation Pipeline:</span>
               <p className="text-slate-400 leading-relaxed">
-                Your provided 21-digit Corporate Identification Number (CIN) or 15-digit GSTIN is verified against Ministry of Corporate Affairs records. Verified employers gain +30 TrustScore points and Verified MCA badges.
+                Your 21-digit Corporate Identification Number (CIN) or 15-digit GSTIN is matched against Ministry of Corporate Affairs data. Verified organizations gain +30 TrustScore points, Verified MCA badges, and elevated applicant priority.
               </p>
             </div>
 
@@ -91,7 +92,7 @@ export default function VerifyPage() {
                 value={cin}
                 onChange={(e) => setCin(e.target.value.toUpperCase())}
                 placeholder="e.g. U72900KA2021PTC145678"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono uppercase"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono uppercase focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[10px] text-slate-500 mt-1 block">Format: 21 alphanumeric characters (e.g. U + 5 digits + 2 letters + 4 digits + 3 letters + 6 digits)</span>
             </div>
@@ -105,7 +106,7 @@ export default function VerifyPage() {
                 value={gstin}
                 onChange={(e) => setGstin(e.target.value.toUpperCase())}
                 placeholder="e.g. 29AAAAA0000A1Z5"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white font-mono uppercase"
+                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono uppercase focus:outline-none focus:border-emerald-500"
               />
               <span className="text-[10px] text-slate-500 mt-1 block">Format: 15 alphanumeric characters</span>
             </div>
@@ -114,7 +115,7 @@ export default function VerifyPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="px-6 py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-lg transition flex items-center space-x-2"
+                className="px-6 py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl transition flex items-center space-x-2 shadow-glow-sm"
               >
                 <span>Validate & Issue Trust Badge</span>
                 <ArrowRight className="w-4 h-4" />
@@ -124,37 +125,39 @@ export default function VerifyPage() {
         )}
 
         {step === 2 && (
-          <div className="py-12 flex flex-col items-center space-y-4 text-center">
-            <div className="w-12 h-12 border-3 border-emerald-500 border-t-transparent rounded-full animate-spin" />
+          <div className="py-14 flex flex-col items-center space-y-4 text-center">
+            <Spinner className="w-12 h-12 text-emerald-400" />
             <h3 className="text-base font-bold text-white">Validating Statutory Registry...</h3>
-            <p className="text-xs text-slate-400 max-w-sm">Querying Ministry of Corporate Affairs & GST verification nodes.</p>
+            <p className="text-xs text-slate-400 max-w-sm leading-relaxed">
+              Performing cryptographic check against Ministry of Corporate Affairs and GST identity nodes.
+            </p>
           </div>
         )}
 
         {step === 3 && (
           <div className="py-8 text-center space-y-5">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto">
+            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 flex items-center justify-center mx-auto shadow-glow-md">
               <CheckCircle2 className="w-10 h-10" />
             </div>
             <div>
-              <h2 className="text-xl font-bold text-white">Corporate Identity Verified</h2>
+              <h2 className="text-xl font-black text-white">Corporate Identity Verified</h2>
               <p className="text-xs text-slate-400 mt-1">Your organization has attained official TrustHire Verified status.</p>
             </div>
 
-            <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 max-w-sm mx-auto text-xs space-y-2">
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 max-w-sm mx-auto text-xs space-y-2.5">
               <div className="flex justify-between">
-                <span className="text-slate-400">New Trust Score</span>
-                <span className="text-emerald-400 font-mono font-bold">{verificationResult?.trustScore || 80}/100</span>
+                <span className="text-slate-400">Updated Trust Score</span>
+                <span className="text-emerald-400 font-mono font-black">{verificationResult?.trustScore || 85}/100</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-slate-400">Status</span>
-                <span className="text-emerald-400 font-bold">VERIFIED</span>
+                <span className="text-slate-400">Marketplace Status</span>
+                <span className="text-emerald-400 font-bold font-mono">100% VERIFIED</span>
               </div>
             </div>
 
             <button
               onClick={() => navigate('/employer/dashboard')}
-              className="px-6 py-3 rounded-lg bg-emerald-400 text-slate-900 font-bold text-xs"
+              className="px-6 py-3 rounded-xl bg-emerald-400 text-slate-900 font-bold text-xs shadow-glow-sm"
             >
               Enter Employer Dashboard
             </button>

@@ -1,9 +1,11 @@
-import React, { useEffect } from 'react';
+﻿import React, { useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { useAuthStore } from './store/authStore';
+import { useThemeStore } from './store/themeStore';
 
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
+import ProtectedRoute from './components/layout/ProtectedRoute';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -15,6 +17,7 @@ import ReportPage from './pages/public/ReportPage';
 // Auth Pages
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
+import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
 
 // Employer Pages
 import EmployerDashboard from './pages/employer/EmployerDashboard';
@@ -23,47 +26,24 @@ import VerifyPage from './pages/employer/VerifyPage';
 
 // Job Seeker Pages
 import DashboardPage from './pages/jobseeker/DashboardPage';
-
-const ProtectedRoute = ({ children, allowedRoles }) => {
-  const { isAuthenticated, isInitialized, user } = useAuthStore();
-  const location = useLocation();
-
-  if (!isInitialized) {
-    return (
-      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
-        <div className="flex flex-col items-center space-y-4">
-          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin"></div>
-          <p className="text-slate-400 text-sm font-mono tracking-wider">INITIALIZING TRUSTHIRE SECURITY CONTEXT...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" state={{ from: location }} replace />;
-  }
-
-  if (allowedRoles && !allowedRoles.includes(user?.role)) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
+import ProfilePage from './pages/jobseeker/ProfilePage';
 
 export default function App() {
   const { initialize } = useAuthStore();
+  const { initTheme } = useThemeStore();
   const location = useLocation();
 
   useEffect(() => {
+    initTheme();
     initialize();
-  }, [initialize]);
+  }, [initialize, initTheme]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0F17] text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-400">
+    <div className="min-h-screen flex flex-col bg-[#0B0F17] text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-400 transition-colors duration-200">
       <Navbar />
       <main className="flex-grow">
         <Routes>
@@ -77,6 +57,7 @@ export default function App() {
           {/* Auth Routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
 
           {/* Employer Protected Routes */}
           <Route
@@ -110,6 +91,14 @@ export default function App() {
             element={
               <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/profile"
+            element={
+              <ProtectedRoute allowedRoles={['jobseeker', 'admin']}>
+                <ProfilePage />
               </ProtectedRoute>
             }
           />
