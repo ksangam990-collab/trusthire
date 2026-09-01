@@ -43,7 +43,7 @@ export default function App() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0B0F17] text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-400 transition-colors duration-200">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-500 theme-transition">
       <Navbar />
       <main className="flex-grow">
         <Routes>

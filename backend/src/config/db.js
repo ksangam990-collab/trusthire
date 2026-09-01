@@ -2,9 +2,9 @@ import mongoose from 'mongoose';
 
 const connectDB = async () => {
   try {
-    const mongoUri = process.env.MONGODB_URI;
+    const mongoUri = process.env.MONGODB_URI || process.env.MONGO_URI || process.env.DATABASE_URL;
     if (!mongoUri) {
-      console.warn('[Database Warning] MONGODB_URI is not set in environment. Database operations will require MongoDB Atlas or local MongoDB.');
+      console.warn('[Database Warning] MONGODB_URI (or MONGO_URI) is not set in environment. Database operations will require MongoDB Atlas or local MongoDB.');
       return;
     }
 

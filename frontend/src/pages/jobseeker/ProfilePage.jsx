@@ -1,5 +1,6 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { User, FileText, CheckCircle2, ArrowLeft, Save, Briefcase, Award } from 'lucide-react';
 import { profileApi } from '../../api';
 import { useAuthStore } from '../../store/authStore';
@@ -79,48 +80,52 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-16">
-        <div className="h-96 rounded-3xl bg-[#111827] border border-slate-800 animate-pulse" />
+        <div className="h-96 rounded-3xl bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 animate-pulse" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-6">
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 py-10 space-y-6 theme-transition">
       <Link
         to="/candidate/dashboard"
-        className="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white transition"
+        className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Return to Dashboard</span>
       </Link>
 
-      <div className="p-6 sm:p-10 rounded-3xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
-        <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-6 sm:p-10 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl space-y-6"
+      >
+        <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-6">
           <div className="flex items-center space-x-3.5">
-            <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
+            <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400">
               <User className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Candidate Profile</h1>
-              <p className="text-xs text-slate-400">Manage your skills, headline, and credentials for verified recruiters.</p>
+              <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Candidate Profile</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Manage your skills, headline, and credentials for verified recruiters.</p>
             </div>
           </div>
           {profile?.profileCompleteness !== undefined && (
-            <div className="text-xs font-mono text-emerald-400 bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 font-bold">
+            <div className="text-xs font-mono text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-500/10 px-3 py-1 rounded-full border border-emerald-500/20 font-bold">
               {profile.profileCompleteness}% COMPLETE
             </div>
           )}
         </div>
 
         {successMessage && (
-          <div className="p-4 bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs rounded-xl flex items-center space-x-2">
+          <div className="p-4 bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-500/30 text-emerald-700 dark:text-emerald-400 text-xs rounded-2xl flex items-center space-x-2">
             <CheckCircle2 className="w-4 h-4 flex-shrink-0" />
             <span>{successMessage}</span>
           </div>
         )}
 
         {errorMessage && (
-          <div className="p-4 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl">
+          <div className="p-4 bg-rose-50 dark:bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs rounded-2xl">
             {errorMessage}
           </div>
         )}
@@ -128,68 +133,68 @@ export default function ProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-5 text-xs">
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Full Name *</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Full Name *</label>
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Phone Number</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Phone Number</label>
               <input
                 type="text"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
                 placeholder="+91 9876543210"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono focus:outline-none focus:border-emerald-500"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-mono focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Professional Headline</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Professional Headline</label>
             <input
               type="text"
               value={profile.headline || ''}
               onChange={(e) => setProfile({ ...profile, headline: e.target.value })}
               placeholder="e.g. Senior Full Stack Engineer (React, Node.js, Cloud Architecture)"
-              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-semibold"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Technical Skills (Comma separated)</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Technical Skills (Comma separated)</label>
             <input
               type="text"
               value={skillsInput}
               onChange={(e) => setSkillsInput(e.target.value)}
               placeholder="React, TypeScript, Node.js, Express, MongoDB, Docker, AWS"
-              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-mono"
             />
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Summary / Bio</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Summary / Bio</label>
             <textarea
               rows={4}
               value={profile.summary || ''}
               onChange={(e) => setProfile({ ...profile, summary: e.target.value })}
-              placeholder="Passionate engineer with 4+ years building high-concurrency cloud applications..."
-              className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+              placeholder="Passionate engineer building high-concurrency cloud applications..."
+              className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Preferred Job Arrangement</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Preferred Job Arrangement</label>
               <select
                 value={profile.preferredJobType || 'any'}
                 onChange={(e) => setProfile({ ...profile, preferredJobType: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none"
               >
                 <option value="any">Open to Any</option>
                 <option value="fulltime">Full-Time</option>
@@ -199,11 +204,11 @@ export default function ProfilePage() {
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Notice Period</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Notice Period</label>
               <select
                 value={profile.noticePeriod || 'immediate'}
                 onChange={(e) => setProfile({ ...profile, noticePeriod: e.target.value })}
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none"
               >
                 <option value="immediate">Immediate Joiner</option>
                 <option value="15days">15 Days</option>
@@ -218,14 +223,14 @@ export default function ProfilePage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl transition flex items-center space-x-2 shadow-glow-sm"
+              className="px-6 py-3 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-300 text-white dark:text-slate-900 font-bold rounded-2xl transition flex items-center space-x-2 shadow-sm"
             >
-              {saving ? <Spinner className="w-4 h-4 text-slate-900" /> : <Save className="w-4 h-4" />}
+              {saving ? <Spinner className="w-4 h-4 text-white dark:text-slate-900" /> : <Save className="w-4 h-4" />}
               <span>{saving ? 'Saving...' : 'Save Profile Changes'}</span>
             </button>
           </div>
         </form>
-      </div>
+      </motion.div>
     </div>
   );
 }

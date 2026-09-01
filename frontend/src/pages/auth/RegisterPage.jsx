@@ -1,5 +1,6 @@
 ﻿import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { ShieldCheck, Lock, Mail, User, Building, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { Spinner } from '../../components/ui/Skeleton';
@@ -54,23 +55,27 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12">
-      <div className="max-w-md w-full p-8 rounded-3xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
+    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12 theme-transition">
+      <motion.div 
+        initial={{ opacity: 0, scale: 0.96, y: 15 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        className="max-w-md w-full p-8 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-xl space-y-6"
+      >
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto shadow-glow-sm">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto shadow-sm">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-black text-white tracking-tight">Create TrustHire Account</h1>
-          <p className="text-xs text-slate-400">Join the zero-scam verified recruitment infrastructure.</p>
+          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Create TrustHire Account</h1>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Join the zero-scam verified recruitment infrastructure.</p>
         </div>
 
         {/* Role Toggle Selector */}
-        <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-950 rounded-2xl border border-slate-800 text-xs font-semibold">
+        <div className="grid grid-cols-2 gap-2 p-1.5 bg-slate-100 dark:bg-slate-950 rounded-2xl border border-slate-200 dark:border-slate-800 text-xs font-bold">
           <button
             type="button"
             onClick={() => setRole('jobseeker')}
             className={`py-2 rounded-xl transition ${
-              role === 'jobseeker' ? 'bg-slate-800 text-emerald-400 shadow' : 'text-slate-400 hover:text-white'
+              role === 'jobseeker' ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Job Seeker
@@ -79,7 +84,7 @@ export default function RegisterPage() {
             type="button"
             onClick={() => setRole('employer')}
             className={`py-2 rounded-xl transition ${
-              role === 'employer' ? 'bg-slate-800 text-emerald-400 shadow' : 'text-slate-400 hover:text-white'
+              role === 'employer' ? 'bg-white dark:bg-slate-800 text-emerald-700 dark:text-emerald-400 shadow-sm' : 'text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             Employer / Recruiter
@@ -87,7 +92,7 @@ export default function RegisterPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-xl flex items-center space-x-2">
+          <div className="p-3.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs rounded-2xl flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -95,16 +100,16 @@ export default function RegisterPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Full Name *</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Full Name *</label>
             <div className="relative">
-              <User className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <User className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 required
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 placeholder="Rohit Sharma"
-                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -112,27 +117,27 @@ export default function RegisterPage() {
           {role === 'employer' && (
             <>
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Organization Name *</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Organization Name *</label>
                 <div className="relative">
-                  <Building className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+                  <Building className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     required
                     value={companyName}
                     onChange={(e) => setCompanyName(e.target.value)}
                     placeholder="e.g. Innovate Tech Labs Pvt Ltd"
-                    className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                    className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Industry</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Industry</label>
                   <select
                     value={industry}
                     onChange={(e) => setIndustry(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
+                    className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none font-semibold"
                   >
                     <option value="Information Technology">Software / IT</option>
                     <option value="Fintech">Fintech</option>
@@ -142,11 +147,11 @@ export default function RegisterPage() {
                   </select>
                 </div>
                 <div>
-                  <label className="block text-slate-300 font-medium mb-1">Team Size</label>
+                  <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Team Size</label>
                   <select
                     value={companySize}
                     onChange={(e) => setCompanySize(e.target.value)}
-                    className="w-full px-3 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
+                    className="w-full px-3 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none font-semibold"
                   >
                     <option value="1-10">1-10</option>
                     <option value="11-50">11-50</option>
@@ -160,31 +165,31 @@ export default function RegisterPage() {
           )}
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Email Address *</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Email Address *</label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder={role === 'employer' ? 'hr@yourcompany.com' : 'you@example.com'}
-                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <label className="block text-slate-300 font-medium mb-1">Password (Min 8 chars) *</label>
+            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Password (Min 8 chars) *</label>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-500" />
+              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -192,21 +197,21 @@ export default function RegisterPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-xl transition disabled:opacity-50 flex items-center justify-center space-x-2 text-xs shadow-glow-sm"
+            className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-300 text-white dark:text-slate-900 font-bold rounded-2xl transition disabled:opacity-50 flex items-center justify-center space-x-2 text-xs shadow-sm"
           >
-            {isLoading && <Spinner className="w-4 h-4 text-slate-900" />}
+            {isLoading && <Spinner className="w-4 h-4 text-white dark:text-slate-900" />}
             <span>{isLoading ? 'Setting up Profile...' : 'Complete Registration'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-400 pt-3 border-t border-slate-800">
+        <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800">
           Already have an account?{' '}
-          <Link to="/login" className="text-emerald-400 hover:underline font-bold">
+          <Link to="/login" className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold">
             Sign In
           </Link>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 ﻿import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { AlertTriangle, ShieldAlert, UploadCloud, CheckCircle2, Lock, ArrowLeft } from 'lucide-react';
 import { fraudApi, employerApi } from '../../api';
 import { Spinner } from '../../components/ui/Skeleton';
@@ -78,34 +79,38 @@ export default function ReportPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6">
-      <Link to="/fraud-board" className="inline-flex items-center space-x-1.5 text-xs text-slate-400 hover:text-white transition">
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6 theme-transition">
+      <Link to="/fraud-board" className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Fraud Radar</span>
       </Link>
 
-      <div className="p-6 sm:p-10 rounded-2xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
-        <div className="flex items-center space-x-3.5 border-b border-slate-800 pb-6">
-          <div className="p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-6 sm:p-10 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl space-y-6"
+      >
+        <div className="flex items-center space-x-3.5 border-b border-slate-100 dark:border-slate-800 pb-6">
+          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">Report Recruitment Fraud</h1>
-            <p className="text-xs text-slate-400">Submit evidence of security deposits, fake offer letters, or phishing scams.</p>
+            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Report Recruitment Fraud</h1>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Submit evidence of security deposits, fake offer letters, or phishing scams.</p>
           </div>
         </div>
 
         {successMessage ? (
-          <div className="p-8 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-center space-y-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center mx-auto">
+          <div className="p-8 rounded-3xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-500/30 text-center space-y-4">
+            <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h3 className="text-lg font-bold text-white">Incident Report Filed</h3>
-            <p className="text-xs text-slate-300 max-w-md mx-auto leading-relaxed">{successMessage}</p>
+            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Incident Report Filed</h3>
+            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">{successMessage}</p>
             <div className="pt-2">
               <Link
                 to="/fraud-board"
-                className="inline-block px-6 py-2.5 bg-emerald-400 text-slate-900 rounded-xl text-xs font-bold"
+                className="inline-block px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold"
               >
                 View Public Fraud Board
               </Link>
@@ -114,18 +119,18 @@ export default function ReportPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-5 text-xs">
             {errorMessage && (
-              <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 rounded-xl">
+              <div className="p-3.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-2xl">
                 {errorMessage}
               </div>
             )}
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Target Organization / Entity *</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Target Organization / Entity *</label>
               {employersList.length > 0 ? (
                 <select
                   value={selectedEmployerId}
                   onChange={(e) => setSelectedEmployerId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
                 >
                   <option value="">Select an entity from directory</option>
                   {employersList.map((emp) => (
@@ -141,18 +146,18 @@ export default function ReportPage() {
                   value={selectedEmployerId}
                   onChange={(e) => setSelectedEmployerId(e.target.value)}
                   placeholder="Employer MongoDB ObjectId or identifier..."
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
                 />
               )}
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Scam Category *</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Scam Category *</label>
                 <select
                   value={fraudCategory}
                   onChange={(e) => setFraudCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none font-medium"
                 >
                   <option value="Registration Fee / Security Deposit">Registration Fee / Security Deposit</option>
                   <option value="Fake Offer Letter">Fake Offer Letter</option>
@@ -165,61 +170,61 @@ export default function ReportPage() {
               </div>
 
               <div>
-                <label className="block text-slate-300 font-medium mb-1">Amount Demanded (INR)</label>
+                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Amount Demanded (INR)</label>
                 <input
                   type="number"
                   value={amountDemanded}
                   onChange={(e) => setAmountDemanded(e.target.value)}
                   placeholder="e.g. 5000"
-                  className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white font-mono"
+                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-mono"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Summary Title *</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Summary Title *</label>
               <input
                 type="text"
                 required
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="e.g. Demanded ₹4,500 background check charge via WhatsApp before interview"
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Detailed Incident Description *</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Detailed Incident Description *</label>
               <textarea
                 rows={4}
                 required
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 placeholder="Detail the timeline, channel used (WhatsApp/Telegram/Email), UPI / payment details requested, etc."
-                className="w-full px-3.5 py-2.5 bg-slate-950 border border-slate-800 rounded-xl text-white"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
               />
             </div>
 
             <div>
-              <label className="block text-slate-300 font-medium mb-1">Evidence Files / Screenshots (Max 4)</label>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Evidence Files / Screenshots (Max 4)</label>
               <input
                 type="file"
                 multiple
                 accept="image/*,.pdf,.doc,.docx"
                 onChange={(e) => setEvidenceFiles(Array.from(e.target.files))}
-                className="w-full text-slate-400 file:mr-3 file:py-2 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-emerald-400 hover:file:bg-slate-700 cursor-pointer"
+                className="w-full text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 dark:file:bg-slate-800 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-slate-200 cursor-pointer"
               />
             </div>
 
-            <div className="p-3.5 rounded-xl bg-slate-900 border border-slate-800 flex items-center space-x-2.5">
+            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center space-x-2.5">
               <input
                 type="checkbox"
                 id="anon"
                 checked={isAnonymous}
                 onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="rounded bg-slate-950 border-slate-700 text-emerald-400 focus:ring-0"
+                className="rounded bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-emerald-500 focus:ring-0"
               />
-              <label htmlFor="anon" className="text-slate-300 cursor-pointer select-none">
+              <label htmlFor="anon" className="text-slate-700 dark:text-slate-300 cursor-pointer select-none font-medium">
                 Submit completely anonymously (Your name & contact info will not be revealed)
               </label>
             </div>
@@ -227,14 +232,14 @@ export default function ReportPage() {
             <button
               type="submit"
               disabled={submitting}
-              className="w-full py-3.5 rounded-xl bg-rose-500 hover:bg-rose-400 text-white font-bold transition disabled:opacity-50 flex items-center justify-center space-x-2 shadow-lg shadow-rose-950/20"
+              className="w-full py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold transition disabled:opacity-50 flex items-center justify-center space-x-2 shadow-md shadow-rose-500/20"
             >
               {submitting && <Spinner className="w-4 h-4 text-white" />}
-              <span>{submitting ? 'Encrypting & Transmitting Report...' : 'Submit Incident Report'}</span>
+              <span>{submitting ? 'Transmitting Incident Report...' : 'Submit Incident Report'}</span>
             </button>
           </form>
         )}
-      </div>
+      </motion.div>
     </div>
   );
 }
