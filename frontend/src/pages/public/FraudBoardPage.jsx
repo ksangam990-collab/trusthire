@@ -70,7 +70,7 @@ export default function FraudBoardPage() {
       </motion.div>
 
       {/* Filter Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
+      <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-2xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm text-xs">
         <div className="flex flex-wrap items-center gap-3">
           <select
             value={category}
@@ -115,7 +115,7 @@ export default function FraudBoardPage() {
       {loading ? (
         <div className="space-y-4">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="p-5 rounded-3xl bg-white dark:bg-[#0f172a] border border-slate-200 dark:border-slate-800 space-y-3 animate-pulse">
+            <div key={i} className="p-5 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 animate-pulse">
               <div className="flex justify-between">
                 <Skeleton className="w-28 h-5" />
                 <Skeleton className="w-20 h-4" />
@@ -132,7 +132,7 @@ export default function FraudBoardPage() {
               key={report._id}
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition shadow-sm space-y-3.5"
+              className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition shadow-sm space-y-3.5"
             >
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div className="flex items-center space-x-2 flex-wrap">
@@ -195,6 +195,29 @@ export default function FraudBoardPage() {
           <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
             No scam warnings match your selected filter categories. Help keep the network safe by reporting bad actors.
           </p>
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pagination.pages > 1 && (
+        <div className="flex justify-center items-center space-x-2 pt-6">
+          <button
+            disabled={pagination.page <= 1}
+            onClick={() => setPagination(prev => ({ ...prev, page: prev.page - 1 }))}
+            className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-40 font-semibold"
+          >
+            Previous
+          </button>
+          <span className="text-xs text-slate-500 px-3 font-medium">
+            Page {pagination.page} of {pagination.pages}
+          </span>
+          <button
+            disabled={pagination.page >= pagination.pages}
+            onClick={() => setPagination(prev => ({ ...prev, page: prev.page + 1 }))}
+            className="px-4 py-2 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs text-slate-700 dark:text-slate-300 disabled:opacity-40 font-semibold"
+          >
+            Next
+          </button>
         </div>
       )}
     </div>

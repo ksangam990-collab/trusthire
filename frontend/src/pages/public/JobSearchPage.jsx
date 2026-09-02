@@ -64,6 +64,8 @@ export default function JobSearchPage() {
     setVerifiedOnly(false);
     setSortBy('createdAt');
     setPagination({ page: 1, pages: 1, total: 0 });
+    // Trigger refetch with cleared params on next render
+    setTimeout(() => fetchJobs(), 0);
   };
 
   return (
@@ -105,7 +107,7 @@ export default function JobSearchPage() {
         <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
           <button
             type="submit"
-            className="w-full sm:w-auto px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition shadow-sm"
+            className="w-full sm:w-auto px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition shadow-sm"
           >
             Apply Search
           </button>
@@ -213,7 +215,7 @@ export default function JobSearchPage() {
           </p>
           <button
             onClick={handleResetFilters}
-            className="px-5 py-2.5 rounded-xl bg-slate-900 dark:bg-emerald-500 text-white dark:text-slate-950 font-bold text-xs mt-2"
+            className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs mt-2"
           >
             Reset Filters
           </button>

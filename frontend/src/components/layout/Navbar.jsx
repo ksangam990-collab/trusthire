@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -7,7 +7,6 @@ import {
   LogOut, 
   User, 
   Plus, 
-  Briefcase, 
   Menu, 
   X, 
   ChevronDown,
@@ -295,16 +294,81 @@ export default function Navbar() {
           </Link>
 
           {isAuthenticated ? (
-            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-2">
-              <div className="px-3 text-slate-500 text-[11px]">
-                Signed in as <strong>{user?.name}</strong>
+            <div className="pt-3 border-t border-slate-200 dark:border-slate-800 space-y-1">
+              <div className="px-3 py-1.5 text-slate-500 dark:text-slate-400 text-[11px]">
+                Signed in as <strong className="text-slate-700 dark:text-slate-200">{user?.name}</strong>
               </div>
-              <button
-                onClick={handleLogout}
-                className="w-full text-left px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 font-semibold"
-              >
-                Sign Out
-              </button>
+
+              {user?.role === 'admin' && (
+                <Link
+                  to="/admin/dashboard"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                >
+                  <ShieldAlert className="w-4 h-4 text-emerald-600" />
+                  <span>Admin Control Center</span>
+                </Link>
+              )}
+
+              {user?.role === 'employer' && (
+                <>
+                  <Link
+                    to="/employer/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                  >
+                    <LayoutDashboard className="w-4 h-4 text-slate-500" />
+                    <span>Recruiter Dashboard</span>
+                  </Link>
+                  <Link
+                    to="/employer/post-job"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                  >
+                    <Plus className="w-4 h-4 text-emerald-600" />
+                    <span>Post New Job</span>
+                  </Link>
+                  <Link
+                    to="/employer/verify"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <span>MCA Verification</span>
+                  </Link>
+                </>
+              )}
+
+              {user?.role === 'jobseeker' && (
+                <>
+                  <Link
+                    to="/candidate/dashboard"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                  >
+                    <FileText className="w-4 h-4 text-slate-500" />
+                    <span>My Applications</span>
+                  </Link>
+                  <Link
+                    to="/profile"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className="flex items-center space-x-2 px-3 py-2 rounded-xl text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 font-medium"
+                  >
+                    <User className="w-4 h-4 text-slate-500" />
+                    <span>Profile & Resume</span>
+                  </Link>
+                </>
+              )}
+
+              <div className="border-t border-slate-200 dark:border-slate-800 mt-2 pt-2">
+                <button
+                  onClick={handleLogout}
+                  className="w-full flex items-center space-x-2 text-left px-3 py-2 rounded-xl text-rose-600 dark:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 font-semibold"
+                >
+                  <LogOut className="w-4 h-4" />
+                  <span>Sign Out</span>
+                </button>
+              </div>
             </div>
           ) : (
             <div className="pt-3 border-t border-slate-200 dark:border-slate-800 grid grid-cols-2 gap-2">

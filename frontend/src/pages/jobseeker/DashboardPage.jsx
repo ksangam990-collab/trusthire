@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, Building2, Clock, CheckCircle2, AlertCircle, FileText, ArrowRight, User } from 'lucide-react';
@@ -59,7 +59,7 @@ export default function DashboardPage() {
       <motion.div 
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6"
+        className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
         <div className="space-y-2">
           <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Candidate Portal & Application Tracker</h1>
@@ -105,7 +105,7 @@ export default function DashboardPage() {
                 key={app._id}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
+                className="p-5 sm:p-6 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200/90 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 transition flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-sm"
               >
                 <div className="flex items-start space-x-4">
                   <div className="w-12 h-12 rounded-2xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center text-slate-800 dark:text-slate-200 font-bold text-base flex-shrink-0">
@@ -133,7 +133,7 @@ export default function DashboardPage() {
                     </Link>
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                       <span>{app.job?.location?.city} ({app.job?.workplaceType})</span>
-                      <span className="text-slate-400">•</span>
+                      <span className="text-slate-400">�</span>
                       <span className="inline-flex items-center space-x-1 font-mono text-slate-400">
                         <Clock className="w-3 h-3" />
                         <span>Applied on {new Date(app.createdAt).toLocaleDateString()}</span>

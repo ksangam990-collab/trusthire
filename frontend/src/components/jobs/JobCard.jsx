@@ -17,7 +17,7 @@ export default function JobCard({ job }) {
     isFromVerifiedEmployer,
     employerTrustScore,
     createdAt
-  } = job;
+  } = job || {};
 
   const score = employerTrustScore || employer?.trustScore || 40;
 
@@ -58,7 +58,7 @@ export default function JobCard({ job }) {
               </div>
 
               <Link to={`/jobs/${_id}`}>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors leading-snug">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors leading-snug">
                   {title}
                 </h3>
               </Link>
@@ -72,18 +72,18 @@ export default function JobCard({ job }) {
         <div className="flex flex-wrap items-center gap-2 text-xs">
           <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
             <MapPin className="w-3.5 h-3.5 text-slate-400" />
-            <span>{location?.city || 'India'} ({workplaceType})</span>
+            <span>{location?.city || 'India'} • {workplaceType || 'Onsite'}</span>
           </span>
 
           <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
             <Briefcase className="w-3.5 h-3.5 text-slate-400" />
-            <span>{jobType} • {experienceLevel}</span>
+            <span>{jobType || 'Full-time'} • {experienceLevel || 'Any'}</span>
           </span>
 
           {salary?.min > 0 && (
             <span className="inline-flex items-center space-x-1 px-3 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 font-bold border border-emerald-200 dark:border-emerald-900">
               <IndianRupee className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
-              <span>₹{(salary.min / 100000).toFixed(1)}L - ₹{(salary.max / 100000).toFixed(1)}L / yr</span>
+              <span>₹{((salary.min || 0) / 100000).toFixed(1)}L - ₹{((salary.max || salary.min || 0) / 100000).toFixed(1)}L / yr</span>
             </span>
           )}
         </div>
@@ -112,7 +112,7 @@ export default function JobCard({ job }) {
 
         <Link
           to={`/jobs/${_id}`}
-          className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center space-x-1 group"
+          className="font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center space-x-1 group"
         >
           <span>View Opportunity</span>
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />

@@ -1,6 +1,7 @@
 const errorHandler = (err, req, res, next) => {
   let error = { ...err };
   error.message = err.message || 'Internal Server Error';
+  error.statusCode = err.statusCode;
 
   if (process.env.NODE_ENV !== 'production') {
     console.error('[Error Handler Detail]:', err);

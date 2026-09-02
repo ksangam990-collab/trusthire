@@ -42,20 +42,23 @@ const allowedOrigins = [
   'http://127.0.0.1:5173'
 ].filter(Boolean);
 
+app.set('trust proxy', 1);
+
 app.use(cors({
   origin: (origin, callback) => {
-    // Allow requests with no origin (like mobile apps, curl) or any vercel/localhost/configured origin
     if (!origin) return callback(null, true);
     if (
       allowedOrigins.includes(origin) ||
       origin.endsWith('.vercel.app') ||
       origin.includes('localhost') ||
-      origin.includes('127.0.0.1') ||
-      process.env.NODE_ENV !== 'production'
+      origin.includes('127.0.0.1')
     ) {
       return callback(null, true);
     }
-    return callback(null, true);
+    if (process.env.NODE_ENV !== 'production') {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'), false);
   },
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

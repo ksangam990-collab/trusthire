@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams, useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { AlertTriangle, ShieldAlert, UploadCloud, CheckCircle2, Lock, ArrowLeft } from 'lucide-react';
@@ -40,7 +40,7 @@ export default function ReportPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const targetEmployerId = selectedEmployerId || (employersList[0]?._id);
+    const targetEmployerId = selectedEmployerId || null;
     if (!targetEmployerId && !customOrgName.trim()) {
       setErrorMessage('Please select or specify the reported organization.');
       return;

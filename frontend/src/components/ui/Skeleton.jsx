@@ -1,9 +1,9 @@
-﻿import React from 'react';
+import React from 'react';
 
 export function Skeleton({ className = '', ...props }) {
   return (
     <div
-      className={`animate-pulse rounded-md bg-slate-800/60 dark:bg-slate-800/60 ${className}`}
+      className={`animate-pulse rounded-md bg-slate-200 dark:bg-slate-800/60 ${className}`}
       {...props}
     />
   );
@@ -11,7 +11,7 @@ export function Skeleton({ className = '', ...props }) {
 
 export function JobCardSkeleton() {
   return (
-    <div className="rounded-xl border border-slate-800 bg-[#111827]/80 p-5 space-y-4">
+    <div className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-5 space-y-4">
       <div className="flex items-start justify-between">
         <div className="flex items-center space-x-3">
           <Skeleton className="w-11 h-11 rounded-lg" />
@@ -27,7 +27,7 @@ export function JobCardSkeleton() {
         <Skeleton className="w-32 h-5 rounded" />
         <Skeleton className="w-28 h-5 rounded" />
       </div>
-      <div className="pt-3 border-t border-slate-800/80 flex justify-between">
+      <div className="pt-3 border-t border-slate-100 dark:border-slate-800/80 flex justify-between">
         <Skeleton className="w-20 h-4" />
         <Skeleton className="w-28 h-4" />
       </div>

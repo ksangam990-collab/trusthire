@@ -8,10 +8,10 @@ export default function ProtectedRoute({ children, allowedRoles }) {
 
   if (!isInitialized) {
     return (
-      <div className="min-h-screen bg-[#0B0F17] flex items-center justify-center">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0B0F17] flex items-center justify-center">
         <div className="flex flex-col items-center space-y-4">
           <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin" />
-          <p className="text-slate-400 text-xs font-mono tracking-wider">VERIFYING AUTHENTICATION CONTEXT...</p>
+          <p className="text-slate-500 dark:text-slate-400 text-xs font-mono tracking-wider">VERIFYING AUTHENTICATION CONTEXT...</p>
         </div>
       </div>
     );

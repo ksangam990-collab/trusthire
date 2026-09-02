@@ -62,7 +62,14 @@ export const verifyEmployerSimulation = async (req, res, next) => {
     const cinPattern = /^[LUu]{1}[0-9]{5}[A-Za-z]{2}[0-9]{4}[A-Za-z]{3}[0-9]{6}$/;
     const gstinPattern = /^[0-9]{2}[A-Za-z]{5}[0-9]{4}[A-Za-z]{1}[1-9A-Za-z]{1}Z[0-9A-Za-z]{1}$/;
 
-    if (cin && !cinPattern.test(cin.trim())) {
+    if (!cin || !cin.trim()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Corporate Identification Number (CIN) is required for verification.'
+      });
+    }
+
+    if (!cinPattern.test(cin.trim())) {
       return res.status(400).json({
         success: false,
         message: 'Invalid Corporate Identification Number (CIN) format.'

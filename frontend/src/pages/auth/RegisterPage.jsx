@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { ShieldCheck, Lock, Mail, User, Building, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
@@ -46,7 +46,7 @@ export default function RegisterPage() {
       if (role === 'employer') {
         navigate('/employer/verify');
       } else {
-        navigate('/jobs');
+        navigate('/candidate/dashboard');
       }
     } else {
       setErrorMessage(res.message || 'Registration failed.');

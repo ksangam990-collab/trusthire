@@ -251,8 +251,7 @@ export const forgotPassword = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: 'Password reset email sent successfully.',
-      data: { resetToken } // Included for local demo ease
+      message: 'If the email exists, password reset instructions have been sent.'
     });
   } catch (error) {
     next(error);

@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -12,17 +12,8 @@ import {
   ChevronDown, 
   ChevronUp, 
   ShieldAlert,
-  Building,
   Check,
-  TrendingUp,
-  Sparkles,
-  IndianRupee,
-  Briefcase,
-  AlertTriangle,
-  FileCheck,
-  UserCheck,
-  Eye,
-  ExternalLink
+  AlertTriangle
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';

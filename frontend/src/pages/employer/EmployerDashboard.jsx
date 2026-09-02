@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { 
@@ -56,7 +56,7 @@ export default function EmployerDashboard() {
         prev.map(app => (app._id === applicationId ? { ...app, status: newStatus } : app))
       );
     } catch (err) {
-      alert(err.message || 'Failed to update candidate status.');
+      console.error('Failed to update candidate status:', err.message);
     } finally {
       setUpdatingId(null);
     }
@@ -91,7 +91,7 @@ export default function EmployerDashboard() {
       <motion.div 
         initial={{ opacity: 0, y: 12 }}
         animate={{ opacity: 1, y: 0 }}
-        className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6"
+        className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-slate-900/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl flex flex-col md:flex-row md:items-center justify-between gap-6"
       >
         <div className="space-y-2">
           <div className="flex items-center space-x-2.5 flex-wrap">
@@ -133,7 +133,7 @@ export default function EmployerDashboard() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono font-bold">TRUST SCORE</span>
             <div className="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{overview.trustScore}/100</div>
@@ -141,7 +141,7 @@ export default function EmployerDashboard() {
           <TrustScoreBadge score={overview.trustScore} size="sm" showLabel={false} />
         </motion.div>
 
-        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono font-bold">ACTIVE LISTINGS</span>
             <div className="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{overview.activeJobs}</div>
@@ -149,7 +149,7 @@ export default function EmployerDashboard() {
           <Briefcase className="w-8 h-8 text-emerald-500/30" />
         </motion.div>
 
-        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono font-bold">CANDIDATES</span>
             <div className="text-2xl font-black font-mono text-slate-900 dark:text-white mt-1">{overview.totalApplications}</div>
@@ -157,7 +157,7 @@ export default function EmployerDashboard() {
           <Users className="w-8 h-8 text-blue-500/30" />
         </motion.div>
 
-        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
+        <motion.div whileHover={{ y: -2 }} className="p-5 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 flex items-center justify-between shadow-sm">
           <div>
             <span className="text-[11px] text-slate-500 dark:text-slate-400 font-mono font-bold">FRAUD ALERTS</span>
             <div className={`text-2xl font-black font-mono mt-1 ${overview.fraudReportsCount > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-emerald-600 dark:text-emerald-400'}`}>
@@ -169,7 +169,7 @@ export default function EmployerDashboard() {
       </div>
 
       {/* Recruitment Funnel Stages */}
-      <div className="p-6 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
+      <div className="p-6 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
         <h2 className="text-xs font-bold font-mono text-slate-600 dark:text-slate-400 uppercase tracking-wider">Recruitment Pipeline Funnel</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           {Object.entries(funnel).map(([statusKey, count]) => (
@@ -182,7 +182,7 @@ export default function EmployerDashboard() {
       </div>
 
       {/* Candidate Pipeline Stream */}
-      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-[#0f172a]/85 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="p-6 sm:p-8 rounded-3xl bg-white/90 dark:bg-slate-900/85 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-100 dark:border-slate-800 pb-4">
           <div>
             <h2 className="text-base font-bold text-slate-900 dark:text-white">Candidate Review Stream</h2>
@@ -223,7 +223,7 @@ export default function EmployerDashboard() {
                       <div className="text-[11px] text-slate-400 font-mono">{app.candidate?.email}</div>
                     </td>
                     <td className="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-medium">{app.job?.title || 'Job Opening'}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-500">{app.contactPhone || '—'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-500">{app.contactPhone || '�'}</td>
                     <td className="py-3.5 px-4">
                       {app.resumeUrl ? (
                         <a

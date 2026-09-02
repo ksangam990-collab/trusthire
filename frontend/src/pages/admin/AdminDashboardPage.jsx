@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { 
   ShieldAlert, 
@@ -69,7 +69,7 @@ export default function AdminDashboardPage() {
       const metricsRes = await fraudApi.getAdminMetrics();
       setMetrics(metricsRes?.data || metrics);
     } catch (err) {
-      alert(err.message || 'Failed to update report status.');
+      console.error('Failed to update report status:', err.message);
     } finally {
       setUpdatingReportId(null);
     }
@@ -78,7 +78,7 @@ export default function AdminDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8 theme-transition">
       {/* Top Banner */}
-      <div className="p-6 sm:p-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
+      <div className="p-6 sm:p-8 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 flex flex-col md:flex-row md:items-center justify-between gap-4 shadow-sm">
         <div className="space-y-1">
           <div className="flex items-center space-x-2">
             <div className="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center">
@@ -114,24 +114,24 @@ export default function AdminDashboardPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-1">
+        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
           <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Total Accounts</span>
           <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">{metrics?.totalUsers || 0}</div>
         </div>
 
-        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-1">
+        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
           <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">MCA Verified Orgs</span>
           <div className="text-2xl font-bold font-mono text-emerald-600 dark:text-emerald-400">
             {metrics?.verifiedEmployers || 0} <span className="text-xs font-normal text-slate-400">/ {metrics?.totalEmployers || 0}</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-1">
+        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
           <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Active Listings</span>
           <div className="text-2xl font-bold font-mono text-slate-900 dark:text-white">{metrics?.activeJobs || 0}</div>
         </div>
 
-        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-1">
+        <div className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-1">
           <span className="text-[11px] font-mono text-slate-500 uppercase font-semibold">Pending Scam Reports</span>
           <div className={`text-2xl font-bold font-mono ${metrics?.pendingReports > 0 ? 'text-rose-600 dark:text-rose-400' : 'text-slate-900 dark:text-white'}`}>
             {metrics?.pendingReports || 0}
@@ -185,7 +185,7 @@ export default function AdminDashboardPage() {
             <select
               value={statusFilter}
               onChange={(e) => setStatusFilter(e.target.value)}
-              className="bg-white dark:bg-[#0F172A] border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none"
+              className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-slate-700 dark:text-slate-300 text-xs rounded-lg px-2.5 py-1.5 focus:outline-none"
             >
               <option value="">All Statuses (Pending, Verified, Dismissed)</option>
               <option value="pending">Pending Review</option>
@@ -204,7 +204,7 @@ export default function AdminDashboardPage() {
               {reports.map((report) => (
                 <div
                   key={report._id}
-                  className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-4 text-xs shadow-sm"
+                  className="p-5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-4 text-xs shadow-sm"
                 >
                   <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-100 dark:border-slate-800 pb-3">
                     <div className="flex items-center space-x-2 flex-wrap">
@@ -218,7 +218,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-800 dark:text-slate-200">
                         {report.fraudCategory}
                       </span>
-                      <span className="text-slate-400">• Severity: <strong>{report.severity}</strong></span>
+                      <span className="text-slate-400">� Severity: <strong>{report.severity}</strong></span>
                     </div>
 
                     <span className="text-[11px] font-mono text-slate-400">
@@ -243,7 +243,7 @@ export default function AdminDashboardPage() {
                     <div>
                       <span className="text-slate-400 block">Demanded Amount:</span>
                       <span className="font-bold font-mono text-rose-600 dark:text-rose-400">
-                        {report.amountDemanded > 0 ? `₹${report.amountDemanded.toLocaleString()}` : 'None Stated'}
+                        {report.amountDemanded > 0 ? `?${report.amountDemanded.toLocaleString()}` : 'None Stated'}
                       </span>
                     </div>
                     <div>
@@ -323,8 +323,8 @@ export default function AdminDashboardPage() {
                 {employers.map((emp) => (
                   <tr key={emp._id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
                     <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{emp.companyName}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || '—'}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || '—'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || '�'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || '�'}</td>
                     <td className="py-3.5 px-4">
                       <TrustScoreBadge score={emp.trustScore || 40} size="sm" />
                     </td>
@@ -348,7 +348,7 @@ export default function AdminDashboardPage() {
       {activeTab === 'jobs' && (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {jobs.map((job) => (
-            <div key={job._id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#0F172A] space-y-2 text-xs">
+            <div key={job._id} className="p-4 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-2 text-xs">
               <div className="flex justify-between items-start">
                 <div>
                   <h4 className="font-bold text-slate-900 dark:text-white text-sm">{job.title}</h4>
@@ -358,17 +358,17 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex items-center space-x-2 text-slate-500 text-[11px]">
                 <span>{job.location?.city}</span>
-                <span>•</span>
+                <span>�</span>
                 <span>{job.jobType}</span>
-                <span>•</span>
-                <span>₹{(job.salary?.min / 100000).toFixed(1)}L - ₹{(job.salary?.max / 100000).toFixed(1)}L</span>
+                <span>�</span>
+                <span>?{((job.salary?.min || 0) / 100000).toFixed(1)}L - ?{((job.salary?.max || job.salary?.min || 0) / 100000).toFixed(1)}L</span>
               </div>
               <div className="pt-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
                 <span className="font-mono text-[10px] text-emerald-600 uppercase font-bold">
                   Status: {job.status}
                 </span>
                 <Link to={`/jobs/${job._id}`} className="text-emerald-600 dark:text-emerald-400 font-semibold hover:underline">
-                  Inspect Listing →
+                  Inspect Listing ?
                 </Link>
               </div>
             </div>
