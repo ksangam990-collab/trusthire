@@ -17,31 +17,42 @@
 
 // backend/src/services/verificationService.js
 
-export const SUSPICIOUS_KEYWORDS = [
-  "wire transfer",
-  "western union",
-  "telegram @",
-  "whatsapp interview",
-  "pay for training kit",
-  "crypto payment",
-  "registration fee",
-  "gift card",
-  "data entry $80/hr",
-  "no experience 5000$/week",
-  "package forwarding",
+/**
+ * Employer Verification Service
+ *
+ * Verifies Indian companies via:
+ * 1. CIN (Company Identification Number) — MCA21 format check
+ * 2. GSTIN — GST verification format check
+ *
+ * NOTE: For development/demo, structural pattern validation is used.
+ * Replace with live API calls once government API keys are configured.
+ */
+
+const SUSPICIOUS_KEYWORDS = [
+  'wire transfer',
+  'western union',
+  'telegram @',
+  'whatsapp interview',
+  'pay for training kit',
+  'crypto payment',
+  'registration fee',
+  'gift card',
+  'data entry $80/hr',
+  'no experience 5000$/week',
+  'package forwarding',
 ];
 
-export const HIGH_RISK_DOMAINS = [
-  "gmail.com",
-  "yahoo.com",
-  "hotmail.com",
-  "outlook.com",
-  "proton.me",
+const HIGH_RISK_DOMAINS = [
+  'gmail.com',
+  'yahoo.com',
+  'hotmail.com',
+  'outlook.com',
+  'proton.me',
 ];
 
 export const verifyCompanyEmail = (email) => {
   if (!email) return false;
-  const domain = email.split("@")[1]?.toLowerCase();
+  const domain = email.split('@')[1]?.toLowerCase();
   return domain && !HIGH_RISK_DOMAINS.includes(domain);
 };
 
@@ -55,7 +66,7 @@ export const analyzeJobRisk = (jobData, employerCompany) => {
   const flags = [];
 
   const textToScan =
-    `${jobData.title || ""} ${jobData.description || ""} ${(jobData.requirements || []).join(" ")}`.toLowerCase();
+    `${jobData.title || ''} ${jobData.description || ''} ${(jobData.requirements || []).join(' ')}`.toLowerCase();
 
   SUSPICIOUS_KEYWORDS.forEach((keyword) => {
     if (textToScan.includes(keyword)) {
@@ -64,25 +75,26 @@ export const analyzeJobRisk = (jobData, employerCompany) => {
     }
   });
 
-  if (jobData.salary?.max > 250000 && jobData.experienceLevel === "Entry") {
+  if (jobData.salary?.max > 250000 && jobData.experienceLevel === 'Entry Level') {
     riskScore += 20;
-    flags.push("Unusually high salary for entry-level designation");
+    flags.push('Unusually high salary for entry-level designation');
   }
 
-  if (employerCompany?.email) {
-    const emailDomain = employerCompany.email.split("@")[1];
-    if (
-      HIGH_RISK_DOMAINS.includes(emailDomain) &&
-      employerCompany.isCorporate
-    ) {
-      riskScore += 15;
-      flags.push("Corporate listing using unverified public email provider");
+  if (employerCompany?.website) {
+    try {
+      const websiteDomain = new URL(employerCompany.website).hostname.replace('www.', '');
+      if (HIGH_RISK_DOMAINS.includes(websiteDomain) && employerCompany.verificationStatus === 'verified') {
+        riskScore += 15;
+        flags.push('Verified corporate listing using a free-hosted website domain');
+      }
+    } catch {
+      // Invalid URL — skip domain check
     }
   }
 
-  let status = "CLEAN";
-  if (riskScore >= 50) status = "CRITICAL_RISK";
-  else if (riskScore >= 25) status = "NEEDS_REVIEW";
+  let status = 'CLEAN';
+  if (riskScore >= 50) status = 'CRITICAL_RISK';
+  else if (riskScore >= 25) status = 'NEEDS_REVIEW';
 
   return {
     riskScore: Math.min(riskScore, 100),
@@ -92,10 +104,4 @@ export const analyzeJobRisk = (jobData, employerCompany) => {
   };
 };
 
-export default {
-  verifyCompanyEmail,
-  verifyRegistrationNumber,
-  analyzeJobRisk,
-  SUSPICIOUS_KEYWORDS,
-  HIGH_RISK_DOMAINS,
-};
+export { SUSPICIOUS_KEYWORDS, HIGH_RISK_DOMAINS };

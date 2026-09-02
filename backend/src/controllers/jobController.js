@@ -194,14 +194,37 @@ export const updateJob = async (req, res, next) => {
       return res.status(404).json({ success: false, message: 'Job not found or unauthorized.' });
     }
 
-    const updates = req.body;
-    // Protect trust status invariants
-    delete updates.employer;
-    delete updates.isFromVerifiedEmployer;
-    delete updates.employerTrustScore;
-    delete updates.verifiedFraudCount;
+    const {
+      title,
+      description,
+      responsibilities,
+      requirements,
+      skills,
+      jobType,
+      workplaceType,
+      experienceLevel,
+      location,
+      salary,
+      openings,
+      status,
+      deadline
+    } = req.body;
 
-    Object.assign(job, updates);
+    // Explicit whitelist — never allow trust/employer fields to be overwritten
+    if (title !== undefined) job.title = title;
+    if (description !== undefined) job.description = description;
+    if (responsibilities !== undefined) job.responsibilities = responsibilities;
+    if (requirements !== undefined) job.requirements = requirements;
+    if (skills !== undefined) job.skills = Array.isArray(skills) ? skills.map(s => s.toLowerCase().trim()) : job.skills;
+    if (jobType !== undefined) job.jobType = jobType;
+    if (workplaceType !== undefined) job.workplaceType = workplaceType;
+    if (experienceLevel !== undefined) job.experienceLevel = experienceLevel;
+    if (location !== undefined) job.location = { ...job.location, ...location };
+    if (salary !== undefined) job.salary = { ...job.salary, ...salary };
+    if (openings !== undefined) job.openings = openings;
+    if (deadline !== undefined) job.deadline = deadline;
+    // Only allow closing a job, not suspending (suspension is system-only)
+    if (status !== undefined && ['active', 'closed', 'draft'].includes(status)) job.status = status;
     await job.save();
 
     res.status(200).json({

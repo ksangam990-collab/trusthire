@@ -1,9 +1,7 @@
 ﻿import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { motion } from 'framer-motion';
 import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
-import { Spinner } from '../../components/ui/Skeleton';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -14,7 +12,14 @@ export default function LoginPage() {
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
 
-  const from = location.state?.from?.pathname || '/';
+  const from = location.state?.from?.pathname || null;
+
+  const getRoleDefaultPath = (role) => {
+    if (role === 'employer') return '/employer/dashboard';
+    if (role === 'jobseeker') return '/jobs';
+    if (role === 'admin') return '/employer/dashboard';
+    return '/';
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -27,29 +32,26 @@ export default function LoginPage() {
     const res = await login({ email: email.trim(), password });
 
     if (res.success) {
-      navigate(from, { replace: true });
+      // Honour the original destination if set; otherwise route by role
+      navigate(from || getRoleDefaultPath(res.user?.role), { replace: true });
     } else {
       setErrorMessage(res.message || 'Login failed. Please verify your credentials.');
     }
   };
 
   return (
-    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12 theme-transition">
-      <motion.div 
-        initial={{ opacity: 0, scale: 0.96, y: 15 }}
-        animate={{ opacity: 1, scale: 1, y: 0 }}
-        className="max-w-md w-full p-8 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-xl backdrop-blur-xl space-y-6"
-      >
+    <div className="min-h-[calc(100vh-8rem)] flex items-center justify-center px-4 py-12">
+      <div className="max-w-md w-full p-8 rounded-2xl bg-[#111827] border border-slate-800 shadow-2xl space-y-6">
         <div className="text-center space-y-2">
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400 mx-auto shadow-sm">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
             <ShieldCheck className="w-6 h-6" />
           </div>
-          <h1 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">Welcome to TrustHire</h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400">Sign in to your verified recruitment or candidate workspace.</p>
+          <h1 className="text-2xl font-bold text-white tracking-tight">Welcome Back</h1>
+          <p className="text-xs text-slate-400">Sign in to access your verified profile & safety dashboard.</p>
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 text-xs rounded-2xl flex items-center space-x-2">
+          <div className="p-3.5 bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs rounded-lg flex items-center space-x-2">
             <AlertCircle className="w-4 h-4 flex-shrink-0" />
             <span>{errorMessage}</span>
           </div>
@@ -57,36 +59,36 @@ export default function LoginPage() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-xs">
           <div>
-            <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Email Address</label>
+            <label className="block text-slate-300 font-medium mb-1">Email Address</label>
             <div className="relative">
-              <Mail className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@company.com"
-                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                placeholder="name@company.com"
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           <div>
-            <div className="flex justify-between items-center mb-1">
-              <label className="block text-slate-700 dark:text-slate-300 font-semibold">Password</label>
-              <Link to="/forgot-password" className="text-emerald-600 dark:text-emerald-400 hover:underline text-[11px] font-semibold">
+            <div className="flex items-center justify-between mb-1">
+              <label className="block text-slate-300 font-medium">Password</label>
+              <Link to="/forgot-password" className="text-emerald-400 hover:underline text-[11px]">
                 Forgot password?
               </Link>
             </div>
             <div className="relative">
-              <Lock className="absolute left-3.5 top-3 w-4 h-4 text-slate-400" />
+              <Lock className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
               <input
                 type="password"
                 required
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="••••••••"
-                className="w-full pl-10 pr-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:border-emerald-500"
+                className="w-full pl-9 pr-3 py-2.5 bg-slate-950 border border-slate-800 rounded-lg text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
@@ -94,21 +96,20 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={isLoading}
-            className="w-full py-3 bg-emerald-500 hover:bg-emerald-600 dark:bg-emerald-400 dark:hover:bg-emerald-300 text-white dark:text-slate-900 font-bold rounded-2xl transition disabled:opacity-50 flex items-center justify-center space-x-2 text-xs shadow-sm"
+            className="w-full py-3 bg-emerald-400 hover:bg-emerald-300 text-slate-900 font-bold rounded-lg transition disabled:opacity-50 flex items-center justify-center space-x-2 text-xs"
           >
-            {isLoading && <Spinner className="w-4 h-4 text-white dark:text-slate-900" />}
-            <span>{isLoading ? 'Authenticating...' : 'Sign In to TrustHire'}</span>
+            <span>{isLoading ? 'Authenticating...' : 'Sign In'}</span>
             <ArrowRight className="w-4 h-4" />
           </button>
         </form>
 
-        <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-3 border-t border-slate-100 dark:border-slate-800">
-          Don't have an account yet?{' '}
-          <Link to="/register" className="text-emerald-600 dark:text-emerald-400 hover:underline font-bold">
-            Create an Account
+        <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
+          Don't have an account?{' '}
+          <Link to="/register" className="text-emerald-400 hover:underline font-semibold">
+            Create Account
           </Link>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
