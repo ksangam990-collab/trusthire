@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+ï»¿import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   MapPin, 
@@ -199,7 +199,7 @@ export default function JobDetailPage() {
                 <MapPin className="w-3.5 h-3.5 text-slate-400" /> {location?.city}, {location?.country} ({workplaceType})
               </span>
               <span className="inline-flex items-center space-x-1">
-                <Briefcase className="w-3.5 h-3.5 text-slate-400" /> {jobType} • {experienceLevel}
+                <Briefcase className="w-3.5 h-3.5 text-slate-400" /> {jobType} ï¿½ {experienceLevel}
               </span>
               <span className="inline-flex items-center space-x-1 text-emerald-700 dark:text-emerald-400 font-bold">
                 <IndianRupee className="w-3.5 h-3.5 text-emerald-600" /> ?{((salary?.min || 0) / 100000).toFixed(1)}L - ?{((salary?.max || salary?.min || 0) / 100000).toFixed(1)}L LPA
@@ -230,7 +230,7 @@ export default function JobDetailPage() {
                   setShowApplyModal(true);
                 }
               }}
-              className="px-6 py-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold text-xs sm:text-sm transition shadow-sm"
+              className="px-6 py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition shadow-sm rounded-xl cursor-pointer"
             >
               Apply to Role
             </button>
@@ -308,7 +308,7 @@ export default function JobDetailPage() {
 
               <div className="p-3.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-900/50 space-y-2 text-xs">
                 <div className="flex justify-between items-center text-[11px] text-slate-600 dark:text-slate-400">
-                  <span>Gross Monthly (CTC ÷ 12):</span>
+                  <span>Gross Monthly (CTC ï¿½ 12):</span>
                   <span className="font-mono font-bold text-slate-900 dark:text-white">?{monthlyGross.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between items-center text-[11px] text-slate-600 dark:text-slate-400">

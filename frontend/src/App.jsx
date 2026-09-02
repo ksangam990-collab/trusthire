@@ -6,6 +6,7 @@ import { useThemeStore } from './store/themeStore';
 import Navbar from './components/layout/Navbar';
 import Footer from './components/layout/Footer';
 import ProtectedRoute from './components/layout/ProtectedRoute';
+import InteractiveMeshBackground from './components/canvas/InteractiveMeshBackground';
 
 // Public Pages
 import HomePage from './pages/public/HomePage';
@@ -46,9 +47,10 @@ export default function App() {
   }, [location.pathname]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-500 theme-transition">
+    <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-500 theme-transition relative">
+      <InteractiveMeshBackground />
       <Navbar />
-      <main className="flex-grow">
+      <main className="flex-grow relative z-10">
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<HomePage />} />

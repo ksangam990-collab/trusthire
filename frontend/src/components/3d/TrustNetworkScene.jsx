@@ -149,10 +149,31 @@ export default function TrustNetworkScene() {
       observer.disconnect();
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener('resize', handleResize);
-      if (currentMount && renderer.domElement) {
+
+      // Cleanly dispose Three.js scene assets
+      coreGeometry.dispose();
+      coreMaterial.dispose();
+      innerGeometry.dispose();
+      innerMaterial.dispose();
+      lineMaterial.dispose();
+
+      nodePositions.forEach(node => {
+        if (node.mesh) {
+          node.mesh.geometry?.dispose();
+          node.mesh.material?.dispose();
+        }
+      });
+
+      linesGroup.children.forEach(child => {
+        child.geometry?.dispose();
+      });
+
+      if (currentMount && renderer?.domElement && currentMount.contains(renderer.domElement)) {
         currentMount.removeChild(renderer.domElement);
       }
-      renderer.dispose();
+      if (renderer) {
+        renderer.dispose();
+      }
     };
   }, []);
 

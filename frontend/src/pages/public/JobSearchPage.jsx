@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { Search, MapPin, RotateCcw, Building2, CheckCircle2 } from 'lucide-react';
 import { jobsApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -71,17 +72,28 @@ export default function JobSearchPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8 theme-transition">
       {/* Page Header */}
-      <div className="space-y-2">
+      <motion.div 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4 }}
+        className="space-y-2"
+      >
         <h1 className="text-3xl font-black text-slate-900 dark:text-white tracking-tight">
           Explore Verified Opportunities
         </h1>
         <p className="text-sm text-slate-600 dark:text-slate-400">
           Search genuine job postings verified against corporate MCA21 registration databases.
         </p>
-      </div>
+      </motion.div>
 
       {/* High-Contrast Search Bar */}
-      <form onSubmit={handleSearchSubmit} className="bg-white dark:bg-slate-900 p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center gap-3">
+      <motion.form 
+        initial={{ opacity: 0, y: 15 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.4, delay: 0.1 }}
+        onSubmit={handleSearchSubmit} 
+        className="bg-white/95 dark:bg-slate-900/90 backdrop-blur-md p-3 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col sm:flex-row items-center gap-3 transition-all focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20"
+      >
         <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-800">
           <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
           <input
@@ -120,7 +132,7 @@ export default function JobSearchPage() {
             <RotateCcw className="w-4 h-4" />
           </button>
         </div>
-      </form>
+      </motion.form>
 
       {/* Filter Control Bar */}
       <div className="flex flex-wrap items-center justify-between gap-4 pb-4 border-b border-slate-200 dark:border-slate-800 text-xs">

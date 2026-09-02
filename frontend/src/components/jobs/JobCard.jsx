@@ -1,5 +1,6 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { MapPin, Briefcase, IndianRupee, CheckCircle2, Building2, Clock, ArrowRight } from 'lucide-react';
 import TrustScoreBadge from '../ui/TrustScoreBadge';
 
@@ -31,7 +32,10 @@ export default function JobCard({ job }) {
   };
 
   return (
-    <div className="rounded-2xl p-6 border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/90 shadow-sm hover:shadow-md hover:border-slate-300 dark:hover:border-slate-700 transition-all flex flex-col justify-between space-y-5">
+    <motion.div
+      whileHover={{ y: -4, transition: { duration: 0.2 } }}
+      className="rounded-2xl p-6 border border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm shadow-sm hover:shadow-xl hover:shadow-emerald-500/5 hover:border-emerald-500/30 dark:hover:border-emerald-500/30 transition-all flex flex-col justify-between space-y-5 group"
+    >
       <div className="space-y-4">
         {/* Header: Company Icon + Details + TrustScore */}
         <div className="flex items-start justify-between gap-4">
@@ -118,6 +122,6 @@ export default function JobCard({ job }) {
           <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>
-    </div>
+    </motion.div>
   );
 }
