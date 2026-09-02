@@ -146,7 +146,7 @@ export default function HomePage() {
 
   return (
     <div className="space-y-16 pb-20 theme-transition">
-      {/* 2-Column Split Hero Section (Stripe & Wellfound Inspired) */}
+      {/* 2-Column Split Hero Section (Unified Theme System) */}
       <section className="pt-10 sm:pt-16 pb-12 bg-gradient-to-b from-white via-slate-50 to-slate-100/60 dark:from-[#0B0F17] dark:via-[#0F172A] dark:to-[#0B0F17] border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
@@ -196,7 +196,7 @@ export default function HomePage() {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm shadow-indigo-600/20"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm"
                 >
                   <span>Search</span>
                   <ArrowRight className="w-4 h-4" />
@@ -207,15 +207,15 @@ export default function HomePage() {
               <div className="flex flex-wrap items-center gap-3">
                 <Link
                   to="/jobs"
-                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs transition shadow-sm"
+                  className="px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition shadow-sm"
                 >
                   Browse Verified Jobs
                 </Link>
                 <Link
                   to="/report-fraud"
-                  className="px-5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-bold text-xs transition flex items-center space-x-1.5"
+                  className="px-5 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-semibold text-xs transition flex items-center space-x-1.5"
                 >
-                  <ShieldAlert className="w-3.5 h-3.5" />
+                  <ShieldAlert className="w-3.5 h-3.5 text-slate-500" />
                   <span>Report a Scam</span>
                 </Link>
               </div>
@@ -241,7 +241,7 @@ export default function HomePage() {
                   <span className="font-semibold text-slate-800 dark:text-slate-200">100% MCA Checked</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
-                  <Lock className="w-4 h-4 text-blue-600" />
+                  <Lock className="w-4 h-4 text-emerald-600" />
                   <span className="font-semibold text-slate-800 dark:text-slate-200">₹0 Candidate Fees</span>
                 </div>
                 <div className="flex items-center space-x-1.5">
@@ -313,7 +313,7 @@ export default function HomePage() {
 
                 <Link
                   to="/jobs"
-                  className="block text-center py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold text-xs transition"
+                  className="block text-center py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs transition"
                 >
                   Browse Verified Opportunities →
                 </Link>
@@ -349,7 +349,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
           <div>
-            <span className="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
+            <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
               Featured Opportunities
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
@@ -358,7 +358,7 @@ export default function HomePage() {
           </div>
           <Link
             to="/jobs"
-            className="mt-3 sm:mt-0 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center space-x-1"
+            className="mt-3 sm:mt-0 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1"
           >
             <span>Explore all verified jobs</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -389,7 +389,7 @@ export default function HomePage() {
       {/* How TrustHire Works (4 Steps) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-3 mb-10">
-          <span className="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
+          <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
             Trust-First Architecture
           </span>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -406,7 +406,7 @@ export default function HomePage() {
               key={idx}
               className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition"
             >
-              <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
+              <span className="font-mono text-xs font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-1 rounded-md border border-emerald-200 dark:border-emerald-800">
                 {s.num}
               </span>
               <h3 className="font-bold text-slate-900 dark:text-white text-base pt-1">{s.title}</h3>
@@ -435,7 +435,7 @@ export default function HomePage() {
 
             <Link
               to="/fraud-board"
-              className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition flex items-center space-x-1.5 flex-shrink-0"
+              className="px-5 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-bold text-xs transition flex items-center space-x-1.5 flex-shrink-0"
             >
               <span>Learn How to Spot a Scam</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -522,7 +522,7 @@ export default function HomePage() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-2 mb-8">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-            <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
+            <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
             <span>Frequently Asked Questions</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -547,7 +547,7 @@ export default function HomePage() {
                 >
                   <span>{faq.q}</span>
                   {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-indigo-600 flex-shrink-0" />
+                    <ChevronUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
                   ) : (
                     <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
                   )}
@@ -578,7 +578,7 @@ export default function HomePage() {
           <div className="flex items-center space-x-3 flex-shrink-0">
             <Link
               to="/employer/verify"
-              className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition shadow-sm"
+              className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition shadow-sm"
             >
               Verify Company
             </Link>
