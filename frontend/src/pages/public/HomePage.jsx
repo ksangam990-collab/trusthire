@@ -14,8 +14,8 @@ import {
   ShieldAlert,
   Building,
   Check,
-  AlertTriangle,
-  Radio
+  TrendingUp,
+  Sparkles
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -97,16 +97,18 @@ export default function HomePage() {
   return (
     <div className="space-y-16 pb-20 theme-transition">
       {/* Hero Section */}
-      <section className="pt-12 sm:pt-16 pb-12 bg-gradient-to-b from-white via-slate-50 to-slate-100/60 dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800">
+      <section className="pt-14 sm:pt-20 pb-14 bg-gradient-to-b from-white via-slate-50/80 to-slate-100/60 dark:from-[#0B0F17] dark:via-[#0E1522] dark:to-[#0B0F17] border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
-          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
+          {/* Statutory Badge */}
+          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
             <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Government MCA21 & GST Registered Employers Only</span>
           </div>
 
+          {/* Main Title & Subtitle */}
           <div className="space-y-3">
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.2]">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.18]">
               Find verified jobs in India. <br />
               <span className="text-emerald-600 dark:text-emerald-400">Zero fake recruiters. Zero fees.</span>
             </h1>
@@ -115,9 +117,9 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* High-Contrast Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-white dark:bg-slate-800 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg flex flex-col sm:flex-row items-center gap-2">
-            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
+          {/* Elevated Indeed / LinkedIn Style Search Card */}
+          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-white dark:bg-slate-800/90 p-3 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-xl shadow-slate-200/50 dark:shadow-none flex flex-col sm:flex-row items-center gap-2.5">
+            <div className="flex items-center space-x-3 px-3.5 py-2.5 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
               <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
@@ -128,7 +130,7 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2">
+            <div className="flex items-center space-x-3 px-3.5 py-2.5 w-full sm:w-1/2">
               <MapPin className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
@@ -167,14 +169,14 @@ export default function HomePage() {
       {/* Corporate Trust Bar */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-4">
-          <p className="text-xs font-bold uppercase tracking-wider text-slate-500">
+          <p className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400">
             Verified hiring organizations across India
           </p>
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3.5">
             {topCompanies.map((c, i) => (
               <div
                 key={i}
-                className="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-2 shadow-sm"
+                className="p-4 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-2 shadow-sm hover:border-slate-300 dark:hover:border-slate-600 transition"
               >
                 <span className="text-xs font-bold text-slate-900 dark:text-white">{c.name}</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -225,7 +227,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* How TrustHire Protects Candidates */}
+      {/* How TrustHire Protects Candidates (3 Steps) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
           <div className="max-w-2xl space-y-2">
@@ -300,7 +302,7 @@ export default function HomePage() {
                 <div key={scam._id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-3 text-xs flex flex-col justify-between">
                   <div className="space-y-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/80 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900 uppercase">
+                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/80 px-2.5 py-0.5 rounded-full border border-rose-200 dark:border-rose-900 uppercase font-mono">
                         {scam.fraudCategory}
                       </span>
                       <span className="text-[10px] text-slate-400 font-medium">
