@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { ShieldCheck, Lock, Mail, ArrowRight, AlertCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
@@ -17,7 +17,7 @@ export default function LoginPage() {
   const getRoleDefaultPath = (role) => {
     if (role === 'employer') return '/employer/dashboard';
     if (role === 'jobseeker') return '/jobs';
-    if (role === 'admin') return '/employer/dashboard';
+    if (role === 'admin') return '/admin/dashboard';
     return '/';
   };
 
