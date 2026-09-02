@@ -80,6 +80,7 @@ export const submitReport = async (req, res, next) => {
     }
 
     const report = await FraudReport.create({
+      user: req.user ? req.user._id : (employer?.user || employerId),
       reporter: req.user ? req.user._id : null,
       isAnonymous: Boolean(isAnonymous),
       reporterContact: isAnonymous ? {} : (reporterContact || {}),

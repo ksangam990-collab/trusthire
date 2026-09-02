@@ -35,6 +35,7 @@ export const register = async (req, res, next) => {
     if (assignedRole === 'employer') {
       employerProfile = await Employer.create({
         user: user._id,
+        userId: user._id,
         companyName: companyName || `${name}'s Organization`,
         industry: industry || 'Information Technology',
         companySize: companySize || '11-50',
