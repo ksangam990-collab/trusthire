@@ -13,7 +13,9 @@ import {
   ChevronUp, 
   ShieldAlert,
   Building,
-  Check
+  Check,
+  AlertTriangle,
+  Radio
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -61,12 +63,12 @@ export default function HomePage() {
   };
 
   const topCompanies = [
-    { name: 'Razorpay', location: 'Bengaluru', verified: true },
-    { name: 'Zerodha', location: 'Bengaluru', verified: true },
-    { name: 'Swiggy', location: 'Bengaluru', verified: true },
-    { name: 'Infosys', location: 'Pune', verified: true },
-    { name: 'Zomato', location: 'Gurugram', verified: true },
-    { name: 'TCS', location: 'Mumbai', verified: true }
+    { name: 'Razorpay', location: 'Bengaluru' },
+    { name: 'Zerodha', location: 'Bengaluru' },
+    { name: 'Swiggy', location: 'Bengaluru' },
+    { name: 'Infosys', location: 'Pune' },
+    { name: 'Zomato', location: 'Gurugram' },
+    { name: 'TCS', location: 'Mumbai' }
   ];
 
   const faqs = [
@@ -93,9 +95,9 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-20 pb-20 theme-transition">
+    <div className="space-y-16 pb-20 theme-transition">
       {/* Hero Section */}
-      <section className="pt-12 sm:pt-16 pb-12 bg-white dark:bg-[#0B0F17] border-b border-slate-200 dark:border-slate-800">
+      <section className="pt-12 sm:pt-16 pb-12 bg-gradient-to-b from-white via-slate-50 to-slate-100/60 dark:from-slate-900 dark:via-slate-900/95 dark:to-slate-950 border-b border-slate-200 dark:border-slate-800">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
@@ -104,7 +106,7 @@ export default function HomePage() {
           </div>
 
           <div className="space-y-3">
-            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-tight">
+            <h1 className="text-3xl sm:text-5xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.2]">
               Find verified jobs in India. <br />
               <span className="text-emerald-600 dark:text-emerald-400">Zero fake recruiters. Zero fees.</span>
             </h1>
@@ -114,14 +116,14 @@ export default function HomePage() {
           </div>
 
           {/* High-Contrast Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md flex flex-col sm:flex-row items-center gap-2">
+          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-white dark:bg-slate-800 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-lg flex flex-col sm:flex-row items-center gap-2">
             <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
               <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
-                placeholder="Job title, skills, or company (e.g. React, Product Manager)..."
+                placeholder="Job title, skills, or company..."
                 className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none"
               />
             </div>
@@ -153,7 +155,7 @@ export default function HomePage() {
               <button
                 key={tag}
                 onClick={() => handleQuickTagClick(tag)}
-                className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium"
+                className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-700 transition font-medium shadow-sm"
               >
                 {tag}
               </button>
@@ -172,7 +174,7 @@ export default function HomePage() {
             {topCompanies.map((c, i) => (
               <div
                 key={i}
-                className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 shadow-sm"
+                className="p-3.5 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 flex items-center justify-center space-x-2 shadow-sm"
               >
                 <span className="text-xs font-bold text-slate-900 dark:text-white">{c.name}</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -277,7 +279,10 @@ export default function HomePage() {
         <div className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
             <div className="space-y-1">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Public Scam Advisory Feed</h3>
+              <div className="flex items-center space-x-2">
+                <ShieldAlert className="w-5 h-5 text-rose-600" />
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white">Public Scam Advisory Feed</h3>
+              </div>
               <p className="text-xs text-slate-500 dark:text-slate-400">Verified reports of fake recruiter deposits and WhatsApp impersonation.</p>
             </div>
             <Link
@@ -289,20 +294,37 @@ export default function HomePage() {
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {recentScams.length > 0 ? (
               recentScams.slice(0, 3).map((scam) => (
-                <div key={scam._id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900 uppercase">
-                      {scam.fraudCategory}
-                    </span>
-                    <span className="text-[10px] text-slate-400">
-                      {new Date(scam.createdAt).toLocaleDateString()}
-                    </span>
+                <div key={scam._id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 space-y-3 text-xs flex flex-col justify-between">
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] font-bold text-rose-700 dark:text-rose-300 bg-rose-100 dark:bg-rose-950/80 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900 uppercase">
+                        {scam.fraudCategory}
+                      </span>
+                      <span className="text-[10px] text-slate-400 font-medium">
+                        {new Date(scam.createdAt).toLocaleDateString()}
+                      </span>
+                    </div>
+                    <h4 className="font-bold text-slate-900 dark:text-white text-sm line-clamp-1">{scam.title}</h4>
+                    <p className="text-slate-600 dark:text-slate-300 text-xs line-clamp-3 leading-relaxed">{scam.description}</p>
                   </div>
-                  <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm line-clamp-1">{scam.title}</h4>
-                  <p className="text-slate-600 dark:text-slate-300 text-xs line-clamp-2 leading-relaxed">{scam.description}</p>
+
+                  <div className="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
+                    <span className="font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
+                      {scam.amountDemanded > 0 ? `Demanded: ₹${scam.amountDemanded.toLocaleString()}` : 'Zero-Fee Fraud'}
+                    </span>
+                    <button
+                      onClick={() => {
+                        const msg = `⚠️ SCAM ALERT on TrustHire: Beware of fake recruiter "${scam.employer?.companyName || 'unverified entity'}" claiming "${scam.title}". Read: https://trusthire-six.vercel.app/fraud-board`;
+                        window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
+                      }}
+                      className="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline"
+                    >
+                      Alert WhatsApp 📲
+                    </button>
+                  </div>
                 </div>
               ))
             ) : (
