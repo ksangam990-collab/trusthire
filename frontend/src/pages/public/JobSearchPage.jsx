@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, MapPin, RotateCcw, Building2, CheckCircle2 } from 'lucide-react';
 import { jobsApi } from '../../api';
@@ -105,7 +105,7 @@ export default function JobSearchPage() {
         <div className="flex gap-2 w-full sm:w-auto flex-shrink-0">
           <button
             type="submit"
-            className="w-full sm:w-auto px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition shadow-sm"
+            className="w-full sm:w-auto px-7 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-sm transition shadow-sm"
           >
             Apply Search
           </button>

@@ -18,6 +18,10 @@ import {
   Sparkles,
   IndianRupee,
   Briefcase,
+  AlertTriangle,
+  FileCheck,
+  UserCheck,
+  Eye,
   ExternalLink
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
@@ -73,6 +77,48 @@ export default function HomePage() {
     { name: 'Infosys', location: 'Pune' },
     { name: 'Zomato', location: 'Gurugram' },
     { name: 'TCS', location: 'Mumbai' }
+  ];
+
+  const steps = [
+    {
+      num: '01',
+      title: 'Search Opportunities',
+      desc: 'Discover vetted tech openings with upfront LPA compensation and verified corporate domains.'
+    },
+    {
+      num: '02',
+      title: 'Verify Employer Identity',
+      desc: 'Inspect statutory MCA21 CIN records, GST filings, and the employer TrustScore before applying.'
+    },
+    {
+      num: '03',
+      title: 'Apply with Zero Fees',
+      desc: 'Send your resume directly to verified HR teams. Never pay a single rupee for interviews or onboarding.'
+    },
+    {
+      num: '04',
+      title: 'Stay Safe & Report',
+      desc: 'Alert the community immediately if an impersonator attempts deposit or phishing scams.'
+    }
+  ];
+
+  const redFlags = [
+    {
+      title: 'Demanding Application or Training Fees',
+      desc: 'Legitimate employers never ask for application processing charges, laptop security deposits, or uniform fees.'
+    },
+    {
+      title: 'Interviews Exclusively on WhatsApp or Telegram',
+      desc: 'Scammers avoid official corporate email addresses and conduct fake "text interviews" on messaging apps.'
+    },
+    {
+      title: 'Immediate Job Offers Without an Interview',
+      desc: 'Receiving an unprompted offer letter with high salary promises for roles you never applied to is an impersonation scam.'
+    },
+    {
+      title: 'Demanding Sensitive Bank Credentials or OTPs',
+      desc: 'Never share banking passwords, UPI PINs, or financial access codes during hiring or background verification.'
+    }
   ];
 
   const faqs = [
@@ -150,12 +196,29 @@ export default function HomePage() {
 
                 <button
                   type="submit"
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm"
+                  className="w-full sm:w-auto px-6 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1 flex-shrink-0 shadow-sm shadow-indigo-600/20"
                 >
                   <span>Search</span>
                   <ArrowRight className="w-4 h-4" />
                 </button>
               </form>
+
+              {/* Action CTAs */}
+              <div className="flex flex-wrap items-center gap-3">
+                <Link
+                  to="/jobs"
+                  className="px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs transition shadow-sm"
+                >
+                  Browse Verified Jobs
+                </Link>
+                <Link
+                  to="/report-fraud"
+                  className="px-5 py-2.5 rounded-xl border border-rose-200 dark:border-rose-900/60 bg-rose-50/50 dark:bg-rose-950/30 hover:bg-rose-100 dark:hover:bg-rose-950/60 text-rose-600 dark:text-rose-400 font-bold text-xs transition flex items-center space-x-1.5"
+                >
+                  <ShieldAlert className="w-3.5 h-3.5" />
+                  <span>Report a Scam</span>
+                </Link>
+              </div>
 
               {/* Popular Quick Tags */}
               <div className="flex flex-wrap items-center gap-1.5 text-xs text-slate-500 pt-1">
@@ -250,9 +313,9 @@ export default function HomePage() {
 
                 <Link
                   to="/jobs"
-                  className="block text-center py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-600 dark:hover:bg-emerald-700 text-white font-bold text-xs transition"
+                  className="block text-center py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-indigo-600 dark:hover:bg-indigo-700 text-white font-bold text-xs transition"
                 >
-                  Browse 8+ Live Verified Roles →
+                  Browse Verified Opportunities →
                 </Link>
 
               </div>
@@ -286,7 +349,7 @@ export default function HomePage() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
           <div>
-            <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
+            <span className="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
               Featured Opportunities
             </span>
             <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
@@ -295,7 +358,7 @@ export default function HomePage() {
           </div>
           <Link
             to="/jobs"
-            className="mt-3 sm:mt-0 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline flex items-center space-x-1"
+            className="mt-3 sm:mt-0 text-xs font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center space-x-1"
           >
             <span>Explore all verified jobs</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -323,51 +386,72 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* How TrustHire Protects Candidates (3 Core Pillars) */}
+      {/* How TrustHire Works (4 Steps) */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
-          <div className="max-w-2xl space-y-2">
-            <h2 className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
-              Safety & Verification Guarantee
-            </h2>
-            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              Why applying on TrustHire is 100% safe
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
-              Traditional job portals allow anyone with a Gmail account to post jobs. TrustHire enforces statutory corporate identity verification before any opening goes live.
-            </p>
+        <div className="text-center space-y-3 mb-10">
+          <span className="text-xs font-bold uppercase text-indigo-600 dark:text-indigo-400 tracking-wider">
+            Trust-First Architecture
+          </span>
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+            How TrustHire Works
+          </h2>
+          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-xl mx-auto">
+            A simple, verified 4-step recruitment process engineered for candidate security.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {steps.map((s, idx) => (
+            <div
+              key={idx}
+              className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-3 shadow-sm hover:border-slate-300 dark:hover:border-slate-700 transition"
+            >
+              <span className="font-mono text-xs font-bold text-indigo-600 dark:text-indigo-400 bg-indigo-50 dark:bg-indigo-950/60 px-2.5 py-1 rounded-md border border-indigo-200 dark:border-indigo-800">
+                {s.num}
+              </span>
+              <h3 className="font-bold text-slate-900 dark:text-white text-base pt-1">{s.title}</h3>
+              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">{s.desc}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* Fraud Protection & Red Flags Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-slate-900 text-white border border-slate-800 shadow-xl space-y-8">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="space-y-2 max-w-xl">
+              <span className="text-xs font-mono font-bold uppercase text-amber-400 tracking-wider flex items-center gap-1.5">
+                <AlertTriangle className="w-4 h-4 text-amber-400" />
+                <span>CANDIDATE SAFETY DIRECTIVE</span>
+              </span>
+              <h2 className="text-2xl sm:text-3xl font-black tracking-tight text-white">
+                Know the red flags before you apply.
+              </h2>
+              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+                Recruitment scams cost Indian job seekers over ₹500 Crores annually. Stay vigilant with these 4 golden rules.
+              </p>
+            </div>
+
+            <Link
+              to="/fraud-board"
+              className="px-5 py-2.5 rounded-xl bg-amber-400 hover:bg-amber-300 text-slate-950 font-bold text-xs transition flex items-center space-x-1.5 flex-shrink-0"
+            >
+              <span>Learn How to Spot a Scam</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-black text-base">
-                1
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 pt-4 border-t border-slate-800">
+            {redFlags.map((rf, idx) => (
+              <div key={idx} className="space-y-2 p-4 rounded-xl bg-slate-800/60 border border-slate-700/60 text-xs">
+                <div className="w-6 h-6 rounded-md bg-amber-400/20 text-amber-300 flex items-center justify-center font-bold text-xs">
+                  !
+                </div>
+                <h4 className="font-bold text-white text-sm">{rf.title}</h4>
+                <p className="text-slate-300 leading-relaxed">{rf.desc}</p>
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-base">Government MCA21 Validation</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                We cross-check the company's 21-digit CIN and GSTIN with the Ministry of Corporate Affairs database. Fake companies cannot register.
-              </p>
-            </div>
-
-            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400 flex items-center justify-center font-black text-base">
-                2
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-base">Zero Candidate Fees Guarantee</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Legitimate employers never demand registration fees, laptop deposits, or uniform charges. Any listing asking for payment is permanently banned.
-              </p>
-            </div>
-
-            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
-              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 flex items-center justify-center font-black text-base">
-                3
-              </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-base">Community Fraud Advisory</h4>
-              <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
-                Candidates can report impersonator phone numbers and phishing attempts. Confirmed warnings are published immediately on the public Fraud Board.
-              </p>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -438,7 +522,7 @@ export default function HomePage() {
       <section className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-2 mb-8">
           <div className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
-            <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
+            <HelpCircle className="w-3.5 h-3.5 text-indigo-600" />
             <span>Frequently Asked Questions</span>
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
@@ -463,7 +547,7 @@ export default function HomePage() {
                 >
                   <span>{faq.q}</span>
                   {isOpen ? (
-                    <ChevronUp className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+                    <ChevronUp className="w-4 h-4 text-indigo-600 flex-shrink-0" />
                   ) : (
                     <ChevronDown className="w-4 h-4 text-slate-400 flex-shrink-0" />
                   )}
@@ -480,7 +564,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Recruiter Callout */}
+      {/* Recruiter Callout Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
           <div className="space-y-2 max-w-xl text-center md:text-left">
@@ -494,7 +578,7 @@ export default function HomePage() {
           <div className="flex items-center space-x-3 flex-shrink-0">
             <Link
               to="/employer/verify"
-              className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition shadow-sm"
+              className="px-5 py-3 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs sm:text-sm transition shadow-sm"
             >
               Verify Company
             </Link>

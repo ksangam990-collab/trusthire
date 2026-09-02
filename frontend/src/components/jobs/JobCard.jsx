@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import { Link } from 'react-router-dom';
 import { MapPin, Briefcase, IndianRupee, CheckCircle2, Building2, Clock, ArrowRight } from 'lucide-react';
 import TrustScoreBadge from '../ui/TrustScoreBadge';
@@ -58,7 +58,7 @@ export default function JobCard({ job }) {
               </div>
 
               <Link to={`/jobs/${_id}`}>
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white hover:text-emerald-600 dark:hover:text-emerald-400 transition-colors leading-snug">
+                <h3 className="text-lg font-bold text-slate-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors leading-snug">
                   {title}
                 </h3>
               </Link>
@@ -112,10 +112,10 @@ export default function JobCard({ job }) {
 
         <Link
           to={`/jobs/${_id}`}
-          className="font-bold text-emerald-600 dark:text-emerald-400 hover:text-emerald-700 dark:hover:text-emerald-300 flex items-center space-x-1"
+          className="font-bold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 flex items-center space-x-1 group"
         >
-          <span>View Role & Apply</span>
-          <ArrowRight className="w-3.5 h-3.5" />
+          <span>View Opportunity</span>
+          <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
         </Link>
       </div>
     </div>
