@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
@@ -101,19 +101,18 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
           {/* Statutory Badge */}
-          <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-            <span>Government MCA21 & GST Registered Employers Only</span>
+          <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <span>MCA21 & GST Statutory Verified Hiring Network</span>
           </div>
 
-          {/* Main Title & Subtitle */}
-          <div className="space-y-3">
-            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-[1.18]">
-              Find verified jobs in India. <br />
-              <span className="text-emerald-600 dark:text-emerald-400">Zero fake recruiters. Zero fees.</span>
+          {/* Clean, Unified Headline & Subtitle */}
+          <div className="space-y-4 max-w-3xl mx-auto">
+            <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-slate-900 dark:text-white leading-tight">
+              Find Verified Jobs in India with Zero Recruitment Scams
             </h1>
-            <p className="text-slate-600 dark:text-slate-300 text-sm sm:text-base max-w-2xl mx-auto leading-relaxed">
-              Every employer on TrustHire is screened against official Ministry of Corporate Affairs records. Apply directly to verified hiring teams without the risk of deposit scams.
+            <p className="text-sm sm:text-base text-slate-600 dark:text-slate-300 leading-relaxed max-w-2xl mx-auto">
+              Every employer on TrustHire is screened against official Ministry of Corporate Affairs records. Apply directly to verified hiring teams with 100% zero placement or deposit fees.
             </p>
           </div>
 
