@@ -3,22 +3,17 @@ import { Link, useNavigate } from 'react-router-dom';
 import { 
   ShieldCheck, 
   Search, 
-  MapPin,
-  ShieldAlert, 
+  MapPin, 
   ArrowRight, 
   CheckCircle2, 
   Lock, 
   Building2, 
-  Users, 
-  AlertTriangle,
+  HelpCircle, 
+  ChevronDown, 
+  ChevronUp, 
+  ShieldAlert,
   Building,
-  Check,
-  Briefcase,
-  HelpCircle,
-  ChevronDown,
-  ChevronUp,
-  Sparkles,
-  TrendingUp
+  Check
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -29,11 +24,8 @@ export default function HomePage() {
   const [recentScams, setRecentScams] = useState([]);
   const [loading, setLoading] = useState(true);
   
-  // Search inputs
   const [keyword, setKeyword] = useState('');
   const [location, setLocation] = useState('');
-
-  // FAQ open/close state
   const [openFaq, setOpenFaq] = useState(null);
 
   const navigate = useNavigate();
@@ -74,17 +66,17 @@ export default function HomePage() {
     { name: 'Swiggy', location: 'Bengaluru', verified: true },
     { name: 'Infosys', location: 'Pune', verified: true },
     { name: 'Zomato', location: 'Gurugram', verified: true },
-    { name: 'Tata Consultancy Services', location: 'Mumbai', verified: true }
+    { name: 'TCS', location: 'Mumbai', verified: true }
   ];
 
   const faqs = [
     {
       q: 'What is an MCA21 CIN Number and why does TrustHire verify it?',
-      a: 'In India, the Ministry of Corporate Affairs (MCA21) issues a unique 21-digit Corporate Identification Number (CIN) to every registered Private Limited or Public Limited company. TrustHire verifies this number to confirm the employer is a legally registered corporate entity and not an anonymous ghost scammer.'
+      a: 'In India, the Ministry of Corporate Affairs (MCA21) issues a unique 21-digit Corporate Identification Number (CIN) to every registered company. TrustHire verifies this number to confirm the employer is a legally registered corporate entity and not an anonymous scammer.'
     },
     {
       q: 'Why do fake recruiters use WhatsApp or Telegram instead of official emails?',
-      a: 'Scammers avoid using corporate domain emails (e.g. hr@company.com) because domain registrations require verification. They instead use WhatsApp or Gmail accounts to demand application deposits, uniform charges, or laptop security fees. TrustHire verifies official domains to eliminate impersonation.'
+      a: 'Scammers avoid using corporate domain emails because domains require legal verification. They instead use WhatsApp or Gmail to demand application deposits, uniform charges, or laptop security fees. TrustHire screens all employer domains to eliminate impersonation.'
     },
     {
       q: 'Is TrustHire 100% free for job seekers and college freshers?',
@@ -96,18 +88,18 @@ export default function HomePage() {
     },
     {
       q: 'What should I do if an employer asks for money during an interview?',
-      a: 'Legitimate companies NEVER ask for money during recruitment. If an employer requests any payment, immediately stop communication and file an incident report on our Fraud Board. Our admin moderation team will investigate and penalize the listing.'
+      a: 'Legitimate companies NEVER ask for money during recruitment. If an employer requests any payment, immediately stop communication and file an incident report on our Fraud Board. Our admin team will investigate and penalize the listing.'
     }
   ];
 
   return (
-    <div className="space-y-16 pb-20 theme-transition">
+    <div className="space-y-20 pb-20 theme-transition">
       {/* Hero Section */}
-      <section className="pt-10 sm:pt-14 pb-8 bg-white dark:bg-[#111827] border-b border-slate-200 dark:border-slate-800">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
+      <section className="pt-12 sm:pt-16 pb-12 bg-white dark:bg-[#0B0F17] border-b border-slate-200 dark:border-slate-800">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-6">
           
           <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-sm">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Government MCA21 & GST Registered Employers Only</span>
           </div>
 
@@ -121,33 +113,33 @@ export default function HomePage() {
             </p>
           </div>
 
-          {/* Indeed / LinkedIn Standard Dual-Input Search Bar */}
-          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-white dark:bg-[#131b26] p-2.5 rounded-2xl border-2 border-slate-200 dark:border-slate-700 shadow-md flex flex-col sm:flex-row items-center gap-2">
-            <div className="flex items-center space-x-2 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
-              <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+          {/* High-Contrast Search Bar */}
+          <form onSubmit={handleSearchSubmit} className="max-w-3xl mx-auto bg-slate-50 dark:bg-slate-900 p-2.5 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md flex flex-col sm:flex-row items-center gap-2">
+            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-700">
+              <Search className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
                 value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 placeholder="Job title, skills, or company (e.g. React, Product Manager)..."
-                className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
+                className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none"
               />
             </div>
 
-            <div className="flex items-center space-x-2 px-3 py-2 w-full sm:w-1/2">
-              <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2">
+              <MapPin className="w-5 h-5 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
                 placeholder="City (e.g. Bengaluru, Pune) or 'Remote'..."
-                className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-xs sm:text-sm focus:outline-none"
+                className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold text-xs sm:text-sm transition flex items-center justify-center space-x-1.5 flex-shrink-0 shadow-sm"
+              className="w-full sm:w-auto px-7 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition flex items-center justify-center space-x-1.5 flex-shrink-0 shadow-sm"
             >
               <span>Find Jobs</span>
               <ArrowRight className="w-4 h-4" />
@@ -161,7 +153,7 @@ export default function HomePage() {
               <button
                 key={tag}
                 onClick={() => handleQuickTagClick(tag)}
-                className="px-2.5 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition"
+                className="px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-700 transition font-medium"
               >
                 {tag}
               </button>
@@ -180,9 +172,9 @@ export default function HomePage() {
             {topCompanies.map((c, i) => (
               <div
                 key={i}
-                className="p-3 rounded-xl bg-white dark:bg-[#131b26] border border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-1.5 shadow-sm"
+                className="p-4 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 flex items-center justify-center space-x-2 shadow-sm"
               >
-                <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{c.name}</span>
+                <span className="text-xs font-bold text-slate-900 dark:text-white">{c.name}</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
               </div>
             ))}
@@ -192,12 +184,12 @@ export default function HomePage() {
 
       {/* Featured Verified Openings */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-6">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between mb-8">
           <div>
             <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
               Featured Opportunities
             </span>
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight mt-1">
               Latest Verified Openings
             </h2>
           </div>
@@ -211,21 +203,21 @@ export default function HomePage() {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <JobCardSkeleton key={i} />
             ))}
           </div>
         ) : recentJobs.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {recentJobs.map((job) => (
               <JobCard key={job._id} job={job} />
             ))}
           </div>
         ) : (
-          <div className="text-center py-12 border border-slate-200 dark:border-slate-800 rounded-xl bg-white dark:bg-[#131b26] space-y-2">
-            <Building2 className="w-8 h-8 text-slate-400 mx-auto" />
-            <h4 className="text-xs font-bold text-slate-900 dark:text-white">No active listings right now</h4>
+          <div className="text-center py-16 border border-slate-200 dark:border-slate-800 rounded-2xl bg-white dark:bg-slate-900 space-y-2">
+            <Building2 className="w-10 h-10 text-slate-400 mx-auto" />
+            <h4 className="text-sm font-bold text-slate-900 dark:text-white">No active listings right now</h4>
             <p className="text-xs text-slate-500">Employers will publish verified openings here.</p>
           </div>
         )}
@@ -233,45 +225,45 @@ export default function HomePage() {
 
       {/* How TrustHire Protects Candidates */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-8 sm:p-10 rounded-2xl bg-white dark:bg-[#131b26] border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
+        <div className="p-8 sm:p-12 rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-8">
           <div className="max-w-2xl space-y-2">
             <h2 className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
               Safety & Verification Guarantee
             </h2>
-            <h3 className="text-2xl font-black text-slate-900 dark:text-white tracking-tight">
+            <h3 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
               Why applying on TrustHire is 100% safe
             </h3>
-            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
+            <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
               Traditional job portals allow anyone with a Gmail account to post jobs. TrustHire enforces statutory corporate identity verification before any opening goes live.
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <div className="space-y-2.5 p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="w-9 h-9 rounded-lg bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-bold text-sm">
+            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-400 flex items-center justify-center font-black text-base">
                 1
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-sm">Government MCA21 Validation</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base">Government MCA21 Validation</h4>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 We cross-check the company's 21-digit CIN and GSTIN with the Ministry of Corporate Affairs database. Fake companies cannot register.
               </p>
             </div>
 
-            <div className="space-y-2.5 p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="w-9 h-9 rounded-lg bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400 flex items-center justify-center font-bold text-sm">
+            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+              <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-400 flex items-center justify-center font-black text-base">
                 2
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-sm">Zero Candidate Fees Guarantee</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base">Zero Candidate Fees Guarantee</h4>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Legitimate employers never demand registration fees, laptop deposits, or uniform charges. Any listing asking for payment is permanently banned.
               </p>
             </div>
 
-            <div className="space-y-2.5 p-5 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800">
-              <div className="w-9 h-9 rounded-lg bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 flex items-center justify-center font-bold text-sm">
+            <div className="space-y-3 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/60 border border-slate-200 dark:border-slate-700/60">
+              <div className="w-10 h-10 rounded-xl bg-rose-100 dark:bg-rose-950 text-rose-700 dark:text-rose-400 flex items-center justify-center font-black text-base">
                 3
               </div>
-              <h4 className="font-bold text-slate-900 dark:text-white text-sm">Community Fraud Advisory</h4>
+              <h4 className="font-bold text-slate-900 dark:text-white text-base">Community Fraud Advisory</h4>
               <p className="text-xs text-slate-600 dark:text-slate-400 leading-relaxed">
                 Candidates can report impersonator phone numbers and phishing attempts. Confirmed warnings are published immediately on the public Fraud Board.
               </p>
@@ -280,40 +272,41 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Live Fraud Warnings Board */}
+      {/* Public Scam Advisory Feed */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="p-6 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131b26] space-y-5 shadow-sm">
+        <div className="p-8 rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 space-y-6 shadow-sm">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-100 dark:border-slate-800 pb-4">
-            <div className="space-y-0.5">
-              <h3 className="text-base font-bold text-slate-900 dark:text-white">Public Scam Advisory Feed</h3>
-              <p className="text-xs text-slate-500">Verified reports of fake recruiter deposits and WhatsApp impersonation.</p>
+            <div className="space-y-1">
+              <h3 className="text-lg font-bold text-slate-900 dark:text-white">Public Scam Advisory Feed</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Verified reports of fake recruiter deposits and WhatsApp impersonation.</p>
             </div>
             <Link
               to="/fraud-board"
-              className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex-shrink-0"
+              className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center space-x-1 flex-shrink-0"
             >
-              Open Full Fraud Board →
+              <span>Open Full Fraud Board</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {recentScams.length > 0 ? (
               recentScams.slice(0, 3).map((scam) => (
-                <div key={scam._id} className="p-4 rounded-xl bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-800 space-y-2 text-xs">
+                <div key={scam._id} className="p-5 rounded-2xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 space-y-3 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/40 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900">
+                    <span className="text-[10px] font-bold text-rose-700 dark:text-rose-400 bg-rose-50 dark:bg-rose-950/60 px-2 py-0.5 rounded border border-rose-200 dark:border-rose-900 uppercase">
                       {scam.fraudCategory}
                     </span>
                     <span className="text-[10px] text-slate-400">
                       {new Date(scam.createdAt).toLocaleDateString()}
                     </span>
                   </div>
-                  <h4 className="font-bold text-slate-900 dark:text-slate-200 line-clamp-1">{scam.title}</h4>
-                  <p className="text-slate-500 text-[11px] line-clamp-2">{scam.description}</p>
+                  <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm line-clamp-1">{scam.title}</h4>
+                  <p className="text-slate-600 dark:text-slate-300 text-xs line-clamp-2 leading-relaxed">{scam.description}</p>
                 </div>
               ))
             ) : (
-              <div className="col-span-3 text-center py-4 text-xs text-slate-400">
+              <div className="col-span-3 text-center py-6 text-xs text-slate-400">
                 No critical threats in live feed.
               </div>
             )}
@@ -328,7 +321,7 @@ export default function HomePage() {
             <HelpCircle className="w-3.5 h-3.5 text-emerald-600" />
             <span>Frequently Asked Questions</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white">
+          <h2 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
             Everything you need to know about TrustHire
           </h2>
           <p className="text-xs text-slate-500 max-w-lg mx-auto">
@@ -342,11 +335,11 @@ export default function HomePage() {
             return (
               <div
                 key={idx}
-                className="rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131b26] overflow-hidden transition-colors shadow-sm"
+                className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden transition-colors shadow-sm"
               >
                 <button
                   onClick={() => setOpenFaq(isOpen ? null : idx)}
-                  className="w-full p-4 text-left flex items-center justify-between space-x-4 text-xs sm:text-sm font-bold text-slate-900 dark:text-white"
+                  className="w-full p-5 text-left flex items-center justify-between space-x-4 text-sm font-bold text-slate-900 dark:text-white"
                 >
                   <span>{faq.q}</span>
                   {isOpen ? (
@@ -357,7 +350,7 @@ export default function HomePage() {
                 </button>
 
                 {isOpen && (
-                  <div className="px-4 pb-4 text-xs text-slate-600 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
+                  <div className="px-5 pb-5 text-xs sm:text-sm text-slate-600 dark:text-slate-400 leading-relaxed border-t border-slate-100 dark:border-slate-800 pt-3">
                     {faq.a}
                   </div>
                 )}
@@ -369,25 +362,25 @@ export default function HomePage() {
 
       {/* Recruiter Callout */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-[#131b26] p-6 sm:p-8 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
-          <div className="space-y-1.5 max-w-xl">
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">
+        <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-8 sm:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-sm">
+          <div className="space-y-2 max-w-xl text-center md:text-left">
+            <h3 className="text-xl font-bold text-slate-900 dark:text-white">
               Hiring verified engineering or product talent?
             </h3>
-            <p className="text-xs text-slate-600 dark:text-slate-400">
+            <p className="text-xs sm:text-sm text-slate-600 dark:text-slate-400">
               Verified corporate badges increase candidate application rates by 4x. Verify your company in 2 minutes.
             </p>
           </div>
-          <div className="flex items-center space-x-2.5 flex-shrink-0">
+          <div className="flex items-center space-x-3 flex-shrink-0">
             <Link
               to="/employer/verify"
-              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 font-bold text-xs transition shadow-sm"
+              className="px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs sm:text-sm transition shadow-sm"
             >
               Verify Company
             </Link>
             <Link
               to="/employer/post-job"
-              className="px-4 py-2.5 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs transition"
+              className="px-5 py-3 rounded-xl border border-slate-300 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-900 dark:text-white font-bold text-xs sm:text-sm transition"
             >
               Post an Opening
             </Link>
