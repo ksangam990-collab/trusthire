@@ -15,10 +15,10 @@ import { JobCardSkeleton } from '../../components/ui/Skeleton';
 const QUICK_TAGS = ['Frontend', 'Backend', 'Full Stack', 'Remote', 'Bengaluru', 'Fresher'];
 
 const STATS = [
-  { value: '2,400+', label: 'Verified Tech Jobs', detail: 'Cross-checked with MCA21' },
-  { value: '380+',   label: 'Registered Employers', detail: 'Official corporate domains' },
-  { value: '18,000+',label: 'Job Seekers Protected', detail: 'Zero scam victims' },
-  { value: '₹0 Fees', label: '100% Free Forever', detail: 'Zero candidate charges' },
+  { value: '2,400+', label: 'Verified Tech Jobs', sub: 'Cross-checked via MCA21' },
+  { value: '380+',   label: 'Registered Companies', sub: 'Official corporate domains' },
+  { value: '18,000+',label: 'Job Seekers Protected', sub: 'Zero fake placements' },
+  { value: '₹0 Fees', label: '100% Free Forever', sub: 'Zero candidate charges' },
 ];
 
 const COMPANIES = [
@@ -134,74 +134,77 @@ export default function HomePage() {
     <div className="theme-transition overflow-x-hidden min-h-screen">
 
       {/* ════════════════════════════════════════
-          HERO SECTION (Optimized for Mobile & Desktop)
+          HERO & VALUE HUB (Unified, Balanced Viewport)
       ════════════════════════════════════════ */}
-      <section className="relative pt-6 sm:pt-12 pb-8 sm:pb-12 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center">
+      <section className="relative px-4 sm:px-6 lg:px-8 pt-5 sm:pt-10 pb-10 sm:pb-14 max-w-5xl mx-auto text-center">
         
-        {/* Pill Badge */}
+        {/* Ambient Top Glow */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-64 bg-emerald-500/10 dark:bg-emerald-500/5 blur-3xl pointer-events-none -z-10" />
+
+        {/* Verification Status Pill */}
         <motion.div 
-          initial={{ opacity: 0, y: -6 }} 
+          initial={{ opacity: 0, y: -4 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.3 }}
-          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-4 sm:mb-6"
+          transition={{ duration: 0.25 }}
+          className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold mb-3 sm:mb-4"
         >
           <ShieldCheck className="w-3.5 h-3.5" strokeWidth={2.5} />
           <span>India's Verified Hiring Network</span>
         </motion.div>
 
-        {/* Main Headline */}
+        {/* Primary Headline */}
         <motion.h1 
-          initial={{ opacity: 0, y: 8 }} 
+          initial={{ opacity: 0, y: 6 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.35, delay: 0.05 }}
-          className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight leading-[1.15] text-slate-900 dark:text-white mb-3 sm:mb-4"
+          transition={{ duration: 0.3, delay: 0.05 }}
+          className="text-2xl sm:text-4xl lg:text-5xl font-black tracking-tight leading-[1.15] text-slate-900 dark:text-white mb-2.5 sm:mb-3"
         >
           Find genuine tech jobs in India<br />
           <span className="text-emerald-500 dark:text-emerald-400">without the scams.</span>
         </motion.h1>
 
-        {/* Subtitle */}
+        {/* Concise Subhead */}
         <motion.p 
-          initial={{ opacity: 0, y: 8 }} 
+          initial={{ opacity: 0, y: 6 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.35, delay: 0.1 }}
-          className="text-slate-600 dark:text-slate-400 text-sm sm:text-base lg:text-lg max-w-xl mx-auto leading-relaxed mb-6 sm:mb-8"
+          transition={{ duration: 0.3, delay: 0.1 }}
+          className="text-slate-600 dark:text-slate-400 text-xs sm:text-base max-w-lg mx-auto leading-relaxed mb-5 sm:mb-6"
         >
-          Every employer is verified against government records before posting.
-          Upfront salaries. Zero application fees.
+          Every employer is verified against official government registries before posting.
+          Upfront salaries. Zero candidate fees.
         </motion.p>
 
         {/* Search Bar */}
         <motion.form 
           onSubmit={doSearch} 
-          initial={{ opacity: 0, y: 10 }} 
+          initial={{ opacity: 0, y: 8 }} 
           animate={{ opacity: 1, y: 0 }} 
-          transition={{ duration: 0.35, delay: 0.15 }}
-          className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-2 shadow-xl shadow-slate-200/50 dark:shadow-black/50 flex flex-col sm:flex-row gap-2 transition-all focus-within:border-emerald-500/60 focus-within:ring-2 focus-within:ring-emerald-500/20 mb-3 sm:mb-4"
+          transition={{ duration: 0.3, delay: 0.15 }}
+          className="max-w-2xl mx-auto bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-1.5 sm:p-2 shadow-lg shadow-slate-200/40 dark:shadow-black/60 flex flex-col sm:flex-row gap-2 transition-all focus-within:border-emerald-500/60 focus-within:ring-2 focus-within:ring-emerald-500/20 mb-3"
         >
-          <div className="flex items-center gap-2.5 flex-1 px-3 py-2 border-b sm:border-b-0 sm:border-r border-slate-100 dark:border-slate-800">
+          <div className="flex items-center gap-2 flex-1 px-3 py-1.5 sm:py-2 border-b sm:border-b-0 sm:border-r border-slate-100 dark:border-slate-800">
             <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <input 
               type="text" 
               value={keyword} 
               onChange={e => setKeyword(e.target.value)}
               placeholder="Role, skill, or employer..."
-              className="w-full text-sm bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none min-w-0" 
+              className="w-full text-xs sm:text-sm bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none min-w-0" 
             />
           </div>
-          <div className="flex items-center gap-2.5 flex-1 px-3 py-2">
+          <div className="flex items-center gap-2 flex-1 px-3 py-1.5 sm:py-2">
             <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
             <input 
               type="text" 
               value={city} 
               onChange={e => setCity(e.target.value)}
               placeholder="City or 'Remote'..."
-              className="w-full text-sm bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none min-w-0" 
+              className="w-full text-xs sm:text-sm bg-transparent text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none min-w-0" 
             />
           </div>
           <button 
             type="submit"
-            className="w-full sm:w-auto px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm rounded-xl transition flex items-center justify-center gap-2 flex-shrink-0 shadow-sm cursor-pointer"
+            className="w-full sm:w-auto px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-1.5 flex-shrink-0 shadow-sm cursor-pointer"
           >
             <span>Search Jobs</span>
             <ArrowRight className="w-4 h-4" />
@@ -209,69 +212,53 @@ export default function HomePage() {
         </motion.form>
 
         {/* Quick Tag Pills */}
-        <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2 text-xs text-slate-500 mb-6 sm:mb-8">
+        <div className="flex flex-wrap items-center justify-center gap-1.5 text-[11px] sm:text-xs text-slate-500 mb-5 sm:mb-6">
           <span className="font-semibold text-slate-600 dark:text-slate-400">Popular:</span>
           {QUICK_TAGS.map(t => (
             <button 
               key={t} 
               onClick={() => navigate('/jobs?keyword=' + encodeURIComponent(t))}
-              className="px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition font-medium cursor-pointer"
+              className="px-2.5 py-0.5 sm:py-1 rounded-md bg-slate-100 dark:bg-slate-800 hover:bg-emerald-50 dark:hover:bg-emerald-950/50 text-slate-700 dark:text-slate-300 hover:text-emerald-600 dark:hover:text-emerald-400 transition font-medium cursor-pointer"
             >
               {t}
             </button>
           ))}
         </div>
 
-        {/* Key Guarantees Strip */}
-        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> MCA21 & GST Verified
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> Upfront Salary Disclosure
-          </span>
-          <span className="flex items-center gap-1.5">
-            <CheckCircle2 className="w-4 h-4 text-emerald-500" /> ₹0 Fees for Candidates
-          </span>
-        </div>
-      </section>
-
-      {/* ════════════════════════════════════════
-          STATS BENTO STRIP (Responsive 2x2 on Mobile, 4x1 on Desktop)
-      ════════════════════════════════════════ */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-8 sm:mb-12">
-        <div className="p-4 sm:p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-800">
+        {/* Integrated Metrics & Guarantees Bar (Fits completely in initial viewport) */}
+        <div className="p-3.5 sm:p-5 rounded-2xl bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border border-slate-200/90 dark:border-slate-800 shadow-sm">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 divide-y sm:divide-y-0 sm:divide-x divide-slate-100 dark:divide-slate-800">
             {STATS.map((s, i) => (
-              <div key={i} className={`text-center ${i > 0 ? 'pt-3 sm:pt-0 sm:pl-4' : ''}`}>
-                <div className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
+              <div key={i} className={`text-center ${i > 0 ? 'pt-2.5 sm:pt-0 sm:pl-3' : ''}`}>
+                <div className="text-lg sm:text-xl lg:text-2xl font-black text-slate-900 dark:text-white tracking-tight">
                   {s.value}
                 </div>
-                <div className="text-xs sm:text-sm font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
+                <div className="text-[11px] sm:text-xs font-bold text-emerald-600 dark:text-emerald-400 mt-0.5">
                   {s.label}
                 </div>
-                <div className="text-[11px] text-slate-500 dark:text-slate-400 hidden sm:block mt-0.5">
-                  {s.detail}
+                <div className="text-[10px] text-slate-500 dark:text-slate-400 hidden sm:block mt-0.5">
+                  {s.sub}
                 </div>
               </div>
             ))}
           </div>
         </div>
+
       </section>
 
       {/* ════════════════════════════════════════
-          TRUSTED COMPANIES BAR
+          TRUSTED EMPLOYERS BAR
       ════════════════════════════════════════ */}
-      <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-12 sm:mb-16">
-        <div className="text-center space-y-3">
-          <p className="text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            Candidates on TrustHire explore opportunities at
+      <section className="border-y border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 py-5 sm:py-7 mb-10 sm:mb-16">
+        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
+          <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">
+            Trusted by candidates applying to top engineering teams
           </p>
-          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-2.5">
+          <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             {COMPANIES.map(c => (
               <div 
                 key={c.name}
-                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900/80 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-xs"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-xs"
               >
                 <span>{c.name}</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
@@ -286,15 +273,15 @@ export default function HomePage() {
       ════════════════════════════════════════ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 sm:mb-20">
         
-        {/* Header with Segmented Tabs */}
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-4 sm:mb-6">
+        {/* Header with Segmented Switcher */}
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 mb-4 sm:mb-6">
           <div>
             <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-emerald-600 dark:text-emerald-400 mb-1">
               <Radio className="w-3.5 h-3.5 animate-pulse text-emerald-500" />
               <span>Interactive Verification Showcase</span>
             </div>
             <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white tracking-tight">
-              See what a verified job looks like
+              What verified openings look like
             </h2>
           </div>
 
@@ -325,70 +312,68 @@ export default function HomePage() {
           className="rounded-3xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-lg shadow-slate-200/40 dark:shadow-black/60 overflow-hidden"
         >
           {/* Card Top Banner */}
-          <div className="px-5 sm:px-7 py-3 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
+          <div className="px-4 sm:px-6 py-3 bg-slate-50 dark:bg-slate-950/60 border-b border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-2 text-xs">
             <div className="flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-              <span className="font-mono text-slate-500 font-semibold">
+              <span className="font-mono text-slate-500 font-semibold text-[11px] sm:text-xs">
                 MCA21 CIN: <strong className="text-slate-700 dark:text-slate-300">{spotlight.cin}</strong>
               </span>
             </div>
-            <div className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800">
+            <div className="flex items-center gap-1.5 font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2.5 py-0.5 rounded-full border border-emerald-200 dark:border-emerald-800 text-[11px]">
               <ShieldCheck className="w-3.5 h-3.5" />
               <span>Trust Score {spotlight.score}/100</span>
             </div>
           </div>
 
           {/* Card Body */}
-          <div className="p-5 sm:p-7 space-y-6">
+          <div className="p-4 sm:p-7 space-y-5 sm:space-y-6">
             
             {/* Employer & Role Header */}
-            <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4">
-              <div className="flex items-start gap-3.5">
-                <div className={`w-12 h-12 rounded-2xl ${spotlight.avatarBg} text-white font-black text-sm flex items-center justify-center flex-shrink-0 shadow-sm`}>
-                  {spotlight.avatarText}
+            <div className="flex items-start gap-3 sm:gap-4">
+              <div className={`w-11 h-11 sm:w-12 sm:h-12 rounded-2xl ${spotlight.avatarBg} text-white font-black text-sm flex items-center justify-center flex-shrink-0 shadow-sm`}>
+                {spotlight.avatarText}
+              </div>
+              <div>
+                <div className="flex flex-wrap items-center gap-2 mb-0.5">
+                  <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
+                    {spotlight.name}
+                  </h3>
+                  <span className="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                    <CheckCircle2 className="w-3 h-3" /> Verified Employer
+                  </span>
                 </div>
-                <div>
-                  <div className="flex flex-wrap items-center gap-2 mb-1">
-                    <h3 className="font-bold text-sm sm:text-base text-slate-900 dark:text-white">
-                      {spotlight.name}
-                    </h3>
-                    <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
-                      <CheckCircle2 className="w-3 h-3" /> Verified Employer
-                    </span>
-                  </div>
-                  <h4 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white">
-                    {spotlight.role}
-                  </h4>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-                    {spotlight.location} · {spotlight.jobType} · Recruiter domain verified: <code className="text-slate-700 dark:text-slate-300 font-mono">@{spotlight.domain}</code>
-                  </p>
-                </div>
+                <h4 className="text-base sm:text-xl font-black text-slate-900 dark:text-white leading-snug">
+                  {spotlight.role}
+                </h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  {spotlight.location} · {spotlight.jobType} · Verified domain: <code className="text-slate-700 dark:text-slate-300 font-mono font-semibold">@{spotlight.domain}</code>
+                </p>
               </div>
             </div>
 
             {/* Compensation & Highlights Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-3.5 sm:p-4 rounded-2xl bg-slate-50 dark:bg-slate-950/50 border border-slate-100 dark:border-slate-800">
               <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-0.5">
                   Verified Compensation
                 </span>
-                <div className="text-xl sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
+                <div className="text-lg sm:text-2xl font-black text-emerald-600 dark:text-emerald-400">
                   {spotlight.salary} <span className="text-xs font-semibold text-slate-500 font-sans">/ year</span>
                 </div>
-                <div className="text-xs text-slate-500 font-medium mt-0.5">
+                <div className="text-[11px] sm:text-xs text-slate-500 font-medium mt-0.5">
                   {spotlight.monthly}
                 </div>
               </div>
 
-              <div className="space-y-1.5 sm:border-l sm:border-slate-200 dark:sm:border-slate-800 sm:pl-4">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
+              <div className="space-y-1 sm:border-l sm:border-slate-200 dark:sm:border-slate-800 sm:pl-4">
+                <span className="text-[10px] sm:text-[11px] font-bold uppercase tracking-wider text-slate-400 block mb-1">
                   Candidate Protections
                 </span>
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
                   <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                   <span>No security deposit or registration fee</span>
                 </div>
-                <div className="flex items-center gap-2 text-xs font-semibold text-slate-700 dark:text-slate-300">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-700 dark:text-slate-300">
                   <Check className="w-3.5 h-3.5 text-emerald-500 flex-shrink-0" />
                   <span>Direct recruiter review (zero intermediary)</span>
                 </div>
@@ -396,10 +381,10 @@ export default function HomePage() {
             </div>
 
             {/* Required Skills */}
-            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+            <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
               <span className="text-xs font-semibold text-slate-400 mr-1">Skills:</span>
               {spotlight.skills.map(sk => (
-                <span key={sk} className="text-xs px-2.5 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
+                <span key={sk} className="text-[11px] sm:text-xs px-2.5 py-0.5 sm:py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium">
                   {sk}
                 </span>
               ))}
