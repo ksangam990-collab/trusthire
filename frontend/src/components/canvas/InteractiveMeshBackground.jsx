@@ -152,7 +152,7 @@ export default function InteractiveMeshBackground() {
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none z-0 opacity-70 transition-opacity duration-700"
+      className="fixed inset-0 pointer-events-none z-0 opacity-25 dark:opacity-35 transition-opacity duration-700"
       aria-hidden="true"
     />
   );
