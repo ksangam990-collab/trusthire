@@ -1,4 +1,4 @@
-﻿import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -9,21 +9,21 @@ import {
   CheckCircle2, 
   Lock, 
   Building2, 
-  HelpCircle, 
   ChevronDown, 
   ChevronUp, 
   ShieldAlert,
-  Check,
   AlertTriangle,
   Briefcase,
   Share2,
-  Users,
   CheckCircle,
-  FileCheck
+  FileCheck,
+  ExternalLink,
+  Sparkles
 } from 'lucide-react';
 import { jobsApi, fraudApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
 import { JobCardSkeleton } from '../../components/ui/Skeleton';
+import TrustScoreBadge from '../../components/ui/TrustScoreBadge';
 
 export default function HomePage() {
   const [recentJobs, setRecentJobs] = useState([]);
@@ -33,6 +33,9 @@ export default function HomePage() {
   const [keyword, setKeyword] = useState('');
   const [location, setLocation] = useState('');
   const [openFaq, setOpenFaq] = useState(null);
+
+  // Hero interactive sample showcase state
+  const [activeSpotlight, setActiveSpotlight] = useState('razorpay');
 
   const navigate = useNavigate();
 
@@ -66,25 +69,60 @@ export default function HomePage() {
     navigate(`/jobs?keyword=${encodeURIComponent(tag)}`);
   };
 
+  const spotlights = {
+    razorpay: {
+      name: 'Razorpay Software',
+      role: 'Senior Full Stack Engineer',
+      salary: '₹24.0L – ₹32.0L / yr',
+      location: 'Bengaluru (Hybrid)',
+      cin: 'U72200KA2013PTC070993',
+      domain: 'razorpay.com',
+      trustScore: 98,
+      avatar: 'RZ'
+    },
+    zerodha: {
+      name: 'Zerodha Broking',
+      role: 'Systems Architect (Golang)',
+      salary: '₹30.0L – ₹42.0L / yr',
+      location: 'Bengaluru (Remote)',
+      cin: 'U67120KA2010PTC054045',
+      domain: 'zerodha.com',
+      trustScore: 99,
+      avatar: 'ZD'
+    },
+    swiggy: {
+      name: 'Swiggy (Bundl Tech)',
+      role: 'Staff React Native Engineer',
+      salary: '₹28.0L – ₹38.0L / yr',
+      location: 'Bengaluru / Remote',
+      cin: 'U74110KA2013PTC096530',
+      domain: 'swiggy.in',
+      trustScore: 97,
+      avatar: 'SW'
+    }
+  };
+
+  const currentSpotlight = spotlights[activeSpotlight];
+
   const trustedCompanies = [
     'Razorpay', 'Zerodha', 'Swiggy', 'Zomato', 'Infosys', 'CRED', 'TCS', 'Flipkart'
   ];
 
   const protections = [
     {
-      icon: <Building2 className="w-5 h-5 text-emerald-600" />,
+      icon: <Building2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
       title: 'Company Registration Checked',
       desc: 'We cross-check every employer against official Indian corporate registries (CIN & GST) before they can post any job.'
     },
     {
-      icon: <FileCheck className="w-5 h-5 text-emerald-600" />,
+      icon: <FileCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
       title: 'Official Corporate Emails Only',
-      desc: 'Recruiters must register with their verified company email domains. We block anonymous Gmail and temporary numbers.'
+      desc: 'Recruiters must register with verified company domains (@company.com). We block anonymous webmails and unverified recruiters.'
     },
     {
-      icon: <Lock className="w-5 h-5 text-emerald-600" />,
+      icon: <Lock className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />,
       title: '100% Free for Candidates',
-      desc: 'No application fees, uniform charges, or laptop deposits. Any company asking candidates for money is permanently banned.'
+      desc: 'Zero application fees, uniform charges, or laptop deposits. Any company asking candidates for money is permanently banned.'
     }
   ];
 
@@ -92,7 +130,7 @@ export default function HomePage() {
     {
       number: '01',
       title: 'Asking for money before an interview',
-      redFlag: '"Please deposit â‚¹2,500 for training materials or interview fees via Google Pay/PhonePe."',
+      redFlag: '"Please deposit ₹2,500 for training materials or uniform fees via Google Pay/PhonePe."',
       truth: 'Legitimate employers in India NEVER charge candidates for recruitment. This is always a scam.'
     },
     {
@@ -104,7 +142,7 @@ export default function HomePage() {
     {
       number: '03',
       title: 'Job offer without any interview',
-      redFlag: '"Congratulations! Your resume was shortlisted for â‚¹15 LPA. Sign the offer letter and pay â‚¹5,000 for verification."',
+      redFlag: '"Congratulations! Your resume was shortlisted for ₹15 LPA. Sign the offer letter and pay ₹5,000 for verification."',
       truth: 'No genuine company gives out high-paying technical job offers without a proper interview or coding assessment.'
     },
     {
@@ -135,18 +173,21 @@ export default function HomePage() {
   ];
 
   return (
-    <div className="space-y-20 pb-24 theme-transition">
+    <div className="space-y-20 pb-24 theme-transition relative overflow-hidden">
       
-      {/* Hero Section: Human, Confident, Clean */}
-      <section className="pt-14 sm:pt-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-8">
+      {/* Top Ambient Emerald Glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-[600px] pointer-events-none radial-glow -z-10 opacity-75" />
+
+      {/* Hero Section */}
+      <section className="pt-12 sm:pt-20 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto text-center space-y-8">
         
-        {/* Simple Trust Badge */}
-        <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800/80 text-emerald-800 dark:text-emerald-300 text-xs font-semibold">
+        {/* Clean Pill Badge */}
+        <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-500/10 dark:bg-emerald-500/[0.12] border border-emerald-500/30 text-emerald-800 dark:text-emerald-300 text-xs font-semibold shadow-xs">
           <ShieldCheck className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
-          <span>Indiaâ€™s verified hiring network</span>
+          <span>India's Verified Hiring Network</span>
         </div>
 
-        {/* Natural Headline & Subhead */}
+        {/* Headline & Subhead */}
         <div className="space-y-4 max-w-3xl mx-auto">
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-slate-900 dark:text-white leading-[1.12]">
             Find genuine tech jobs in India{' '}
@@ -160,14 +201,14 @@ export default function HomePage() {
           </p>
         </div>
 
-        {/* Clean, Human Search Bar */}
+        {/* Clean, Polished Search Bar */}
         <div className="max-w-2xl mx-auto">
           <form 
             onSubmit={handleSearchSubmit} 
-            className="bg-white dark:bg-slate-900 p-2 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-none border border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-2"
+            className="bg-white/95 dark:bg-slate-900/95 backdrop-blur-md p-2 rounded-2xl shadow-xl shadow-slate-200/50 dark:shadow-black/40 border border-slate-200/90 dark:border-slate-800 flex flex-col sm:flex-row items-center gap-2 transition-all focus-within:border-emerald-500/50 focus-within:ring-2 focus-within:ring-emerald-500/20"
           >
-            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-800">
-              <Search className="w-4 h-4 text-slate-400 flex-shrink-0" />
+            <div className="flex items-center space-x-3 px-3 py-2.5 w-full sm:w-1/2 border-b sm:border-b-0 sm:border-r border-slate-200 dark:border-slate-800">
+              <Search className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
               <input
                 type="text"
                 value={keyword}
@@ -177,20 +218,20 @@ export default function HomePage() {
               />
             </div>
 
-            <div className="flex items-center space-x-3 px-3 py-2 w-full sm:w-1/2">
+            <div className="flex items-center space-x-3 px-3 py-2.5 w-full sm:w-1/2">
               <MapPin className="w-4 h-4 text-slate-400 flex-shrink-0" />
               <input
                 type="text"
                 value={location}
                 onChange={(e) => setLocation(e.target.value)}
-                placeholder="City (e.g. Bengaluru, Pune, Remote)..."
+                placeholder="City or 'Remote'..."
                 className="w-full bg-transparent text-slate-900 dark:text-white placeholder-slate-400 text-sm focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm transition flex items-center justify-center space-x-1.5 flex-shrink-0 shadow-sm cursor-pointer"
+              className="w-full sm:w-auto px-6 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-700 active:scale-95 text-white font-bold text-sm transition flex items-center justify-center space-x-1.5 flex-shrink-0 shadow-sm shadow-emerald-600/20 cursor-pointer"
             >
               <span>Search Jobs</span>
               <ArrowRight className="w-4 h-4" />
@@ -204,7 +245,7 @@ export default function HomePage() {
               <button
                 key={tag}
                 onClick={() => handleQuickTagClick(tag)}
-                className="px-3 py-1 rounded-full bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium cursor-pointer"
+                className="px-3 py-1 rounded-full bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition font-medium cursor-pointer shadow-xs"
               >
                 {tag}
               </button>
@@ -213,18 +254,92 @@ export default function HomePage() {
         </div>
 
         {/* 3 Simple Value Points */}
-        <div className="pt-6 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200/80 dark:border-slate-800 max-w-2xl mx-auto">
+        <div className="pt-4 flex flex-wrap items-center justify-center gap-6 sm:gap-10 text-xs text-slate-600 dark:text-slate-400 border-t border-slate-200/80 dark:border-slate-800 max-w-2xl mx-auto">
           <div className="flex items-center space-x-2">
             <CheckCircle className="w-4 h-4 text-emerald-600" />
             <span className="font-medium text-slate-800 dark:text-slate-200">Registered Companies Only</span>
           </div>
           <div className="flex items-center space-x-2">
             <CheckCircle className="w-4 h-4 text-emerald-600" />
-            <span className="font-medium text-slate-800 dark:text-slate-200">â‚¹0 Fees for Candidates</span>
+            <span className="font-medium text-slate-800 dark:text-slate-200">₹0 Fees for Candidates</span>
           </div>
           <div className="flex items-center space-x-2">
             <CheckCircle className="w-4 h-4 text-emerald-600" />
             <span className="font-medium text-slate-800 dark:text-slate-200">Upfront Salaries</span>
+          </div>
+        </div>
+
+        {/* Interactive Verified Job Spotlight (Visual Centerpiece that eliminates the empty void) */}
+        <div className="pt-2 max-w-2xl mx-auto text-left">
+          <div className="p-6 rounded-3xl bg-white/95 dark:bg-slate-900/90 backdrop-blur-xl border border-slate-200/80 dark:border-white/[0.08] shadow-2xl shadow-slate-200/50 dark:shadow-black/60 space-y-4">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div className="flex items-center space-x-2">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 font-mono">
+                  Live Verified Opportunity Spotlight
+                </span>
+              </div>
+              <div className="flex items-center space-x-1.5">
+                {['razorpay', 'zerodha', 'swiggy'].map((k) => (
+                  <button
+                    key={k}
+                    onClick={() => setActiveSpotlight(k)}
+                    className={`px-2.5 py-1 rounded-lg text-xs font-semibold capitalize transition cursor-pointer ${
+                      activeSpotlight === k
+                        ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30'
+                        : 'text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
+                    }`}
+                  >
+                    {k}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div className="flex items-start space-x-3.5">
+                <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-600 dark:text-emerald-400 font-black text-sm flex items-center justify-center flex-shrink-0">
+                  {currentSpotlight.avatar}
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center space-x-2">
+                    <h3 className="font-bold text-base text-slate-900 dark:text-white">
+                      {currentSpotlight.name}
+                    </h3>
+                    <span className="inline-flex items-center space-x-1 text-[11px] font-semibold text-emerald-700 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-950/60 px-2 py-0.5 rounded-md border border-emerald-200 dark:border-emerald-800">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+                      <span>Verified Company</span>
+                    </span>
+                  </div>
+                  <p className="text-sm font-semibold text-slate-800 dark:text-slate-200">
+                    {currentSpotlight.role}
+                  </p>
+                  <p className="text-xs text-slate-500 font-mono">
+                    CIN: {currentSpotlight.cin} • Official @{currentSpotlight.domain}
+                  </p>
+                </div>
+              </div>
+
+              <TrustScoreBadge score={currentSpotlight.trustScore} size="md" />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between pt-3 border-t border-slate-100 dark:border-slate-800 text-xs gap-3">
+              <div className="flex items-center space-x-3">
+                <span className="font-bold text-emerald-600 dark:text-emerald-400 font-mono text-sm">
+                  {currentSpotlight.salary}
+                </span>
+                <span className="text-slate-500 font-medium">
+                  {currentSpotlight.location}
+                </span>
+              </div>
+              <Link
+                to="/jobs"
+                className="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs transition flex items-center space-x-1 shadow-xs cursor-pointer"
+              >
+                <span>View Verified Jobs</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
         </div>
 
@@ -239,7 +354,7 @@ export default function HomePage() {
           {trustedCompanies.map((c, i) => (
             <div
               key={i}
-              className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center space-x-1.5 shadow-xs"
+              className="px-4 py-2 rounded-xl bg-white/80 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 flex items-center space-x-1.5 shadow-xs"
             >
               <span className="text-xs font-bold text-slate-800 dark:text-slate-200">{c}</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
@@ -289,7 +404,7 @@ export default function HomePage() {
         )}
       </section>
 
-      {/* How TrustHire Keeps You Safe (Simple 3 Cards) */}
+      {/* How TrustHire Keeps You Safe (3 Simple Cards) */}
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center space-y-2 mb-10">
           <span className="text-xs font-bold uppercase text-emerald-600 dark:text-emerald-400 tracking-wider">
@@ -338,7 +453,7 @@ export default function HomePage() {
 
             <Link
               to="/fraud-board"
-              className="px-4 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-semibold text-xs transition flex items-center space-x-1.5 self-start sm:self-auto"
+              className="px-4 py-2.5 rounded-xl border border-slate-700 hover:bg-slate-800 text-white font-semibold text-xs transition flex items-center space-x-1.5 self-start sm:self-auto cursor-pointer"
             >
               <span>View Recent Scam Alerts</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -379,7 +494,7 @@ export default function HomePage() {
             </div>
             <Link
               to="/fraud-board"
-              className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center space-x-1"
+              className="text-xs font-bold text-rose-600 dark:text-rose-400 hover:underline flex items-center space-x-1 cursor-pointer"
             >
               <span>See all scam reports</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -405,11 +520,11 @@ export default function HomePage() {
 
                   <div className="pt-3 border-t border-slate-200 dark:border-slate-700 flex items-center justify-between">
                     <span className="font-mono text-xs font-bold text-rose-600 dark:text-rose-400">
-                      {scam.amountDemanded > 0 ? `Demanded â‚¹${scam.amountDemanded.toLocaleString()}` : 'Zero-Fee Scam'}
+                      {scam.amountDemanded > 0 ? `Demanded ₹${scam.amountDemanded.toLocaleString()}` : 'Zero-Fee Scam'}
                     </span>
                     <button
                       onClick={() => {
-                        const msg = `âš ï¸ SCAM ALERT: Beware of fake recruiter claiming "${scam.title}". Read details: ${window.location.origin}/fraud-board`;
+                        const msg = `⚠️ SCAM ALERT: Beware of fake recruiter claiming "${scam.title}". Read details: ${window.location.origin}/fraud-board`;
                         window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(msg)}`, '_blank');
                       }}
                       className="text-[11px] font-bold text-rose-600 dark:text-rose-400 hover:underline cursor-pointer flex items-center space-x-1"
