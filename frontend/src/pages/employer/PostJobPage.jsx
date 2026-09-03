@@ -1,4 +1,4 @@
-﻿import React, { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Briefcase, CheckCircle2, ArrowLeft, PlusCircle } from 'lucide-react';
@@ -36,6 +36,11 @@ export default function PostJobPage() {
     e.preventDefault();
     if (!formData.title.trim() || !formData.description.trim() || !formData.city.trim()) {
       setErrorMessage('Title, description, and city location are required.');
+      return;
+    }
+
+    if (formData.salaryMin && formData.salaryMax && Number(formData.salaryMin) > Number(formData.salaryMax)) {
+      setErrorMessage('Minimum compensation cannot exceed maximum compensation.');
       return;
     }
 
@@ -193,7 +198,7 @@ export default function PostJobPage() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Min Compensation (INR / Year)</label>
               <input
@@ -214,6 +219,20 @@ export default function PostJobPage() {
                 value={formData.salaryMax}
                 onChange={handleChange}
                 placeholder="e.g. 2400000"
+                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-mono"
+              />
+            </div>
+
+            <div>
+              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Number of Openings</label>
+              <input
+                type="number"
+                name="openings"
+                min="1"
+                max="500"
+                value={formData.openings}
+                onChange={handleChange}
+                placeholder="1"
                 className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-mono"
               />
             </div>

@@ -218,7 +218,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-800 dark:text-slate-200">
                         {report.fraudCategory}
                       </span>
-                      <span className="text-slate-400">• Severity: <strong>{report.severity}</strong></span>
+                      <span className="text-slate-400">ï¿½ Severity: <strong>{report.severity}</strong></span>
                     </div>
 
                     <span className="text-[11px] font-mono text-slate-400">
@@ -323,8 +323,8 @@ export default function AdminDashboardPage() {
                 {employers.map((emp) => (
                   <tr key={emp._id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
                     <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{emp.companyName}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || '—'}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || '—'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || 'ï¿½'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || 'ï¿½'}</td>
                     <td className="py-3.5 px-4">
                       <TrustScoreBadge score={emp.trustScore || 40} size="sm" />
                     </td>
@@ -358,9 +358,9 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex items-center space-x-2 text-slate-500 text-[11px]">
                 <span>{job.location?.city}</span>
-                <span>•</span>
+                <span>ï¿½</span>
                 <span>{job.jobType}</span>
-                <span>•</span>
+                <span>ï¿½</span>
                 <span>?{((job.salary?.min || 0) / 100000).toFixed(1)}L - ?{((job.salary?.max || job.salary?.min || 0) / 100000).toFixed(1)}L</span>
               </div>
               <div className="pt-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">

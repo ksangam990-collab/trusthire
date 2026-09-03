@@ -141,15 +141,28 @@ export const createJob = async (req, res, next) => {
       });
     }
 
+    const minSalary = Number(salary?.min) || 0;
+    const maxSalary = Number(salary?.max) || 0;
+    if (minSalary > 0 && maxSalary > 0 && minSalary > maxSalary) {
+      return res.status(400).json({
+        success: false,
+        message: 'Minimum salary cannot exceed maximum salary.'
+      });
+    }
+
+    const cleanedSkills = Array.isArray(skills)
+      ? skills.filter(s => typeof s === 'string' && s.trim()).map(s => s.toLowerCase().trim())
+      : [];
+
     const isVerified = employer.verificationStatus === 'verified';
 
     const job = await JobListing.create({
       employer: employer._id,
       title,
       description,
-      responsibilities: Array.isArray(responsibilities) ? responsibilities : [],
-      requirements: Array.isArray(requirements) ? requirements : [],
-      skills: Array.isArray(skills) ? skills.map(s => s.toLowerCase().trim()) : [],
+      responsibilities: Array.isArray(responsibilities) ? responsibilities.filter(r => typeof r === 'string' && r.trim()) : [],
+      requirements: Array.isArray(requirements) ? requirements.filter(r => typeof r === 'string' && r.trim()) : [],
+      skills: cleanedSkills,
       jobType: jobType || 'Full-time',
       workplaceType: workplaceType || 'On-site',
       experienceLevel: experienceLevel || 'Entry Level',
@@ -159,8 +172,8 @@ export const createJob = async (req, res, next) => {
         country: location.country || 'India'
       },
       salary: {
-        min: salary?.min || 0,
-        max: salary?.max || 0,
+        min: minSalary,
+        max: maxSalary >= minSalary ? maxSalary : minSalary,
         currency: salary?.currency || 'INR',
         isNegotiable: !!salary?.isNegotiable
       },
@@ -215,7 +228,11 @@ export const updateJob = async (req, res, next) => {
     if (description !== undefined) job.description = description;
     if (responsibilities !== undefined) job.responsibilities = responsibilities;
     if (requirements !== undefined) job.requirements = requirements;
-    if (skills !== undefined) job.skills = Array.isArray(skills) ? skills.map(s => s.toLowerCase().trim()) : job.skills;
+    if (skills !== undefined) {
+      job.skills = Array.isArray(skills)
+        ? skills.filter(s => typeof s === 'string' && s.trim()).map(s => s.toLowerCase().trim())
+        : job.skills;
+    }
     if (jobType !== undefined) job.jobType = jobType;
     if (workplaceType !== undefined) job.workplaceType = workplaceType;
     if (experienceLevel !== undefined) job.experienceLevel = experienceLevel;

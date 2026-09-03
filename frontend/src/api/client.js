@@ -75,11 +75,18 @@ apiClient.interceptors.response.use(
           { withCredentials: true }
         );
 
-        const { token, user } = refreshResponse.data.data;
-        useAuthStore.getState().setAuth(user, token);
+        const responseData = refreshResponse.data?.data || refreshResponse.data || {};
+        const token = responseData.token;
+        const user = responseData.user;
+
+        if (token && user) {
+          useAuthStore.getState().setAuth(user, token);
+        }
 
         processQueue(null, token);
-        originalRequest.headers.Authorization = `Bearer ${token}`;
+        if (token) {
+          originalRequest.headers.Authorization = `Bearer ${token}`;
+        }
         return apiClient(originalRequest);
       } catch (refreshErr) {
         processQueue(refreshErr, null);

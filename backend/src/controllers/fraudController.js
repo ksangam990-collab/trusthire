@@ -80,7 +80,7 @@ export const submitReport = async (req, res, next) => {
     }
 
     const report = await FraudReport.create({
-      user: req.user ? req.user._id : (employer?.user || employerId),
+      user: req.user ? req.user._id : null,
       reporter: req.user ? req.user._id : null,
       isAnonymous: Boolean(isAnonymous),
       reporterContact: isAnonymous ? {} : (reporterContact || {}),
@@ -95,8 +95,9 @@ export const submitReport = async (req, res, next) => {
       status: 'pending'
     });
 
-    employer.totalSubmittedReports += 1;
-    await employer.save();
+    await Employer.findByIdAndUpdate(employerId, {
+      $inc: { totalSubmittedReports: 1 }
+    });
 
     res.status(201).json({
       success: true,

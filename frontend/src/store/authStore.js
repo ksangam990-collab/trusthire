@@ -55,11 +55,13 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.login(credentials);
-      const { user, token } = response.data;
+      const data = response?.data || response || {};
+      const user = data.user;
+      const token = data.token;
       set({
         user,
         token,
-        isAuthenticated: true,
+        isAuthenticated: !!user,
         isLoading: false,
         error: null
       });
@@ -75,11 +77,13 @@ export const useAuthStore = create((set, get) => ({
     set({ isLoading: true, error: null });
     try {
       const response = await authApi.register(payload);
-      const { user, token } = response.data;
+      const data = response?.data || response || {};
+      const user = data.user;
+      const token = data.token;
       set({
         user,
         token,
-        isAuthenticated: true,
+        isAuthenticated: !!user,
         isLoading: false,
         error: null
       });
