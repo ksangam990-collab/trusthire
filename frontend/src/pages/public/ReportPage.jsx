@@ -1,245 +1,198 @@
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, useNavigate, Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { AlertTriangle, ShieldAlert, UploadCloud, CheckCircle2, Lock, ArrowLeft } from 'lucide-react';
+import { useSearchParams, Link } from 'react-router-dom';
+import { AlertTriangle, ShieldAlert, UploadCloud, CheckCircle2, ArrowLeft, AlertCircle, X } from 'lucide-react';
 import { fraudApi, employerApi } from '../../api';
 import { Spinner } from '../../components/ui/Skeleton';
 
+const CATEGORIES = [
+  'Registration Fee / Security Deposit',
+  'Fake Offer Letter',
+  'Identity Theft / Document Misuse',
+  'Phishing / Impersonation',
+  'Unpaid Trial Work',
+  'Misleading Salary / Job Role',
+  'Other Fraudulent Activity',
+];
+
 export default function ReportPage() {
   const [searchParams] = useSearchParams();
-  const navigate = useNavigate();
-
-  const [employersList, setEmployersList] = useState([]);
+  const [employers, setEmployers] = useState([]);
   const [selectedEmployerId, setSelectedEmployerId] = useState(searchParams.get('employerId') || '');
-  const [jobId, setJobId] = useState(searchParams.get('jobId') || '');
   const [customOrgName, setCustomOrgName] = useState('');
-  const [fraudCategory, setFraudCategory] = useState('Registration Fee / Security Deposit');
+  const [category, setCategory] = useState(CATEGORIES[0]);
   const [severity, setSeverity] = useState('High');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [amountDemanded, setAmountDemanded] = useState('');
-  const [isAnonymous, setIsAnonymous] = useState(true);
-  const [evidenceFiles, setEvidenceFiles] = useState([]);
-  
+  const [amount, setAmount] = useState('');
+  const [anonymous, setAnonymous] = useState(true);
+  const [files, setFiles] = useState([]);
   const [submitting, setSubmitting] = useState(false);
-  const [successMessage, setSuccessMessage] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [done, setDone] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchEmployers = async () => {
-      try {
-        const res = await employerApi.getPublicEmployers();
-        setEmployersList(res?.data?.employers || []);
-      } catch (err) {
-        console.error('Failed to load employers list:', err);
-      }
-    };
-    fetchEmployers();
+    employerApi.getPublicEmployers().then(r => setEmployers(r?.data?.employers || [])).catch(() => {});
   }, []);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    const targetEmployerId = selectedEmployerId || null;
-    if (!targetEmployerId && !customOrgName.trim()) {
-      setErrorMessage('Please select or specify the reported organization.');
-      return;
-    }
-
-    if (!title.trim() || !description.trim()) {
-      setErrorMessage('Summary title and detailed incident description are required.');
-      return;
-    }
-
-    setSubmitting(true);
-    setErrorMessage('');
-
+    if (!selectedEmployerId && !customOrgName.trim()) { setError('Please select or name the company involved.'); return; }
+    if (!title.trim() || !description.trim()) { setError('Please fill in a title and description.'); return; }
+    setSubmitting(true); setError('');
     try {
-      const formData = new FormData();
-      formData.append('employerId', targetEmployerId);
-      if (jobId) formData.append('jobId', jobId.trim());
-      formData.append('fraudCategory', fraudCategory);
-      formData.append('severity', severity);
-      formData.append('title', title.trim());
-      formData.append('description', description.trim());
-      formData.append('amountDemanded', amountDemanded || '0');
-      formData.append('isAnonymous', String(isAnonymous));
-
-      for (let i = 0; i < evidenceFiles.length; i++) {
-        formData.append('evidence', evidenceFiles[i]);
-      }
-
-      await fraudApi.submitReport(formData);
-      setSuccessMessage('Your report has been securely registered and queued on the TrustHire Fraud Radar for verification.');
+      const fd = new FormData();
+      fd.append('employerId', selectedEmployerId || '');
+      if (customOrgName.trim()) fd.append('customOrgName', customOrgName.trim());
+      fd.append('fraudCategory', category);
+      fd.append('severity', severity);
+      fd.append('title', title.trim());
+      fd.append('description', description.trim());
+      fd.append('amountDemanded', amount || '0');
+      fd.append('isAnonymous', String(anonymous));
+      files.forEach(f => fd.append('evidence', f));
+      await fraudApi.submitReport(fd);
+      setDone(true);
     } catch (err) {
-      setErrorMessage(err.message || 'Failed to submit report. Please try again.');
-    } finally {
-      setSubmitting(false);
-    }
+      setError(err.message || 'Failed to submit. Please try again.');
+    } finally { setSubmitting(false); }
   };
 
+  const inputCls = "w-full px-3.5 py-2.5 text-sm bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-900 dark:text-white placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-rose-500 focus:border-transparent transition";
+
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-6 theme-transition">
-      <Link to="/fraud-board" className="inline-flex items-center space-x-1.5 text-xs font-semibold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition">
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Fraud Radar</span>
+    <div className="max-w-2xl mx-auto px-4 sm:px-6 py-10 space-y-6 theme-transition">
+      <Link to="/fraud-board" className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-slate-900 dark:hover:text-white transition">
+        <ArrowLeft className="w-4 h-4" /> Back to Fraud Board
       </Link>
 
-      <motion.div 
-        initial={{ opacity: 0, y: 15 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="p-6 sm:p-10 rounded-3xl bg-white/90 dark:bg-[#0f172a]/90 border border-slate-200 dark:border-slate-800 shadow-sm backdrop-blur-xl space-y-6"
-      >
-        <div className="flex items-center space-x-3.5 border-b border-slate-100 dark:border-slate-800 pb-6">
-          <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400">
+      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm p-6 sm:p-8">
+        <div className="flex items-center gap-3 mb-6 pb-5 border-b border-slate-100 dark:border-slate-800">
+          <div className="p-2.5 rounded-xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400">
             <ShieldAlert className="w-6 h-6" />
           </div>
           <div>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-900 dark:text-white tracking-tight">Report Recruitment Fraud</h1>
-            <p className="text-xs text-slate-500 dark:text-slate-400">Submit evidence of security deposits, fake offer letters, or phishing scams.</p>
+            <h1 className="text-lg sm:text-xl font-black text-slate-900 dark:text-white tracking-tight">Report a Recruitment Scam</h1>
+            <p className="text-xs text-slate-500">Help protect others by sharing your experience. All reports are reviewed by our team.</p>
           </div>
         </div>
 
-        {successMessage ? (
-          <div className="p-8 rounded-3xl bg-emerald-50 dark:bg-emerald-500/10 border border-emerald-500/30 text-center space-y-4">
-            <div className="w-14 h-14 rounded-full bg-emerald-500/20 text-emerald-600 dark:text-emerald-400 flex items-center justify-center mx-auto">
-              <CheckCircle2 className="w-8 h-8" />
+        {done ? (
+          <div className="text-center py-8 space-y-4">
+            <div className="w-14 h-14 rounded-full bg-emerald-50 dark:bg-emerald-950/60 border-2 border-emerald-400 flex items-center justify-center mx-auto">
+              <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
             </div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white">Incident Report Filed</h3>
-            <p className="text-xs text-slate-600 dark:text-slate-300 max-w-md mx-auto leading-relaxed">{successMessage}</p>
-            <div className="pt-2">
-              <Link
-                to="/fraud-board"
-                className="inline-block px-6 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white rounded-xl text-xs font-bold"
-              >
-                View Public Fraud Board
-              </Link>
-            </div>
+            <h3 className="text-lg font-black text-slate-900 dark:text-white">Report Submitted</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">Your report has been received. Our team will review it and publish it to the fraud board if verified. Thank you for keeping the hiring ecosystem safe.</p>
+            <Link to="/fraud-board" className="inline-block px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-sm rounded-xl transition cursor-pointer">
+              View Fraud Board
+            </Link>
           </div>
         ) : (
-          <form onSubmit={handleSubmit} className="space-y-5 text-xs">
-            {errorMessage && (
-              <div className="p-3.5 bg-rose-50 dark:bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 rounded-2xl">
-                {errorMessage}
+          <form onSubmit={handleSubmit} className="space-y-5">
+            {error && (
+              <div className="flex items-start gap-2 p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-rose-600 dark:text-rose-400 text-xs rounded-xl">
+                <AlertCircle className="w-4 h-4 flex-shrink-0 mt-0.5" />
+                <span>{error}</span>
               </div>
             )}
 
+            {/* Company */}
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Target Organization / Entity *</label>
-              {employersList.length > 0 ? (
-                <select
-                  value={selectedEmployerId}
-                  onChange={(e) => setSelectedEmployerId(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500 font-medium"
-                >
-                  <option value="">Select an entity from directory</option>
-                  {employersList.map((emp) => (
-                    <option key={emp._id} value={emp._id}>
-                      {emp.companyName} {emp.verificationStatus === 'verified' ? '(Verified)' : ''}
-                    </option>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company involved *</label>
+              {employers.length > 0 ? (
+                <select value={selectedEmployerId} onChange={e => setSelectedEmployerId(e.target.value)} className={inputCls}>
+                  <option value="">Select a company...</option>
+                  {employers.map(e => (
+                    <option key={e._id} value={e._id}>{e.companyName}{e.verificationStatus === 'verified' ? ' (Verified)' : ''}</option>
                   ))}
                 </select>
-              ) : (
-                <input
-                  type="text"
-                  required
-                  value={selectedEmployerId}
-                  onChange={(e) => setSelectedEmployerId(e.target.value)}
-                  placeholder="Employer MongoDB ObjectId or identifier..."
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
-                />
+              ) : null}
+              {!selectedEmployerId && (
+                <input type="text" value={customOrgName} onChange={e => setCustomOrgName(e.target.value)}
+                  placeholder="Company name (if not in list above)"
+                  className={`${inputCls} ${employers.length > 0 ? 'mt-2' : ''}`} />
               )}
             </div>
 
+            {/* Category + Severity */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Scam Category *</label>
-                <select
-                  value={fraudCategory}
-                  onChange={(e) => setFraudCategory(e.target.value)}
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white focus:outline-none font-medium"
-                >
-                  <option value="Registration Fee / Security Deposit">Registration Fee / Security Deposit</option>
-                  <option value="Fake Offer Letter">Fake Offer Letter</option>
-                  <option value="Identity Theft / Document Misuse">Identity Theft / Document Misuse</option>
-                  <option value="Phishing / Impersonation">Phishing / Impersonation</option>
-                  <option value="Unpaid Trial Work">Unpaid Trial Work</option>
-                  <option value="Misleading Salary / Job Role">Misleading Salary / Job Role</option>
-                  <option value="Other Fraudulent Activity">Other Fraudulent Activity</option>
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Scam type *</label>
+                <select value={category} onChange={e => setCategory(e.target.value)} className={inputCls}>
+                  {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
                 </select>
               </div>
-
               <div>
-                <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Amount Demanded (INR)</label>
-                <input
-                  type="number"
-                  value={amountDemanded}
-                  onChange={(e) => setAmountDemanded(e.target.value)}
-                  placeholder="e.g. 5000"
-                  className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white font-mono"
-                />
+                <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Severity</label>
+                <select value={severity} onChange={e => setSeverity(e.target.value)} className={inputCls}>
+                  {['Critical','High','Medium','Low'].map(s => <option key={s} value={s}>{s}</option>)}
+                </select>
               </div>
             </div>
 
+            {/* Amount */}
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Summary Title *</label>
-              <input
-                type="text"
-                required
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="e.g. Demanded ₹4,500 background check charge via WhatsApp before interview"
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
-              />
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Amount demanded (INR) — if any</label>
+              <input type="number" min="0" value={amount} onChange={e => setAmount(e.target.value)} placeholder="e.g. 5000 (leave blank if none)" className={inputCls} />
             </div>
 
+            {/* Title */}
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Detailed Incident Description *</label>
-              <textarea
-                rows={4}
-                required
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Detail the timeline, channel used (WhatsApp/Telegram/Email), UPI / payment details requested, etc."
-                className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-2xl text-slate-900 dark:text-white"
-              />
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Short title *</label>
+              <input type="text" required value={title} onChange={e => setTitle(e.target.value)}
+                placeholder="e.g. Demanded Rs 4,500 before interview via WhatsApp"
+                className={inputCls} maxLength={120} />
             </div>
 
+            {/* Description */}
             <div>
-              <label className="block text-slate-700 dark:text-slate-300 font-semibold mb-1">Evidence Files / Screenshots (Max 4)</label>
-              <input
-                type="file"
-                multiple
-                accept="image/*,.pdf,.doc,.docx"
-                onChange={(e) => setEvidenceFiles(Array.from(e.target.files))}
-                className="w-full text-slate-500 file:mr-3 file:py-2 file:px-3 file:rounded-xl file:border-0 file:text-xs file:font-bold file:bg-slate-100 dark:file:bg-slate-800 file:text-emerald-700 dark:file:text-emerald-400 hover:file:bg-slate-200 cursor-pointer"
-              />
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">What happened? (Details) *</label>
+              <textarea rows={5} required value={description} onChange={e => setDescription(e.target.value)}
+                placeholder="Describe the incident clearly. Include dates, how you were contacted, what was asked of you, and any red flags..."
+                className={inputCls + ' resize-none'} />
             </div>
 
-            <div className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 flex items-center space-x-2.5">
-              <input
-                type="checkbox"
-                id="anon"
-                checked={isAnonymous}
-                onChange={(e) => setIsAnonymous(e.target.checked)}
-                className="rounded bg-white dark:bg-slate-900 border-slate-300 dark:border-slate-700 text-emerald-500 focus:ring-0"
-              />
-              <label htmlFor="anon" className="text-slate-700 dark:text-slate-300 cursor-pointer select-none font-medium">
-                Submit completely anonymously (Your name & contact info will not be revealed)
+            {/* Evidence Upload */}
+            <div>
+              <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Attach evidence (optional)</label>
+              <label className="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-slate-200 dark:border-slate-700 hover:border-rose-400 dark:hover:border-rose-700 rounded-xl p-5 cursor-pointer transition">
+                <UploadCloud className="w-7 h-7 text-slate-400" />
+                <span className="text-xs text-slate-500">Screenshots, offer letters, chat history (JPG, PNG, PDF — max 5MB each)</span>
+                <input type="file" multiple accept="image/*,.pdf" onChange={e => setFiles(Array.from(e.target.files || []))} className="hidden" />
               </label>
+              {files.length > 0 && (
+                <div className="mt-2 flex flex-wrap gap-2">
+                  {files.map((f, i) => (
+                    <span key={i} className="inline-flex items-center gap-1 text-[11px] bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 px-2 py-1 rounded-lg">
+                      {f.name.slice(0, 20)}{f.name.length > 20 ? '...' : ''}
+                      <button type="button" onClick={() => setFiles(files.filter((_, j) => j !== i))} className="text-slate-400 hover:text-rose-500 cursor-pointer">
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  ))}
+                </div>
+              )}
             </div>
 
-            <button
-              type="submit"
-              disabled={submitting}
-              className="w-full py-3.5 rounded-2xl bg-rose-500 hover:bg-rose-600 text-white font-bold transition disabled:opacity-50 flex items-center justify-center space-x-2 shadow-md shadow-rose-500/20"
-            >
-              {submitting && <Spinner className="w-4 h-4 text-white" />}
-              <span>{submitting ? 'Transmitting Incident Report...' : 'Submit Incident Report'}</span>
-            </button>
+            {/* Anonymous toggle */}
+            <label className="flex items-start gap-3 cursor-pointer">
+              <input type="checkbox" checked={anonymous} onChange={e => setAnonymous(e.target.checked)} className="w-4 h-4 mt-0.5 rounded accent-rose-600 flex-shrink-0" />
+              <div>
+                <span className="text-xs font-semibold text-slate-700 dark:text-slate-300 block">Submit anonymously (recommended)</span>
+                <span className="text-[11px] text-slate-500">Your identity will not be visible on the public fraud board.</span>
+              </div>
+            </label>
+
+            <div className="pt-2 flex justify-end">
+              <button type="submit" disabled={submitting}
+                className="flex items-center gap-2 px-6 py-2.5 bg-rose-600 hover:bg-rose-700 disabled:opacity-60 text-white font-bold text-sm rounded-xl transition cursor-pointer shadow-sm">
+                {submitting ? <Spinner className="w-4 h-4 text-white" /> : <AlertTriangle className="w-4 h-4" />}
+                <span>{submitting ? 'Submitting...' : 'Submit Report'}</span>
+              </button>
+            </div>
           </form>
         )}
-      </motion.div>
+      </div>
     </div>
   );
 }
