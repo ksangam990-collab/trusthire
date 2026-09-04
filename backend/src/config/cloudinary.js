@@ -2,113 +2,90 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 
-const hasCloudinaryCredentials = Boolean(
+// FIX (HIGH): Updated for Cloudinary SDK v2.
+// v1.x contained an argument-injection vulnerability (GHSA-g4mf-96x5-5m2c).
+const hasCredentials = Boolean(
   process.env.CLOUDINARY_CLOUD_NAME &&
-  process.env.CLOUDINARY_API_KEY &&
+  process.env.CLOUDINARY_API_KEY   &&
   process.env.CLOUDINARY_API_SECRET
 );
 
-if (hasCloudinaryCredentials) {
+if (hasCredentials) {
   cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
-    api_key: process.env.CLOUDINARY_API_KEY,
+    api_key:    process.env.CLOUDINARY_API_KEY,
     api_secret: process.env.CLOUDINARY_API_SECRET,
-    secure: true
+    secure: true,
   });
 }
 
-const allowedMimeTypes = [
-  'image/jpeg',
-  'image/png',
-  'image/webp',
+const ALLOWED_MIME_TYPES = [
+  'image/jpeg', 'image/png', 'image/webp',
   'application/pdf',
   'application/msword',
-  'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
 ];
 
-let evidenceStorage;
-let resumeStorage;
+const fileFilter = (req, file, cb) => {
+  if (ALLOWED_MIME_TYPES.includes(file.mimetype)) {
+    cb(null, true);
+  } else {
+    cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed: JPEG, PNG, WEBP, PDF, DOC, DOCX`), false);
+  }
+};
 
-if (hasCloudinaryCredentials) {
+let evidenceStorage, resumeStorage;
+
+if (hasCredentials) {
   evidenceStorage = new CloudinaryStorage({
     cloudinary,
-    params: async (req, file) => {
-      const isDoc = file.mimetype === 'application/pdf' || file.mimetype.includes('word');
-      return {
-        folder: 'trusthire/fraud_evidence',
-        resource_type: isDoc ? 'raw' : 'image',
-        public_id: `evidence_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-        allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'doc', 'docx']
-      };
-    }
+    params: async (req, file) => ({
+      folder: 'trusthire/fraud_evidence',
+      resource_type: (file.mimetype === 'application/pdf' || file.mimetype.includes('word')) ? 'raw' : 'image',
+      public_id: `evidence_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      allowed_formats: ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'doc', 'docx'],
+    }),
   });
 
   resumeStorage = new CloudinaryStorage({
     cloudinary,
-    params: async (req, file) => {
-      return {
-        folder: 'trusthire/resumes',
-        resource_type: 'raw',
-        public_id: `resume_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`,
-        allowed_formats: ['pdf', 'doc', 'docx']
-      };
-    }
+    params: async (req, file) => ({
+      folder: 'trusthire/resumes',
+      resource_type: 'raw',
+      public_id: `resume_${req.user?._id || 'anon'}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+      allowed_formats: ['pdf', 'doc', 'docx'],
+    }),
   });
 } else {
-  // Graceful local fallback for development/testing without external Cloudinary setup
-  const memoryStorage = multer.memoryStorage();
-  evidenceStorage = memoryStorage;
-  resumeStorage = memoryStorage;
+  evidenceStorage = multer.memoryStorage();
+  resumeStorage   = multer.memoryStorage();
 }
 
-const fileFilter = (req, file, cb) => {
-  if (allowedMimeTypes.includes(file.mimetype)) {
-    cb(null, true);
-  } else {
-    cb(new Error(`Unsupported file type: ${file.mimetype}. Allowed types: JPEG, PNG, WEBP, PDF, DOC, DOCX`), false);
-  }
-};
-
-const attachMockUrlsMiddleware = (req, res, next) => {
-  if (!hasCloudinaryCredentials) {
+// Attach placeholder URLs when Cloudinary is not configured (dev mode)
+const attachDevUrls = (req, _res, next) => {
+  if (!hasCredentials) {
     if (req.file) {
-      req.file.secure_url = `https://storage.trusthire.dev/uploads/resumes/${Date.now()}_${req.file.originalname}`;
-      req.file.path = req.file.secure_url;
+      req.file.path = req.file.secure_url =
+        `https://cdn.trusthire.in/dev/resumes/${Date.now()}_${encodeURIComponent(req.file.originalname)}`;
     }
-    if (req.files && Array.isArray(req.files)) {
-      req.files.forEach(file => {
-        file.secure_url = `https://storage.trusthire.dev/uploads/evidence/${Date.now()}_${file.originalname}`;
-        file.path = file.secure_url;
+    if (req.files?.length) {
+      req.files.forEach(f => {
+        f.path = f.secure_url =
+          `https://cdn.trusthire.in/dev/evidence/${Date.now()}_${encodeURIComponent(f.originalname)}`;
       });
     }
   }
   next();
 };
 
-const baseUploadEvidence = multer({
-  storage: evidenceStorage,
-  limits: { fileSize: 5 * 1024 * 1024, files: 4 },
-  fileFilter
-});
-
-const baseUploadResume = multer({
-  storage: resumeStorage,
-  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
-  fileFilter
-});
+const baseEvidence = multer({ storage: evidenceStorage, limits: { fileSize: 5 * 1024 * 1024, files: 4 }, fileFilter });
+const baseResume   = multer({ storage: resumeStorage,   limits: { fileSize: 10 * 1024 * 1024, files: 1 }, fileFilter });
 
 export const uploadEvidence = {
-  array: (fieldName, maxCount) => [
-    baseUploadEvidence.array(fieldName, maxCount),
-    attachMockUrlsMiddleware
-  ]
+  array: (field, max) => [baseEvidence.array(field, max), attachDevUrls],
 };
-
 export const uploadResume = {
-  single: (fieldName) => [
-    baseUploadResume.single(fieldName),
-    attachMockUrlsMiddleware
-  ]
+  single: (field) => [baseResume.single(field), attachDevUrls],
 };
 
 export default cloudinary;

@@ -19,6 +19,7 @@ import ReportPage from './pages/public/ReportPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import ForgotPasswordPage from './pages/auth/ForgotPasswordPage';
+import ResetPasswordPage from './pages/auth/ResetPasswordPage';   // FIX: was missing
 
 // Employer Pages
 import EmployerDashboard from './pages/employer/EmployerDashboard';
@@ -34,17 +35,11 @@ import AdminDashboardPage from './pages/admin/AdminDashboardPage';
 
 export default function App() {
   const { initialize } = useAuthStore();
-  const { initTheme } = useThemeStore();
-  const location = useLocation();
+  const { initTheme }  = useThemeStore();
+  const location       = useLocation();
 
-  useEffect(() => {
-    initTheme();
-    initialize();
-  }, [initialize, initTheme]);
-
-  useEffect(() => {
-    window.scrollTo(0, 0);
-  }, [location.pathname]);
+  useEffect(() => { initTheme(); initialize(); }, [initialize, initTheme]);
+  useEffect(() => { window.scrollTo(0, 0); }, [location.pathname]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-[#080c14] text-slate-900 dark:text-slate-100 antialiased selection:bg-emerald-500/20 selection:text-emerald-500 theme-transition relative">
@@ -52,81 +47,33 @@ export default function App() {
       <Navbar />
       <main className="flex-grow relative z-10">
         <Routes>
-          {/* Public Routes */}
-          <Route path="/" element={<HomePage />} />
-          <Route path="/jobs" element={<JobSearchPage />} />
-          <Route path="/jobs/:id" element={<JobDetailPage />} />
-          <Route path="/fraud-board" element={<FraudBoardPage />} />
+          {/* Public */}
+          <Route path="/"             element={<HomePage />} />
+          <Route path="/jobs"         element={<JobSearchPage />} />
+          <Route path="/jobs/:id"     element={<JobDetailPage />} />
+          <Route path="/fraud-board"  element={<FraudBoardPage />} />
           <Route path="/report-fraud" element={<ReportPage />} />
 
-          {/* Auth Routes */}
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/register" element={<RegisterPage />} />
+          {/* Auth */}
+          <Route path="/login"           element={<LoginPage />} />
+          <Route path="/register"        element={<RegisterPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password"  element={<ResetPasswordPage />} />
 
-          {/* Employer Protected Routes */}
-          <Route
-            path="/employer/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['employer']}>
-                <EmployerDashboard />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/employer/post-job"
-            element={
-              <ProtectedRoute allowedRoles={['employer']}>
-                <PostJobPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/employer/verify"
-            element={
-              <ProtectedRoute allowedRoles={['employer']}>
-                <VerifyPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Employer (protected) */}
+          <Route path="/employer/dashboard" element={<ProtectedRoute allowedRoles={['employer']}><EmployerDashboard /></ProtectedRoute>} />
+          <Route path="/employer/post-job"  element={<ProtectedRoute allowedRoles={['employer']}><PostJobPage /></ProtectedRoute>} />
+          <Route path="/employer/verify"    element={<ProtectedRoute allowedRoles={['employer']}><VerifyPage /></ProtectedRoute>} />
 
-          {/* Job Seeker Protected Routes */}
-          <Route
-            path="/candidate/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['jobseeker']}>
-                <DashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/profile"
-            element={
-              <ProtectedRoute allowedRoles={['jobseeker']}>
-                <ProfilePage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Job Seeker (protected) */}
+          <Route path="/candidate/dashboard" element={<ProtectedRoute allowedRoles={['jobseeker']}><DashboardPage /></ProtectedRoute>} />
+          <Route path="/profile"             element={<ProtectedRoute allowedRoles={['jobseeker']}><ProfilePage /></ProtectedRoute>} />
 
-          {/* Admin Dedicated Routes */}
-          <Route
-            path="/admin"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboardPage />
-              </ProtectedRoute>
-            }
-          />
-          <Route
-            path="/admin/dashboard"
-            element={
-              <ProtectedRoute allowedRoles={['admin']}>
-                <AdminDashboardPage />
-              </ProtectedRoute>
-            }
-          />
+          {/* Admin (protected) */}
+          <Route path="/admin"           element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>} />
+          <Route path="/admin/dashboard" element={<ProtectedRoute allowedRoles={['admin']}><AdminDashboardPage /></ProtectedRoute>} />
 
-          {/* Fallback */}
+          {/* Catch-all */}
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </main>

@@ -71,7 +71,7 @@ export default function ForgotPasswordPage() {
                 <CheckCircle2 className="w-8 h-8 text-emerald-600 dark:text-emerald-400" />
               </div>
               <h2 className="text-lg font-black text-slate-900 dark:text-white">Email Sent!</h2>
-              <p className="text-xs text-slate-500">Check your inbox for a password reset link. It will expire in 1 hour.</p>
+              <p className="text-xs text-slate-500">Check your inbox for a password reset link. It will expire in 15 minutes.</p>
               <Link to="/login" className="block mt-4 py-2.5 text-center bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-900 dark:text-white font-bold text-sm rounded-xl transition">
                 Return to Login
               </Link>
