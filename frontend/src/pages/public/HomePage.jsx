@@ -114,7 +114,7 @@ export default function HomePage() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    jobsApi.getJobs({ limit: 4, verifiedOnly: 'true' })
+    jobsApi.getJobs({ limit: 4, sortBy: 'createdAt', order: 'desc' })
       .then(r => setJobs(r?.data?.jobs || []))
       .catch(() => {})
       .finally(() => setLoading(false));
@@ -572,30 +572,74 @@ export default function HomePage() {
       </section>
 
       {/* ════════════════════════════════════════
-          BOTTOM CALL TO ACTION
+          BOTTOM CALL TO ACTION — Rich version
       ════════════════════════════════════════ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="bg-emerald-600 dark:bg-emerald-700 rounded-3xl p-8 sm:p-12 text-center text-white space-y-4 shadow-xl shadow-emerald-600/10">
-          <ShieldCheck className="w-10 h-10 mx-auto opacity-90" strokeWidth={2} />
-          <h2 className="text-2xl sm:text-3xl font-black tracking-tight">
-            Ready to find genuine jobs the safe way?
-          </h2>
-          <p className="text-emerald-100 text-xs sm:text-sm max-w-md mx-auto leading-relaxed">
-            Browse verified tech jobs with transparent salaries. No recruiter fees, no fake placements.
-          </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2">
-            <Link 
-              to="/jobs"
-              className="px-6 py-3 bg-white text-emerald-700 hover:bg-emerald-50 font-bold text-xs sm:text-sm rounded-xl transition cursor-pointer shadow-md w-full sm:w-auto"
-            >
-              Browse Verified Openings
-            </Link>
-            <Link 
-              to="/register"
-              className="px-6 py-3 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs sm:text-sm rounded-xl border border-emerald-500 transition cursor-pointer w-full sm:w-auto"
-            >
-              Create Free Account
-            </Link>
+        <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-[#090d16] border border-slate-800 shadow-2xl">
+
+          {/* Background glow orbs */}
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+
+          <div className="relative z-10 p-8 sm:p-12">
+            <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
+
+              {/* Left: Text */}
+              <div className="flex-1 text-center lg:text-left space-y-4">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+                  <ShieldCheck className="w-3.5 h-3.5" />
+                  <span>India's Verified Hiring Network</span>
+                </div>
+
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                  Ready to find genuine jobs<br className="hidden sm:block" />
+                  <span className="text-emerald-400"> the safe way?</span>
+                </h2>
+
+                <p className="text-slate-400 text-xs sm:text-sm max-w-md lg:max-w-none leading-relaxed">
+                  Every job on TrustHire is posted by a company verified against official government registries.
+                  Transparent salaries. Zero candidate fees. Zero placement fraud.
+                </p>
+
+                <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 pt-1">
+                  <Link
+                    to="/jobs"
+                    className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 cursor-pointer"
+                  >
+                    <Sparkles className="w-4 h-4" />
+                    Browse Verified Openings
+                  </Link>
+                  <Link
+                    to="/register"
+                    className="w-full sm:w-auto px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
+                  >
+                    Create Free Account
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+
+              {/* Right: Trust stats */}
+              <div className="w-full lg:w-auto grid grid-cols-2 gap-3 lg:gap-4 flex-shrink-0">
+                {[
+                  { value: '2,400+', label: 'Active Jobs',        icon: Briefcase },
+                  { value: '380+',   label: 'Verified Companies', icon: Building2 },
+                  { value: '₹0',     label: 'Candidate Fees',     icon: IndianRupee },
+                  { value: '100%',   label: 'Fraud-Free Promise',  icon: ShieldCheck },
+                ].map(({ value, label, icon: Icon }) => (
+                  <div
+                    key={label}
+                    className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 text-center"
+                  >
+                    <Icon className="w-4 h-4 text-emerald-500 mx-auto mb-1.5" />
+                    <div className="text-lg sm:text-xl font-black text-white">{value}</div>
+                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">{label}</div>
+                  </div>
+                ))}
+              </div>
+
+            </div>
           </div>
         </div>
       </section>
