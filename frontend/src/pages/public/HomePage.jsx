@@ -628,29 +628,29 @@ export default function HomePage() {
           BOTTOM CALL TO ACTION — Rich version
       ════════════════════════════════════════ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 pb-16">
-        <div className="relative overflow-hidden rounded-3xl bg-slate-900 dark:bg-[#090d16] border border-slate-800 shadow-2xl">
+        {/* Theme-aware CTA — emerald gradient in light mode, dark card in dark mode */}
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-emerald-600 to-emerald-700 dark:bg-none dark:bg-[#0d1117] border border-emerald-500/30 dark:border-white/[0.07] shadow-2xl shadow-emerald-200 dark:shadow-black/60">
 
-          {/* Background glow orbs */}
-          <div className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-32 bg-emerald-500/5 rounded-full blur-2xl pointer-events-none" />
+          {/* Glow orbs — white tinted in light, emerald in dark */}
+          <div className="absolute -top-20 -left-20 w-64 h-64 bg-white/10 dark:bg-emerald-600/20 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 -right-20 w-64 h-64 bg-white/5 dark:bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 p-8 sm:p-12">
             <div className="flex flex-col lg:flex-row items-center lg:items-start gap-8 lg:gap-12">
 
               {/* Left: Text */}
               <div className="flex-1 text-center lg:text-left space-y-4">
-                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-emerald-500/30 bg-emerald-500/10 text-emerald-400 text-xs font-semibold">
+                <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-white/30 dark:border-emerald-500/30 bg-white/15 dark:bg-emerald-500/10 text-white dark:text-emerald-400 text-xs font-semibold">
                   <ShieldCheck className="w-3.5 h-3.5" />
                   <span>India's Verified Hiring Network</span>
                 </div>
 
                 <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
                   Ready to find genuine jobs<br className="hidden sm:block" />
-                  <span className="text-emerald-400"> the safe way?</span>
+                  <span className="text-white/80 dark:text-emerald-400"> the safe way?</span>
                 </h2>
 
-                <p className="text-slate-400 text-xs sm:text-sm max-w-md lg:max-w-none leading-relaxed">
+                <p className="text-white/80 dark:text-slate-400 text-xs sm:text-sm max-w-md lg:max-w-none leading-relaxed">
                   Every job on TrustHire is posted by a company verified against official government registries.
                   Transparent salaries. Zero candidate fees. Zero placement fraud.
                 </p>
@@ -658,14 +658,14 @@ export default function HomePage() {
                 <div className="flex flex-col sm:flex-row items-center lg:items-start justify-center lg:justify-start gap-3 pt-1">
                   <Link
                     to="/jobs"
-                    className="w-full sm:w-auto px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/20 cursor-pointer"
+                    className="w-full sm:w-auto px-6 py-3 bg-white dark:bg-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-500 text-emerald-700 dark:text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-black/10 dark:shadow-emerald-600/20 cursor-pointer"
                   >
                     <Sparkles className="w-4 h-4" />
                     Browse Verified Openings
                   </Link>
                   <Link
                     to="/register"
-                    className="w-full sm:w-auto px-6 py-3 border border-slate-700 hover:border-slate-500 text-slate-300 hover:text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
+                    className="w-full sm:w-auto px-6 py-3 border border-white/40 dark:border-slate-700 hover:border-white dark:hover:border-slate-500 bg-white/10 dark:bg-transparent text-white dark:text-slate-300 hover:text-white dark:hover:text-white font-bold text-xs sm:text-sm rounded-xl transition flex items-center justify-center gap-2 cursor-pointer"
                   >
                     Create Free Account
                     <ArrowRight className="w-4 h-4" />
@@ -683,11 +683,11 @@ export default function HomePage() {
                 ].map(({ value, label, icon: Icon }) => (
                   <div
                     key={label}
-                    className="p-4 rounded-2xl bg-slate-800/60 border border-slate-700/60 text-center"
+                    className="p-4 rounded-2xl bg-white/15 dark:bg-slate-800/60 border border-white/20 dark:border-slate-700/60 text-center backdrop-blur-sm"
                   >
-                    <Icon className="w-4 h-4 text-emerald-500 mx-auto mb-1.5" />
+                    <Icon className="w-4 h-4 text-white dark:text-emerald-500 mx-auto mb-1.5" />
                     <div className="text-lg sm:text-xl font-black text-white">{value}</div>
-                    <div className="text-[10px] sm:text-[11px] text-slate-400 font-medium mt-0.5">{label}</div>
+                    <div className="text-[10px] sm:text-[11px] text-white/70 dark:text-slate-400 font-medium mt-0.5">{label}</div>
                   </div>
                 ))}
               </div>
