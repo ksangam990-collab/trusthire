@@ -34,7 +34,7 @@ export default function JobSearchPage() {
       setJobs(res?.data?.jobs || []);
       setPagination(res?.data?.pagination || { page: 1, pages: 1, total: 0 });
       setCurrentPage(page);
-    } catch { } finally { setLoading(false); }
+    } catch (err) { console.error('Job fetch error:', err); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchJobs(1); }, [jobType, workplaceType, experienceLevel, verifiedOnly, sortBy]);

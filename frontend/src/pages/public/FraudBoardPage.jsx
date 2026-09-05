@@ -17,6 +17,7 @@ export default function FraudBoardPage() {
   const [category, setCategory] = useState('');
   const [severity, setSeverity] = useState('');
   const [loading, setLoading] = useState(true);
+  const [fetchError, setFetchError] = useState('');
 
   const fetchFraudBoard = async (page = pagination.page) => {
     setLoading(true);
@@ -24,7 +25,7 @@ export default function FraudBoardPage() {
       const res = await fraudApi.getBoard({ category: category || undefined, severity: severity || undefined, page, limit: 9 });
       setReports(res?.data?.reports || []);
       setPagination(res?.data?.pagination || { page: 1, pages: 1, total: 0 });
-    } catch { } finally { setLoading(false); }
+    } catch (err) { setFetchError(err.message || 'Failed to load scam reports. Please try again.'); } finally { setLoading(false); }
   };
 
   useEffect(() => { fetchFraudBoard(1); }, [category, severity]);

@@ -18,7 +18,6 @@ export default function ReportPage() {
   const [searchParams] = useSearchParams();
   const [employers, setEmployers] = useState([]);
   const [selectedEmployerId, setSelectedEmployerId] = useState(searchParams.get('employerId') || '');
-  const [customOrgName, setCustomOrgName] = useState('');
   const [category, setCategory] = useState(CATEGORIES[0]);
   const [severity, setSeverity] = useState('High');
   const [title, setTitle] = useState('');
@@ -36,13 +35,12 @@ export default function ReportPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!selectedEmployerId && !customOrgName.trim()) { setError('Please select or name the company involved.'); return; }
+    if (!selectedEmployerId) { setError('Please select the company involved from the dropdown.'); return; }
     if (!title.trim() || !description.trim()) { setError('Please fill in a title and description.'); return; }
     setSubmitting(true); setError('');
     try {
       const fd = new FormData();
-      fd.append('employerId', selectedEmployerId || '');
-      if (customOrgName.trim()) fd.append('customOrgName', customOrgName.trim());
+      fd.append('employerId', selectedEmployerId);
       fd.append('fraudCategory', category);
       fd.append('severity', severity);
       fd.append('title', title.trim());
@@ -99,19 +97,22 @@ export default function ReportPage() {
             {/* Company */}
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Company involved *</label>
-              {employers.length > 0 ? (
-                <select value={selectedEmployerId} onChange={e => setSelectedEmployerId(e.target.value)} className={inputCls}>
-                  <option value="">Select a company...</option>
-                  {employers.map(e => (
-                    <option key={e._id} value={e._id}>{e.companyName}{e.verificationStatus === 'verified' ? ' (Verified)' : ''}</option>
-                  ))}
-                </select>
-              ) : null}
-              {!selectedEmployerId && (
-                <input type="text" value={customOrgName} onChange={e => setCustomOrgName(e.target.value)}
-                  placeholder="Company name (if not in list above)"
-                  className={`${inputCls} ${employers.length > 0 ? 'mt-2' : ''}`} />
-              )}
+              <select
+                value={selectedEmployerId}
+                onChange={e => setSelectedEmployerId(e.target.value)}
+                className={inputCls}
+                required
+              >
+                <option value="">Select a company from the list...</option>
+                {employers.map(e => (
+                  <option key={e._id} value={e._id}>
+                    {e.companyName}{e.verificationStatus === 'verified' ? ' ✓ Verified' : ''}
+                  </option>
+                ))}
+              </select>
+              <p className="text-[11px] text-slate-400 mt-1.5">
+                Don't see the company? It may not be registered on TrustHire yet — you can still describe them fully in the incident details below.
+              </p>
             </div>
 
             {/* Category + Severity */}

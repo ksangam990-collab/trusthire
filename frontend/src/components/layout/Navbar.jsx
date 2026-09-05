@@ -31,7 +31,11 @@ export default function Navbar() {
   const handleLogout = async () => {
     setProfileDropdownOpen(false);
     setMobileMenuOpen(false);
-    await logout();
+    try {
+      await logout();
+    } catch {
+      // logout clears local state regardless — always navigate home
+    }
     navigate('/');
   };
 

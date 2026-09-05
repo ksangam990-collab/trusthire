@@ -7,20 +7,20 @@ import {
   getAdminMetrics
 } from '../controllers/fraudController.js';
 import { authenticate, authorize, optionalAuth } from '../middleware/auth.js';
-import { uploadEvidence } from '../config/cloudinary.js';
+import { uploadEvidenceMiddleware } from '../config/cloudinary.js';
 import { reportLimiter } from '../middleware/rateLimiter.js';
 
 const router = express.Router();
 
-router.get('/board', getPublicFraudBoard);
-router.get('/admin/metrics', authenticate, authorize('admin'), getAdminMetrics);
-router.get('/admin/reports', authenticate, authorize('admin'), getAllReportsAdmin);
+router.get('/board',          getPublicFraudBoard);
+router.get('/admin/metrics',  authenticate, authorize('admin'), getAdminMetrics);
+router.get('/admin/reports',  authenticate, authorize('admin'), getAllReportsAdmin);
 
 router.post(
   '/report',
   reportLimiter,
   optionalAuth,
-  uploadEvidence.array('evidence', 4),
+  uploadEvidenceMiddleware,   // FIX: single composed middleware, not array
   submitReport
 );
 

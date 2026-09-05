@@ -2,8 +2,6 @@ import { v2 as cloudinary } from 'cloudinary';
 import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import multer from 'multer';
 
-// FIX (HIGH): Updated for Cloudinary SDK v2.
-// v1.x contained an argument-injection vulnerability (GHSA-g4mf-96x5-5m2c).
 const hasCredentials = Boolean(
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_API_KEY   &&
@@ -34,6 +32,7 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
+// ─── Storage backends ──────────────────────────────────────────────────────────
 let evidenceStorage, resumeStorage;
 
 if (hasCredentials) {
@@ -78,14 +77,41 @@ const attachDevUrls = (req, _res, next) => {
   next();
 };
 
-const baseEvidence = multer({ storage: evidenceStorage, limits: { fileSize: 5 * 1024 * 1024, files: 4 }, fileFilter });
-const baseResume   = multer({ storage: resumeStorage,   limits: { fileSize: 10 * 1024 * 1024, files: 1 }, fileFilter });
+// ─── FIX: Export plain middleware functions, NOT objects with wrapped methods.
+// Previously uploadEvidence.array() returned an array [multerMw, attachDevUrls]
+// which Express cannot call as a function. Now we compose them into a single
+// middleware via a wrapper so routes can use them directly without spreading.
+// ─────────────────────────────────────────────────────────────────────────────
 
-export const uploadEvidence = {
-  array: (field, max) => [baseEvidence.array(field, max), attachDevUrls],
+const baseEvidence = multer({
+  storage: evidenceStorage,
+  limits: { fileSize: 5 * 1024 * 1024, files: 4 },
+  fileFilter,
+});
+
+const baseResume = multer({
+  storage: resumeStorage,
+  limits: { fileSize: 10 * 1024 * 1024, files: 1 },
+  fileFilter,
+});
+
+// Single composed middleware — no more array-of-middlewares problem
+export const uploadEvidenceMiddleware = (req, res, next) => {
+  baseEvidence.array('evidence', 4)(req, res, (err) => {
+    if (err) return next(err);
+    attachDevUrls(req, res, next);
+  });
 };
-export const uploadResume = {
-  single: (field) => [baseResume.single(field), attachDevUrls],
+
+export const uploadResumeMiddleware = (req, res, next) => {
+  baseResume.single('resume')(req, res, (err) => {
+    if (err) return next(err);
+    attachDevUrls(req, res, next);
+  });
 };
+
+// Keep old names as aliases so other imports still work
+export const uploadEvidence = uploadEvidenceMiddleware;
+export const uploadResume   = uploadResumeMiddleware;
 
 export default cloudinary;
