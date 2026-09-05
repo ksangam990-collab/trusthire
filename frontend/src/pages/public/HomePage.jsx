@@ -484,77 +484,76 @@ export default function HomePage() {
       ════════════════════════════════════════ */}
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 mb-14 sm:mb-20">
 
-        {/* Outer shell — deep dark card */}
-        <div className="relative overflow-hidden rounded-3xl bg-[#0a0e17] border border-white/[0.07] shadow-2xl">
+        {/* Outer shell — theme-aware, not hardcoded dark */}
+        <div className="relative overflow-hidden rounded-3xl bg-amber-50 dark:bg-[#0e1117] border border-amber-200/80 dark:border-white/[0.07] shadow-lg dark:shadow-2xl">
 
-          {/* Subtle amber glow top-left */}
-          <div className="absolute -top-24 -left-24 w-72 h-72 bg-amber-500/8 rounded-full blur-3xl pointer-events-none" />
-          <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-rose-500/6 rounded-full blur-3xl pointer-events-none" />
+          {/* Glow accents — visible in both modes */}
+          <div className="absolute -top-24 -left-24 w-72 h-72 bg-amber-400/10 dark:bg-amber-500/8 rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-16 -right-16 w-56 h-56 bg-rose-400/8 dark:bg-rose-500/6 rounded-full blur-3xl pointer-events-none" />
 
           {/* ── Header ── */}
-          <div className="relative px-6 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8 border-b border-white/[0.06]">
+          <div className="relative px-6 sm:px-10 pt-8 sm:pt-10 pb-6 sm:pb-8 border-b border-amber-200/60 dark:border-white/[0.06]">
 
             {/* Section label */}
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 text-[11px] font-bold uppercase tracking-widest">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-4 rounded-full bg-amber-500/12 dark:bg-amber-500/10 border border-amber-400/40 dark:border-amber-500/25 text-amber-700 dark:text-amber-400 text-[11px] font-bold uppercase tracking-widest">
               <AlertTriangle className="w-3.5 h-3.5" />
               Candidate Protection Guide
             </div>
 
             <div className="flex flex-col lg:flex-row lg:items-end lg:justify-between gap-4">
               <div className="space-y-1.5">
-                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-white tracking-tight leading-tight">
+                <h2 className="text-2xl sm:text-3xl lg:text-4xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                   4 golden rules to<br className="hidden sm:block" />
-                  <span className="text-amber-400"> avoid hiring scams</span>
+                  <span className="text-amber-600 dark:text-amber-400"> avoid hiring scams</span>
                 </h2>
-                <p className="text-sm text-slate-400 max-w-lg leading-relaxed">
+                <p className="text-sm text-slate-600 dark:text-slate-400 max-w-lg leading-relaxed">
                   Keep these rules in mind whenever a recruiter contacts you on WhatsApp, Telegram, or email.
                 </p>
               </div>
 
               {/* Stat callout */}
-              <div className="flex-shrink-0 p-3 sm:p-4 rounded-2xl bg-white/[0.04] border border-white/[0.08] text-center min-w-[120px]">
-                <div className="text-2xl font-black text-rose-400">₹0</div>
-                <div className="text-[11px] text-slate-400 font-semibold mt-0.5 leading-tight">
+              <div className="flex-shrink-0 p-3 sm:p-4 rounded-2xl bg-white/70 dark:bg-white/[0.04] border border-amber-200 dark:border-white/[0.08] text-center min-w-[120px] shadow-sm">
+                <div className="text-2xl font-black text-rose-600 dark:text-rose-400">₹0</div>
+                <div className="text-[11px] text-slate-500 dark:text-slate-400 font-semibold mt-0.5 leading-tight">
                   Real jobs<br/>never charge you
                 </div>
               </div>
             </div>
           </div>
 
-          {/* ── Rules grid ── */}
-          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-px bg-white/[0.05]">
+          {/* ── Rules grid — divider adapts to theme ── */}
+          <div className="relative grid grid-cols-1 sm:grid-cols-2 gap-px bg-amber-200/50 dark:bg-white/[0.05]">
             {SCAM_RULES.map((r, i) => (
               <div
                 key={i}
-                className="bg-[#0a0e17] p-6 sm:p-8 space-y-4 hover:bg-white/[0.02] transition-colors duration-200"
+                className="bg-amber-50 dark:bg-[#0e1117] hover:bg-amber-100/60 dark:hover:bg-white/[0.02] p-6 sm:p-8 space-y-4 transition-colors duration-200"
               >
                 {/* Rule number + title row */}
                 <div className="flex items-start gap-3">
-                  {/* Number badge */}
-                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-500/12 border border-amber-500/25 flex items-center justify-center">
-                    <span className="text-[11px] font-black font-mono text-amber-400 leading-none">
+                  <div className="flex-shrink-0 w-8 h-8 rounded-lg bg-amber-500/15 dark:bg-amber-500/12 border border-amber-400/40 dark:border-amber-500/25 flex items-center justify-center">
+                    <span className="text-[11px] font-black font-mono text-amber-700 dark:text-amber-400 leading-none">
                       {r.n}
                     </span>
                   </div>
-                  <h4 className="font-extrabold text-white text-sm sm:text-base leading-snug pt-1">
+                  <h4 className="font-extrabold text-slate-900 dark:text-white text-sm sm:text-base leading-snug pt-1">
                     {r.title}
                   </h4>
                 </div>
 
                 {/* Scam phrase quote */}
-                <div className="relative pl-3 border-l-2 border-rose-500/50">
-                  <div className="text-[10px] font-bold uppercase tracking-wider text-rose-500/70 mb-1">
+                <div className="relative pl-3 border-l-2 border-rose-400 dark:border-rose-500/50">
+                  <div className="text-[10px] font-bold uppercase tracking-wider text-rose-500 dark:text-rose-500/70 mb-1">
                     What scammers say:
                   </div>
-                  <p className="text-xs sm:text-[13px] text-rose-300/90 italic leading-relaxed font-medium">
+                  <p className="text-xs sm:text-[13px] text-rose-700 dark:text-rose-300/90 italic leading-relaxed font-medium">
                     {r.flag}
                   </p>
                 </div>
 
                 {/* Truth */}
                 <div className="flex items-start gap-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-0.5" />
-                  <p className="text-xs sm:text-[13px] text-slate-300 leading-relaxed">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <p className="text-xs sm:text-[13px] text-slate-700 dark:text-slate-300 leading-relaxed">
                     {r.truth}
                   </p>
                 </div>
@@ -563,21 +562,21 @@ export default function HomePage() {
           </div>
 
           {/* ── Footer CTA ── */}
-          <div className="relative px-6 sm:px-10 py-6 sm:py-7 border-t border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-xs text-slate-500 text-center sm:text-left max-w-xs">
+          <div className="relative px-6 sm:px-10 py-6 sm:py-7 border-t border-amber-200/60 dark:border-white/[0.06] flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-slate-500 dark:text-slate-500 text-center sm:text-left max-w-xs">
               Spotted a scam? Report it in 30 seconds — every report protects hundreds of job seekers.
             </p>
             <div className="flex flex-col sm:flex-row items-center gap-2.5 w-full sm:w-auto">
               <Link
                 to="/fraud-board"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all duration-150 shadow-lg shadow-rose-900/30 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold transition-all duration-150 shadow-lg shadow-rose-200 dark:shadow-rose-900/30 cursor-pointer"
               >
                 <AlertTriangle className="w-3.5 h-3.5" />
                 View Live Scam Board
               </Link>
               <Link
                 to="/report-fraud"
-                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-white/10 hover:border-white/20 bg-white/[0.04] hover:bg-white/[0.07] text-slate-300 hover:text-white text-xs font-bold transition-all duration-150 cursor-pointer"
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl border border-slate-300 dark:border-white/10 hover:border-slate-400 dark:hover:border-white/20 bg-white/80 dark:bg-white/[0.04] hover:bg-white dark:hover:bg-white/[0.07] text-slate-700 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-xs font-bold transition-all duration-150 cursor-pointer"
               >
                 Report a Scam
                 <ArrowRight className="w-3.5 h-3.5" />
