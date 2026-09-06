@@ -133,7 +133,7 @@ export default function DashboardPage() {
                     </Link>
                     <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500 dark:text-slate-400">
                       <span>{app.job?.location?.city} ({app.job?.workplaceType})</span>
-                      <span className="text-slate-400">•</span>
+                      <span className="text-slate-400">â€¢</span>
                       <span className="inline-flex items-center space-x-1 font-mono text-slate-400">
                         <Clock className="w-3 h-3" />
                         <span>Applied on {new Date(app.createdAt).toLocaleDateString()}</span>
