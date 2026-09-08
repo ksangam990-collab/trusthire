@@ -141,7 +141,7 @@ export default function ReportPage() {
             <div>
               <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1.5">Short title *</label>
               <input type="text" required value={title} onChange={e => setTitle(e.target.value)}
-                placeholder="e.g. Demanded Rs 4,500 before interview via WhatsApp"
+                placeholder="e.g. Demanded ₹4,500 before interview via WhatsApp"
                 className={inputCls} maxLength={120} />
             </div>
 

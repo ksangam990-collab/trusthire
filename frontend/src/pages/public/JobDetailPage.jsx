@@ -142,7 +142,7 @@ export default function JobDetailPage() {
                 {midSalary > 0 && (
                   <div className="text-right">
                     <span className="text-[11px] text-slate-500 block">Estimated monthly in-hand</span>
-                    <span className="text-sm font-bold text-slate-900 dark:text-white">~Rs {inHand.toLocaleString('en-IN')}</span>
+                    <span className="text-sm font-bold text-slate-900 dark:text-white">~₹{inHand.toLocaleString('en-IN')}</span>
                   </div>
                 )}
               </div>
@@ -241,8 +241,8 @@ export default function JobDetailPage() {
 
       {/* Apply Modal */}
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm px-4" onClick={() => setShowModal(false)} role="presentation" aria-label="Close application modal">
-          <div className="w-full max-w-lg bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl p-6 space-y-5" onClick={e => e.stopPropagation()}>
+        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/60 backdrop-blur-sm p-0 sm:p-4" onClick={() => setShowModal(false)} role="presentation" aria-label="Close application modal">
+          <div className="w-full max-w-lg max-h-[92vh] overflow-y-auto bg-white dark:bg-slate-900 rounded-t-3xl sm:rounded-2xl border border-slate-200 dark:border-slate-800 shadow-2xl p-5 sm:p-6 space-y-5" onClick={e => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-base font-black text-slate-900 dark:text-white">Apply for {title}</h2>
               <button onClick={() => setShowModal(false)} className="p-1 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg cursor-pointer text-slate-500"><X className="w-5 h-5" /></button>

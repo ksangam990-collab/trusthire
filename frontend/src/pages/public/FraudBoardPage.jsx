@@ -60,9 +60,9 @@ export default function FraudBoardPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap items-center gap-3 p-3 sm:p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center gap-3 p-3 sm:p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl">
         <select value={category} onChange={e => setCategory(e.target.value)}
-          className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          className="w-full sm:w-auto text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
           <option value="">All Categories</option>
           <option value="Registration Fee / Security Deposit">Registration Fee / Deposit</option>
           <option value="Fake Offer Letter">Fake Offer Letter</option>
@@ -73,7 +73,7 @@ export default function FraudBoardPage() {
         </select>
 
         <select value={severity} onChange={e => setSeverity(e.target.value)}
-          className="text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500">
+          className="w-full sm:w-auto text-xs bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-800 dark:text-slate-200 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500">
           <option value="">All Severity</option>
           <option value="Critical">Critical</option>
           <option value="High">High</option>

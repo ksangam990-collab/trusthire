@@ -60,9 +60,10 @@ export default function JobSearchPage() {
     setTimeout(() => fetchJobs(1, '', ''), 0);
   };
 
-  const selectCls = "text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl px-3 py-2 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer";
+  const selectCls = "w-full text-xs bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 rounded-xl px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-emerald-500 cursor-pointer transition";
 
-  const hasActiveFilters = jobType || workplaceType || experienceLevel || verifiedOnly;
+  const activeFiltersCount = [jobType, workplaceType, experienceLevel, verifiedOnly ? 'verified' : ''].filter(Boolean).length;
+  const hasActiveFilters = activeFiltersCount > 0;
 
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6 theme-transition">
@@ -91,11 +92,61 @@ export default function JobSearchPage() {
           <button type="button" onClick={() => setShowFilters(!showFilters)}
             className={`flex items-center gap-1.5 px-3 py-2 text-sm font-semibold rounded-xl border transition cursor-pointer ${showFilters || hasActiveFilters ? 'bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border-emerald-300 dark:border-emerald-800' : 'bg-slate-50 dark:bg-slate-800 text-slate-600 dark:text-slate-300 border-slate-200 dark:border-slate-700'}`}>
             <SlidersHorizontal className="w-4 h-4" />
-            <span className="hidden sm:block">Filters</span>
-            {hasActiveFilters && <span className="w-2 h-2 rounded-full bg-emerald-500" />}
+            <span className="hidden sm:inline">Filters</span>
+            {hasActiveFilters && (
+              <span className="inline-flex items-center justify-center px-1.5 py-0.5 text-[10px] font-bold rounded-full bg-emerald-600 text-white">
+                {activeFiltersCount}
+              </span>
+            )}
           </button>
         </div>
       </form>
+
+      {/* Active Filter Chips */}
+      {hasActiveFilters && (
+        <div className="flex flex-wrap items-center gap-2 pt-0.5">
+          <span className="text-xs font-semibold text-slate-500 dark:text-slate-400">Filters:</span>
+          {jobType && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs">
+              <span>{jobType}</span>
+              <button type="button" onClick={() => setJobType('')} className="hover:text-emerald-900 dark:hover:text-white cursor-pointer" aria-label="Remove job type filter">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {workplaceType && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs">
+              <span>{workplaceType}</span>
+              <button type="button" onClick={() => setWorkplaceType('')} className="hover:text-emerald-900 dark:hover:text-white cursor-pointer" aria-label="Remove workplace filter">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {experienceLevel && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs">
+              <span>{experienceLevel}</span>
+              <button type="button" onClick={() => setExperienceLevel('')} className="hover:text-emerald-900 dark:hover:text-white cursor-pointer" aria-label="Remove experience filter">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          {verifiedOnly && (
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 text-xs font-medium rounded-full bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800 shadow-xs">
+              <span>Verified Only</span>
+              <button type="button" onClick={() => setVerifiedOnly(false)} className="hover:text-emerald-900 dark:hover:text-white cursor-pointer" aria-label="Remove verified filter">
+                <X className="w-3 h-3" />
+              </button>
+            </span>
+          )}
+          <button
+            type="button"
+            onClick={handleReset}
+            className="text-xs font-semibold text-rose-600 dark:text-rose-400 hover:text-rose-700 dark:hover:text-rose-300 hover:underline ml-1 cursor-pointer"
+          >
+            Clear all
+          </button>
+        </div>
+      )}
 
       {/* Filter Panel */}
       {showFilters && (
