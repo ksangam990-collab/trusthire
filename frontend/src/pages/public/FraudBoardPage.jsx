@@ -115,14 +115,14 @@ export default function FraudBoardPage() {
             <div key={report._id} className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 hover:border-rose-300 dark:hover:border-rose-800 rounded-2xl p-5 space-y-3 transition flex flex-col">
               <div className="flex items-start justify-between gap-2">
                 <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-bold uppercase ${SEVERITY_COLORS[report.severity] || SEVERITY_COLORS.Medium}`}>
-                  <AlertTriangle className="w-3 h-3" /> {report.severity}
+                  <AlertTriangle className="w-3 h-3" /> {report.severity || 'Medium'}
                 </span>
                 <span className="text-[10px] text-slate-400 flex-shrink-0">{new Date(report.createdAt).toLocaleDateString('en-IN')}</span>
               </div>
 
               <div className="space-y-1 flex-1">
-                <span className="text-[10px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wide block">{report.fraudCategory}</span>
-                <h3 className="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">{report.title}</h3>
+                <span className="text-[10px] font-semibold text-rose-600 dark:text-rose-400 uppercase tracking-wide block">{report.fraudCategory || 'Recruitment Scam'}</span>
+                <h3 className="font-bold text-sm text-slate-900 dark:text-white leading-snug line-clamp-2">{report.title || 'Scam Incident Report'}</h3>
                 <p className="text-xs text-slate-500 dark:text-slate-400 leading-relaxed line-clamp-3">{report.description}</p>
               </div>
 
