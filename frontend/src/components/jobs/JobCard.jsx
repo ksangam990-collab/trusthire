@@ -1,8 +1,14 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  MapPin, Briefcase, IndianRupee, CheckCircle2,
-  Building2, Clock, ArrowRight, ShieldAlert, Wifi
+  MapPin,
+  Briefcase,
+  IndianRupee,
+  CheckCircle2,
+  Clock,
+  ArrowRight,
+  ShieldAlert,
+  Wifi
 } from 'lucide-react';
 import TrustScoreBadge from '../ui/TrustScoreBadge';
 

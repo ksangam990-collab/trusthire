@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useSearchParams } from 'react-router-dom';
-import { Search, MapPin, RotateCcw, Building2, CheckCircle2, ChevronLeft, ChevronRight, SlidersHorizontal, X } from 'lucide-react';
+import {
+  Search,
+  MapPin,
+  Building2,
+  CheckCircle2,
+  ChevronLeft,
+  ChevronRight,
+  SlidersHorizontal,
+  X
+} from 'lucide-react';
 import { jobsApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
 import { JobCardSkeleton } from '../../components/ui/Skeleton';

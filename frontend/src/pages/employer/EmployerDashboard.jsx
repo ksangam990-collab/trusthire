@@ -1,20 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { 
-  Building2, 
-  Briefcase, 
-  Users, 
-  ShieldCheck, 
-  PlusCircle, 
-  CheckCircle2, 
-  Clock, 
-  AlertTriangle, 
-  ChevronRight,
-  UserCheck,
-  UserX,
-  Eye,
-  FileText
+import {
+  Briefcase,
+  Users,
+  ShieldCheck,
+  PlusCircle,
+  CheckCircle2,
+  AlertTriangle,
+  Eye
 } from 'lucide-react';
 import { employerApi, applicationsApi } from '../../api';
 import TrustScoreBadge from '../../components/ui/TrustScoreBadge';
@@ -229,7 +223,7 @@ export default function EmployerDashboard() {
                       <div className="text-[11px] text-slate-400 font-mono">{app.candidate?.email}</div>
                     </td>
                     <td className="py-3.5 px-4 text-slate-700 dark:text-slate-300 font-medium">{app.job?.title || 'Job Opening'}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-500">{app.contactPhone || '—'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-500">{app.contactPhone || '�'}</td>
                     <td className="py-3.5 px-4">
                       {app.resumeUrl ? (
                         <a

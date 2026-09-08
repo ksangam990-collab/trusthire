@@ -19,7 +19,10 @@ export default function VerifyPage() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!cin.trim() && !gstin.trim()) { setError('Please enter your CIN or GSTIN number.'); return; }
+    if (!cin.trim()) {
+      setError('Corporate Identification Number (CIN) is required for verification. GSTIN alone is not sufficient.');
+      return;
+    }
     setError(''); setLoading(true); setStep(1);
     try {
       const res = await employerApi.verifyCompany({ cin: cin.trim(), gstin: gstin.trim() });

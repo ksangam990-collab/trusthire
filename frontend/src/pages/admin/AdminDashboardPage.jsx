@@ -1,20 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { 
-  ShieldAlert, 
-  ShieldCheck, 
-  Users, 
-  Briefcase, 
-  Building2, 
-  AlertTriangle, 
-  CheckCircle2, 
-  XCircle, 
-  Clock, 
-  Filter, 
-  Eye, 
-  FileText,
-  Search,
-  ExternalLink
+import {
+  ShieldAlert,
+  ShieldCheck,
+  Users,
+  CheckCircle2,
+  Filter
 } from 'lucide-react';
 import { fraudApi, jobsApi, employerApi } from '../../api';
 import TrustScoreBadge from '../../components/ui/TrustScoreBadge';
@@ -70,6 +61,12 @@ export default function AdminDashboardPage() {
       setMetrics(metricsRes?.data || metrics);
     } catch (err) {
       console.error('Failed to update report status:', err.message);
+      alert(`Failed to update report: ${err.message || 'Please try again.'}`);
+      // Re-fetch to restore correct state
+      try {
+        const reportsRes = await fraudApi.getAdminReports({ status: statusFilter || undefined });
+        setReports(reportsRes?.data?.reports || []);
+      } catch { /* ignore */ }
     } finally {
       setUpdatingReportId(null);
     }
@@ -97,12 +94,14 @@ export default function AdminDashboardPage() {
         </div>
 
         <div className="flex items-center space-x-2">
-          <Link
-            to="/employer/verify"
+          <a
+            href="https://www.mca.gov.in/content/mca/global/en/mca/master-data/MDS.html"
+            target="_blank"
+            rel="noreferrer"
             className="px-3.5 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold"
           >
-            Statutory CIN Audit Tool
-          </Link>
+            MCA21 CIN Lookup ↗
+          </a>
           <Link
             to="/jobs"
             className="px-3.5 py-2 rounded-lg bg-slate-900 hover:bg-slate-800 dark:bg-emerald-500 dark:hover:bg-emerald-400 text-white dark:text-slate-950 text-xs font-semibold"
@@ -218,7 +217,7 @@ export default function AdminDashboardPage() {
                       <span className="font-bold text-slate-800 dark:text-slate-200">
                         {report.fraudCategory}
                       </span>
-                      <span className="text-slate-400">• Severity: <strong>{report.severity}</strong></span>
+                      <span className="text-slate-400">� Severity: <strong>{report.severity}</strong></span>
                     </div>
 
                     <span className="text-[11px] font-mono text-slate-400">
@@ -323,8 +322,8 @@ export default function AdminDashboardPage() {
                 {employers.map((emp) => (
                   <tr key={emp._id} className="hover:bg-slate-50 dark:hover:bg-slate-900/40">
                     <td className="py-3.5 px-4 font-bold text-slate-900 dark:text-white">{emp.companyName}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || '—'}</td>
-                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || '—'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.cin || '�'}</td>
+                    <td className="py-3.5 px-4 font-mono text-slate-600 dark:text-slate-400">{emp.gstin || '�'}</td>
                     <td className="py-3.5 px-4">
                       <TrustScoreBadge score={emp.trustScore || 40} size="sm" />
                     </td>
@@ -358,10 +357,10 @@ export default function AdminDashboardPage() {
               </div>
               <div className="flex items-center space-x-2 text-slate-500 text-[11px]">
                 <span>{job.location?.city}</span>
-                <span>•</span>
+                <span>�</span>
                 <span>{job.jobType}</span>
-                <span>•</span>
-                <span>₹{((job.salary?.min || 0) / 100000).toFixed(1)}L - ₹{((job.salary?.max || job.salary?.min || 0) / 100000).toFixed(1)}L</span>
+                <span>�</span>
+                <span>?{((job.salary?.min || 0) / 100000).toFixed(1)}L - ?{((job.salary?.max || job.salary?.min || 0) / 100000).toFixed(1)}L</span>
               </div>
               <div className="pt-2 flex justify-between items-center border-t border-slate-100 dark:border-slate-800">
                 <span className="font-mono text-[10px] text-emerald-600 uppercase font-bold">

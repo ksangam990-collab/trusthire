@@ -2,10 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
-  ShieldCheck, Search, MapPin, ArrowRight, CheckCircle2,
-  Lock, Building2, AlertTriangle, FileCheck, Users,
-  ChevronDown, ChevronUp, IndianRupee, TrendingUp, Radio,
-  Sparkles, Check, ExternalLink, Briefcase, BadgeCheck
+  ShieldCheck,
+  Search,
+  MapPin,
+  ArrowRight,
+  CheckCircle2,
+  Lock,
+  Building2,
+  AlertTriangle,
+  FileCheck,
+  ChevronDown,
+  ChevronUp,
+  IndianRupee,
+  Radio,
+  Sparkles,
+  Check,
+  Briefcase
 } from 'lucide-react';
 import { jobsApi } from '../../api';
 import JobCard from '../../components/jobs/JobCard';
@@ -22,64 +34,64 @@ const STATS = [
 ];
 
 const COMPANIES = [
-  { name: 'Razorpay', domain: 'razorpay.com' },
-  { name: 'Zerodha', domain: 'zerodha.com' },
-  { name: 'Swiggy', domain: 'swiggy.in' },
-  { name: 'Zomato', domain: 'zomato.com' },
-  { name: 'Infosys', domain: 'infosys.com' },
-  { name: 'CRED', domain: 'cred.club' },
-  { name: 'TCS', domain: 'tcs.com' },
-  { name: 'Flipkart', domain: 'flipkart.com' }
+  { name: 'NexGen Technologies' },
+  { name: 'BrightWave IT' },
+  { name: 'GreenLeaf Bio' },
+  { name: 'SwiftLogix' },
+  { name: 'Verified Startups' },
+  { name: 'MCA-Registered Cos' },
+  { name: 'Zero Scam Policy' },
+  { name: 'Transparent Salaries' }
 ];
 
 const SPOTLIGHTS = [
   {
-    id: 'razorpay',
-    name: 'Razorpay Software',
-    shortName: 'Razorpay',
-    role: 'Senior Full Stack Engineer',
-    salary: '₹24.0L – ₹32.0L',
-    monthly: '~₹1.65L – ₹2.2L / mo in-hand',
+    id: 'nexgen',
+    name: 'NexGen Technologies Pvt Ltd',
+    shortName: 'NexGen',
+    role: 'Senior Full-Stack Engineer',
+    salary: '₹18.0L – ₹26.0L',
+    monthly: '~₹1.20L – ₹1.75L / mo in-hand',
     location: 'Bengaluru (Hybrid)',
     jobType: 'Full-time',
-    skills: ['React', 'TypeScript', 'Node.js', 'Go', 'AWS'],
-    cin: 'U72200KA2013PTC070993',
-    domain: 'razorpay.com',
-    score: 98,
+    skills: ['React', 'TypeScript', 'Node.js', 'MongoDB', 'AWS'],
+    cin: 'U72900KA2018PTC112345',
+    domain: 'nexgentech.in',
+    score: 90,
     avatarBg: 'bg-blue-600',
-    avatarText: 'RZ'
+    avatarText: 'NG'
   },
   {
-    id: 'zerodha',
-    name: 'Zerodha Broking Ltd',
-    shortName: 'Zerodha',
-    role: 'Systems Architect (Golang)',
-    salary: '₹30.0L – ₹42.0L',
-    monthly: '~₹2.05L – ₹2.85L / mo in-hand',
-    location: 'Bengaluru (Remote)',
+    id: 'brightwave',
+    name: 'BrightWave IT Solutions Pvt Ltd',
+    shortName: 'BrightWave',
+    role: 'Cloud Solutions Architect',
+    salary: '₹24.0L – ₹36.0L',
+    monthly: '~₹1.65L – ₹2.45L / mo in-hand',
+    location: 'Pune (Remote)',
     jobType: 'Full-time · Remote',
-    skills: ['Go', 'PostgreSQL', 'Kafka', 'Docker', 'Linux'],
-    cin: 'U67120KA2010PTC054045',
-    domain: 'zerodha.com',
-    score: 99,
+    skills: ['AWS', 'Terraform', 'Kubernetes', 'Docker', 'Linux'],
+    cin: 'U74999MH2019PTC234567',
+    domain: 'brightwaveit.com',
+    score: 85,
     avatarBg: 'bg-emerald-600',
-    avatarText: 'ZD'
+    avatarText: 'BW'
   },
   {
-    id: 'swiggy',
-    name: 'Bundl Technologies (Swiggy)',
-    shortName: 'Swiggy',
-    role: 'Staff React Native Engineer',
-    salary: '₹28.0L – ₹38.0L',
-    monthly: '~₹1.90L – ₹2.60L / mo in-hand',
-    location: 'Bengaluru / Hybrid',
+    id: 'greenleaf',
+    name: 'GreenLeaf Biosciences Pvt Ltd',
+    shortName: 'GreenLeaf',
+    role: 'ML Engineer — Computer Vision',
+    salary: '₹16.0L – ₹24.0L',
+    monthly: '~₹1.10L – ₹1.65L / mo in-hand',
+    location: 'Hyderabad (Hybrid)',
     jobType: 'Full-time',
-    skills: ['React Native', 'TypeScript', 'GraphQL', 'Mobile Perf'],
-    cin: 'U74110KA2013PTC096530',
-    domain: 'swiggy.in',
-    score: 97,
-    avatarBg: 'bg-orange-600',
-    avatarText: 'SW'
+    skills: ['Python', 'PyTorch', 'OpenCV', 'MLOps', 'TFLite'],
+    cin: 'U24200TG2021PTC345678',
+    domain: 'greenleafbio.co.in',
+    score: 88,
+    avatarBg: 'bg-teal-600',
+    avatarText: 'GL'
   }
 ];
 
@@ -113,10 +125,12 @@ export default function HomePage() {
   const [activeTab, setActiveTab] = useState(0);
   const navigate = useNavigate();
 
+  const [jobsError, setJobsError] = useState(false);
+
   useEffect(() => {
     jobsApi.getJobs({ limit: 4, sortBy: 'createdAt', order: 'desc' })
       .then(r => setJobs(r?.data?.jobs || []))
-      .catch(() => {})
+      .catch(() => setJobsError(true))
       .finally(() => setLoading(false));
   }, []);
 
@@ -252,7 +266,7 @@ export default function HomePage() {
       <section className="border-y border-slate-200/80 dark:border-slate-800/80 bg-slate-50/50 dark:bg-slate-950/50 py-5 sm:py-7 mb-10 sm:mb-16">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center space-y-3">
           <p className="text-[10px] sm:text-[11px] font-bold uppercase tracking-widest text-slate-400">
-            Trusted by candidates applying to top engineering teams
+            Trusted by candidates across India — verified employers only
           </p>
           <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
             {COMPANIES.map(c => (
@@ -260,8 +274,8 @@ export default function HomePage() {
                 key={c.name}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 text-xs font-bold text-slate-700 dark:text-slate-300 shadow-xs"
               >
-                <span>{c.name}</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-emerald-500" />
+                <span>{c.name}</span>
               </div>
             ))}
           </div>
@@ -431,13 +445,22 @@ export default function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {[1, 2, 3, 4].map(i => <JobCardSkeleton key={i} />)}
           </div>
+        ) : jobsError ? (
+          <div className="text-center py-14 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
+            <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto" />
+            <p className="font-bold text-slate-900 dark:text-white text-sm">Couldn't load jobs right now</p>
+            <p className="text-xs text-slate-500">Please check your connection or try refreshing the page.</p>
+            <Link to="/jobs" className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-600 dark:text-emerald-400 hover:underline">
+              Browse all jobs <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         ) : jobs.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {jobs.map(j => <JobCard key={j._id} job={j} />)}
           </div>
         ) : (
           <div className="text-center py-14 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl space-y-3">
-            <Building2 className="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto" />
+            <ShieldCheck className="w-10 h-10 text-slate-300 dark:text-slate-700 mx-auto" />
             <p className="font-bold text-slate-900 dark:text-white text-sm">No active listings yet</p>
             <p className="text-xs text-slate-500">Verified openings will appear here as companies pass validation.</p>
           </div>

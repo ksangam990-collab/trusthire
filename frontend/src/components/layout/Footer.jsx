@@ -1,9 +1,15 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import {
-  ShieldCheck, ExternalLink, AlertTriangle, Mail, Github,
-  ArrowUpRight, Briefcase, Building2, FileSearch, Phone,
-  CheckCircle2, Lock, Zap, IndianRupee
+  ShieldCheck,
+  ExternalLink,
+  AlertTriangle,
+  Mail,
+  Github,
+  ArrowUpRight,
+  Lock,
+  Zap,
+  IndianRupee
 } from 'lucide-react';
 
 /* ─── Nav data ───────────────────────────────────────────────────────────── */

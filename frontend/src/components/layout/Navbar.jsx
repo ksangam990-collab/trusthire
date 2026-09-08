@@ -1,19 +1,18 @@
 ﻿import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { 
-  ShieldCheck, 
-  Sun, 
-  Moon, 
-  LogOut, 
-  User, 
-  Plus, 
-  Menu, 
-  X, 
+import {
+  ShieldCheck,
+  Sun,
+  Moon,
+  LogOut,
+  User,
+  Plus,
+  Menu,
+  X,
   ChevronDown,
   LayoutDashboard,
   FileText,
-  ShieldAlert,
-  Sparkles
+  ShieldAlert
 } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useThemeStore } from '../../store/themeStore';
